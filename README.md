@@ -1,18 +1,46 @@
 ## snake_server 
+
+````
+desc: wechat game snake war server , technique is 
+technique: game: cocos-creator / server: node.js
+date: 2018-7-19 20:00:00
+mail: tangxun_123@163.com
+````
 	
-	1. wechat auth server
-	2. game user info save 
-	3. game ranks info 
-	4. game wechat group ranks info 
-	5. game shopping service 
-	6. game orders service 
-	
+### project description
+
+1. wechat auth server
+2. game user info save 
+3. game ranks info 
+4. game wechat group ranks info 
+5. game shopping service 
+6. game orders service 
 	and so on ...
 
-## time plans
-
-## process
-
-## todo
-
+### Time Plans
 	
+1. project frame setup about [2days]
+2. design db for /user/order/ranks/gourp-ranks/pay-server/ structs [3 days]
+3. devlop ... about [7days]
+4. debug with apps about [7days] 
+5. test ...	[unknow]
+
+### Task List
+
+- [ ] project frame setup 
+- [ ] db design:
+	- [ ] user
+	- [ ] order
+	- [ ] person ranks
+	- [ ] group ranks
+	- [ ] game settle
+	- [ ] payment server
+	- [ ] auth
+- [ ] dev:
+	- [ ] user
+	- [ ] order
+	- [ ] ranks
+	- [ ] group ranks
+	- [ ] auth
+	- [ ] payment
+- [ ] debug:
