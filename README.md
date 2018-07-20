@@ -17,6 +17,11 @@ mail: tangxun_123@163.com
 6. game orders service 
 	and so on ...
 
+### Works Records
+
+1. use mysql with the db technique
+2. use redis for distributed db storage
+
 ### Time Plans
 	
 1. project frame setup about [2days]
