@@ -12,7 +12,7 @@ var db = {};
 
 db.con = function(callback) {
     pool.getConnection(function (err, connection) {
-        console.log(`${__filename} ::: db connection start ... `);
+        console.log(`[event | connect start] ::: db connection start ... `);
 
         if(err) {
             throw err;
@@ -21,7 +21,7 @@ db.con = function(callback) {
         }
         connection.release;
         
-        console.log(`${__filename} ::: connection end ...`);
+        console.log(`[event | connect end] ::: connection end ...`);
     });
 }
 

@@ -10,12 +10,15 @@ var cookieParser = require('cookie-parser');
 var morgan = require('morgan');
 var fs = require('fs');
 var path = require('path');
+var config = require('./src/config');
 
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
 
 var app = express();
+
+process.title = 'Snake-Server';
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -30,7 +33,7 @@ var accLogStream = FileStreamRotator.getStream({
     frequency:'daily',
     verbose: false
 });
-morgan.format('snake','[snake server] :remote-addr - :remote-user [:date[clf]] :method :url HTTP/:http-version :status :res[content-length] :response-time ms');
+morgan.format('snake',`[${process.title}] :remote-addr - :remote-user [:date[clf]] :method :url HTTP/:http-version :status :res[content-length] :response-time ms`);
 app.use(morgan('snake', {stream: accLogStream}));
 
 app.use(express.json());
@@ -58,9 +61,17 @@ app.use(function(err, req, res, next) {
   res.render('error');
 });
 
+// setup process exit listener;
+process.on('exit', function(code){
+  console.debug(`${config.now()} [Event | app exit] exit code is ${code}`);
+  console.trace();
+});
+
 // set app listen on
-var listenPort = 8000;
-console.log(`${__filename} will running , listen on ${listenPort}`);
-app.listen(listenPort);
+var server = app.listen(8000, function() {
+    var host = server.address().address;
+    var port  = server.address().port;
+    console.debug(`${config.now()} [Event | app start] ${process.title} listened on ${host}:${port}`);
+});
 
 module.exports = app;

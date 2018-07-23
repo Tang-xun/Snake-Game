@@ -27,6 +27,7 @@
 
 #### userInfo
 
+
 |name               |type           |not null       |comment                |
 |:-                 |:-             |:-             |:-                     |
 |openId             |int            |true           |wx_id                  |
@@ -51,13 +52,14 @@
     /**
     *  create user table 
     */
-    create table user (
+    create table IF NOT EXISTS user  (
         _id int NOT NULL AUTO_INCREMENT,
         openId  varchar(256) NOT NULL COMMENT 'wechat open id',
         nickName  varchar(256) NOT NULL ,
         honor  varchar(256) NOT NULL COMMENT 'player current honor',
-        honorNum  int NOT NULL COMMENT 'gain honor number',
+        honorNum  int NOT NULL default 1 COMMENT 'gain honor number',
         skin  int NOT NULL COMMENT 'player current skin id',
+        skinNum int NOT NULL default 1 COMMENT 'player own skin num',
         curExp  int NOT NULL COMMENT 'player current exp num',
         nextGradeExp  int NOT NULL COMMENT 'next grade exp',
         t_bestLen int NOT NULL default 0 COMMENT 'best body length',
@@ -71,7 +73,9 @@
         updateTime  TIMESTAMP on update CURRENT_TIMESTAMP,
         PRIMARY KEY ( _id ),
         INDEX (openId)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;
+    ) 
+    COMMENT = 'snake player info',
+    ENGINE=InnoDB DEFAULT CHARSET=utf8;
 
     /**
     *   insert user info 
@@ -94,4 +98,20 @@
     update user set honorNum=11 where openID=openid;
 ```
 
-    
+
+#### grade config
+
+````sql
+    CREATE TABLE snake.grade (
+    id INT NOT NULL AUTO_INCREMENT,
+    grade INT NOT NULL COMMENT 'user grade',
+    name VARCHAR(128) NOT NULL COMMENT 'grade name ',
+    preExp INT NOT NULL COMMENT 'grade start exp.',
+    nextExp INT NOT NULL COMMENT 'user grade next exp.',
+    PRIMARY KEY (id, grade, name)),
+    INDEX (grade, name)
+    COMMENT = 'user grade config sys',
+    ENGINE=InnoDB DEFAULT CHARSET=utf8;
+
+````
+
