@@ -1,6 +1,8 @@
 var db = require('./comonPool');
 var config = require('../config');
 
+var logger = require('../../logger').logger('sanke_grade', 'info');
+
 var grade = function () {
     this.grade;
     this.name;
@@ -21,10 +23,10 @@ function createGradeTable(callback) {
     db.con(function (connection) {
         connection.query(createSql, function (err, res) {
             if (err) {
-                console.error(`${config.now()} [Event | cretate grade table] error ${err}`);
+                logger.info(`[Event | cretate grade table] error ${err}`);
                 callback(err, null);
             } else {
-                console.info(`${config.now()} [Event | create grade table] ok ${res}`);
+                logger.info(`[Event | create grade table] ok ${res}`);
                 callback(null, res);
             }
         })
@@ -33,7 +35,7 @@ function createGradeTable(callback) {
 }
 
 function toString() {
-    console.log(`${config.now()}  grade toString called ...`);
+    logger.info(`grade toString called ...`);
     return 'call succss';
 }
 

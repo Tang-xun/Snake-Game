@@ -1,9 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
+console.log('Tank ::: router indexPage');
+
+var indexPage = function(req, res, next) {
+    res.render('index', { title: 'Express' });
+};
+
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index', { title: 'Express' });
-});
+router.get('/', indexPage);
 
 module.exports = router;

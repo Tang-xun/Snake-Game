@@ -1,1 +1,3 @@
-require('');
+var app = require('../app-com');
+
+app.route('/')

@@ -1,17 +1,12 @@
 var config = require('../config');
 var db = require('./comonPool');
 
+var logger = require('../../logger').logger('sanke_grade', 'info');
+
 // data bean
 var User = function () {
 
-    this.openid = {
-        set() {
-
-        },
-        get() {
-            
-        }
-    };
+    this.openid;
     this.nickName;
     this.honor = '小青蛇';
     this.honorNum = 0;
@@ -31,7 +26,7 @@ var User = function () {
     this.updateTime;
     this.createTime;
 
-    console.log(`init User ::: ${openid}`);
+    console.log(`init User ::: ${this.openid}`);
     
 }
 
@@ -62,10 +57,12 @@ function createUserTable(callback) {
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
         updateTime  TIMESTAMP on update CURRENT_TIMESTAMP,
         PRIMARY KEY ( _id ),
-        INDEX (openId)
-    ) ENGINE=InnoDB DEFAULT CHARSET=utf8;`
+        INDEX (openId),
+        unique (openId)
+    ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
 
     db.con(function (connection) {
+        console.log(`userTable ${userTable}`);
         connection.query(userTable, function (err, res) {
             if (err) {
                 console.error(`[Event | user create table] ::: error : ${err}`);
@@ -105,19 +102,19 @@ function insertUserInfo(openid, nickName, callback) {
     user.e_linkKill = 0;
 
     let insertUser = `insert into snake.user 
-        (openID, nickName, honor, honorNum, skin, curExp, nextGradeExp, latestLogin) 
+        (openID, nickName, honor, honorNum, skin, skinNum, curExp, nextGradeExp, latestLogin) 
         values(
-            ${user.openid}, 
-            ${user.nickName}, 
-            ${user.honor}, 
+            "${user.openid}", 
+            "${user.nickName}", 
+            "${user.honor}", 
             ${user.honorNum}, 
             ${user.skin}, 
             ${user.skinNum}, 
             ${user.curExp}, 
             ${user.nextGradeExp},
-            CURRENT_TIMESPTAME,
+            current_timestamp()
         );`
-
+    console.log(`will exce sql ${insertUser}`);
     db.con(function (connection) {
         connection.query(insertUser, function (err, res) {
             if (err) {
