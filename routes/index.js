@@ -1,7 +1,8 @@
 var express = require('express');
 var router = express.Router();
+var logger = require('../app/logger').logger('route_index', 'info');
 
-console.log('Tank ::: router indexPage');
+logger.info(' router indexPage');
 
 var indexPage = function(req, res, next) {
     res.render('index', { title: 'Express' });

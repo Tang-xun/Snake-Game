@@ -1,41 +1,34 @@
 var config = require('../config');
 var db = require('./comonPool');
 
-var logger = require('../../logger').logger('sanke_grade', 'info');
+var logger = require('../logger').logger('sanke_user', 'info');
 
 // data bean
 var User = function () {
-
-    this.openid;
-    this.nickName;
-    this.honor = '小青蛇';
-    this.honorNum = 0;
-    this.skin = 1;
-    this.curExp = 0;
+    openid;
+    nickName;
+    honor = '小青蛇';
+    honorNum = 0;
+    skin = 1;
+    curExp = 0;
     // 下一升级等级
-    this.nextGradeExp = 500;
-    this.t_bestLen = 0;
-    this.t_mostKill = 0;
-    this.t_linkKill = 0;
-
-    this.e_bestLen = 0;
-    this.e_mostKill = 0;
-    this.e_linkKill = 0;
-
-    this.latestLogin;
-    this.updateTime;
-    this.createTime;
-
-    console.log(`init User ::: ${this.openid}`);
-    
+    nextGradeExp = 500;
+    t_bestLen = 0;
+    t_mostKill = 0;
+    t_linkKill = 0;
+    e_bestLen = 0;
+    e_mostKill = 0;
+    e_linkKill = 0;
+    latestLogin;
+    updateTime;
+    createTime;
 }
 
 /**
  * create user table , when app first start 
  * @param {callback} callback 
  */
-function createUserTable(callback) {
-    console.log(`[event | create user table] start`);
+var createUserTable = function (callback) {
     console.time();
     let userTable = `create table if not exists user (
         _id int NOT NULL AUTO_INCREMENT,
@@ -59,16 +52,17 @@ function createUserTable(callback) {
         PRIMARY KEY ( _id ),
         INDEX (openId),
         unique (openId)
-    ) ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
+    ) COMMENT = 'snake user info', 
+    ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
 
     db.con(function (connection) {
-        console.log(`userTable ${userTable}`);
+        logger.info(`userTable ${userTable}`);
         connection.query(userTable, function (err, res) {
             if (err) {
-                console.error(`[Event | user create table] ::: error : ${err}`);
+                logger.error(`[Event|create table] ::: error : ${JSON.stringify(err)}`);
                 callback(err, null);
             } else {
-                console.log(`[Event | user create table] ::: ok : ${res}`);
+                logger.info(`[Event|create table] ::: ok : ${JSON.stringify(res)}`);
                 callback(null, res);
             }
         });
@@ -80,26 +74,11 @@ function createUserTable(callback) {
  * @param {*} openid 
  * @param {*} nickName 
  */
-function insertUserInfo(openid, nickName, callback) {
-    console.log(`insert User info ...`);
+var insertUserInfo = function (openid, nickName, callback) {
+    logger.info(`insert User info ...`);
     var user = new User();
     user.openid = openid;
     user.nickName = nickName;
-
-    user.honor = 1;
-    user.honorNum = 1;
-    user.skin = 1;
-    user.skinNum = 1;
-    user.curExp = 0;
-    user.nextGradeExp = 500;
-
-    user.t_bestLen = 0;
-    user.t_mostKill = 0;
-    user.t_linkKill = 0;
-
-    user.e_bestLen = 0;
-    user.e_mostKill = 0;
-    user.e_linkKill = 0;
 
     let insertUser = `insert into snake.user 
         (openID, nickName, honor, honorNum, skin, skinNum, curExp, nextGradeExp, latestLogin) 
@@ -114,15 +93,15 @@ function insertUserInfo(openid, nickName, callback) {
             ${user.nextGradeExp},
             current_timestamp()
         );`
-    console.log(`will exce sql ${insertUser}`);
+    logger.info(`will exce sql ${insertUser}`);
     db.con(function (connection) {
         connection.query(insertUser, function (err, res) {
             if (err) {
-                console.error(`[Event | user insert] error ::: ${err}`);
+                logger.error(`[Event|insert] error ::: ${JSON.stringify(err)}`);
                 callback(err, null);
 
             } else {
-                console.log(`[Event | user insert] ok ::: ${res}`);
+                logger.info(`[Event|insert] ok ::: ${JSON.stringify(res)}`);
                 callback(null, res);
             }
 
@@ -135,15 +114,15 @@ function insertUserInfo(openid, nickName, callback) {
  * @param {*} openid 
  * @param {*} callback 
  */
-function queryUserInfo(openid, callback) {
-    let queryUser = `select * from snake.user where openid=${openid};`;
+var queryUserInfo = function (openid, callback) {
+    let queryUser = `select * from snake.user where openid='${openid}';`;
     db.con(function (connection) {
         connection.query(queryUser, function (err, res) {
             if (err) {
-                console.error(`[Event| user query] ${openid} error ::: ${err}`);
+                logger.error(`[Event| query] ${openid} error ::: ${JSON.stringify(err)}`);
                 callback(err, null);
             } else {
-                console.log(`[Event| user query] ${openid} ok ::: ${res}`);
+                logger.info(`[Event| query] ${openid} ok ::: ${JSON.stringify(res)}`);
                 callback(null, res);
             }
         });
@@ -155,25 +134,20 @@ function queryUserInfo(openid, callback) {
  * @param {*} openid 
  * @param {*} callback 
  */
-function updateLoginTime(openid, callback) {
-    let updateLoginTime = `update snake.user set updateTime=CURRENT_TIMESTAMP where openid=${openid};`;
+var updateLoginTime = function (openid, callback) {
+    let updateLoginTime = `update snake.user set updateTime=CURRENT_TIMESTAMP where openid='${openid}';`;
 
     db.con(function (connection) {
         connection.query(updateLoginTime, function (err, res) {
             if (err) {
-                console.log(`[Event | sign ] error ${err}`);
+                logger.info(`[Event|sign ] error ${JSON.stringify(err)}`);
                 callback(err, null);
             } else {
-                console.log(`[Event | sign ] OK ${res}`);
+                logger.info(`[Event|sign ] OK ${JSON.stringify(res)}`);
                 callback(null, res);
             }
         });
     })
-}
-
-function toString() {
-    console.log(`${config.now()}  user toString called ...`);
-    return 'call succss';
 }
 
 module.exports = {

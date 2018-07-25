@@ -34,18 +34,22 @@ mail: tangxun_123@163.com
 
 - [ ] project frame setup 
 - [ ] db design:
-	- [ ] user
+	- [x] user
+	- [ ] grade
+	- [ ] history 
+	- [ ] person ranks
+	- [ ] group ranks
+	- [ ] history
+	- [ ] payment server
+	- [ ] order
+	- [ ] auth
+- [ ] dev:
+	- [x] user
+	- [ ] grade
+	- [ ] history 
 	- [ ] order
 	- [ ] person ranks
 	- [ ] group ranks
-	- [ ] game settle
 	- [ ] payment server
 	- [ ] auth
-- [ ] dev:
-	- [ ] user
-	- [ ] order
-	- [ ] ranks
-	- [ ] group ranks
-	- [ ] auth
-	- [ ] payment
 - [ ] debug:

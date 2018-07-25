@@ -1,16 +1,14 @@
 var db = require('./comonPool');
-var config = require('../config');
-
-var logger = require('../../logger').logger('sanke_grade', 'info');
+var logger = require('../logger').logger('sanke_grade', 'info');
 
 var grade = function () {
-    this.grade;
-    this.name;
-    this.preExp;
-    this.nextExp;
+    grade;
+    name;
+    preExp;
+    nextExp;
 }
 
-function createGradeTable(callback) {
+var createGradeTable = function (callback) {
     var createSql = `CREATE TABLE IF NOT EXISTS snake.grade  (
         id INT NOT NULL AUTO_INCREMENT,
         grade INT NOT NULL COMMENT 'user grade',
@@ -23,10 +21,10 @@ function createGradeTable(callback) {
     db.con(function (connection) {
         connection.query(createSql, function (err, res) {
             if (err) {
-                logger.info(`[Event | cretate grade table] error ${err}`);
+                logger.info(`[Event|cretate table] error ${JSON.stringify(err)}`);
                 callback(err, null);
             } else {
-                logger.info(`[Event | create grade table] ok ${res}`);
+                logger.info(`[Event|create table] ok ${JSON.stringify(res)}`);
                 callback(null, res);
             }
         })
@@ -34,13 +32,7 @@ function createGradeTable(callback) {
 
 }
 
-function toString() {
-    logger.info(`grade toString called ...`);
-    return 'call succss';
-}
-
 module.exports = {
     grade,
     createGradeTable,
-    toString,
 }
