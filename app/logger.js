@@ -32,7 +32,6 @@ log4js.configure({
 
 exports.logger = function (name, level) {
     var logger = log4js.getLogger(name);
-    //默认为debug权限及以上
     return logger;
 };
 

@@ -1,5 +1,5 @@
-var db = require('./comonPool');
-var logger = require('../logger').logger('sanke_grade', 'info');
+var db = require('./mysqlPool');
+var logger = require('../logger').logger('grade', 'info');
 
 var createGradeTable = function (callback) {
     var createSql = `CREATE TABLE IF NOT EXISTS snake.grade  (
@@ -10,7 +10,7 @@ var createGradeTable = function (callback) {
         nextExp INT NOT NULL COMMENT 'user grade next exp.',
         PRIMARY KEY (id, grade, name))
         COMMENT = 'user grade config sys';
-      `
+      `;
     db.con(function (connection) {
         connection.query(createSql, function (err, res) {
             if (err) {
@@ -26,6 +26,5 @@ var createGradeTable = function (callback) {
 
 
 module.exports = {
-    grade,
     createGradeTable,
 }

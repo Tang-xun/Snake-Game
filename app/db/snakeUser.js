@@ -1,9 +1,8 @@
 var config = require('../config');
-var db = require('./comonPool');
+var db = require('./mysqlPool');
+var bean = require('./daoBean');
 
-var logger = require('../logger').logger('sanke_user', 'info');
-
-var bean = require('./bean');
+var logger = require('../logger').logger('user', 'info');
 
 /**
  * create user table , when app first start 
@@ -11,7 +10,7 @@ var bean = require('./bean');
  */
 var createUserTable = function (callback) {
     console.time();
-    let userTable = `create table if not exists user (
+    let userTable = `CREATE TABLE IF NOT EXISTS snake.user (
         id int NOT NULL AUTO_INCREMENT,
         openId  varchar(256) NOT NULL COMMENT 'wechat open id',
         nickName  varchar(256) NOT NULL ,
@@ -30,21 +29,20 @@ var createUserTable = function (callback) {
         e_linkKill int NOT NULL default 0 COMMENT 'best link kill number',
         latestLogin  TIMESTAMP COMMENT 'latest login time',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
-        updateTime  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE ,
-        PRIMARY KEY ( _id ),
+        updateTime  TIMESTAMP default NULL ON UPDATE CURRENT_TIMESTAMP,
+        PRIMARY KEY (id),
         INDEX (openId),
-        unique (openId)
+        UNIQUE (openId)
     ) COMMENT = 'snake user info', 
     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
 
     db.con(function (connection) {
-        logger.info(`userTable ${userTable}`);
         connection.query(userTable, function (err, res) {
             if (err) {
-                logger.error(`[Event|create table] ::: error : ${JSON.stringify(err)}`);
+                logger.error(`[Event|create tableerror : ${JSON.stringify(err)}`);
                 callback(err, null);
             } else {
-                logger.info(`[Event|create table] ::: ok : ${JSON.stringify(res)}`);
+                logger.info(`[Event|create tableok : ${JSON.stringify(res)}`);
                 callback(null, res);
             }
         });
@@ -62,8 +60,17 @@ var insertUserInfo = function (openid, nickName, callback) {
     user.openid = openid;
     user.nickName = nickName;
 
-    let insertUser = `insert into snake.user 
-        (openID, nickName, headUri, honor, honorNum, skin, skinNum, curExp, nextGradeExp, latestLogin) 
+    let insertUser = `INSERT INTO snake.user (
+            openID, 
+            nickName, 
+            headUri, 
+            honor, 
+            honorNum, 
+            skin, 
+            skinNum, 
+            curExp, 
+            nextGradeExp, 
+            latestLogin) 
         values(
             "${user.openid}", 
             "${user.nickName}", 
@@ -80,11 +87,11 @@ var insertUserInfo = function (openid, nickName, callback) {
     db.con(function (connection) {
         connection.query(insertUser, function (err, res) {
             if (err) {
-                logger.error(`[Event|insert] error ::: ${JSON.stringify(err)}`);
+                logger.error(`[Event|insert] error  ${JSON.stringify(err)}`);
                 callback(err, null);
 
             } else {
-                logger.info(`[Event|insert] ok ::: ${JSON.stringify(res)}`);
+                logger.info(`[Event|insert] ok  ${JSON.stringify(res)}`);
                 callback(null, res);
             }
 
@@ -102,10 +109,10 @@ var queryUserInfo = function (openid, callback) {
     db.con(function (connection) {
         connection.query(queryUser, function (err, res) {
             if (err) {
-                logger.error(`[Event| query] ${openid} error ::: ${JSON.stringify(err)}`);
+                logger.error(`[Event| query] ${openid} error  ${JSON.stringify(err)}`);
                 callback(err, null);
             } else {
-                logger.info(`[Event| query] ${openid} ok ::: ${JSON.stringify(res)}`);
+                logger.info(`[Event| query] ${openid} ok  ${JSON.stringify(res)}`);
                 callback(null, res);
             }
         });
@@ -158,7 +165,6 @@ var updateHistoryInfo = function (user) {
 }
 
 module.exports = {
-    User,
     createUserTable,
     insertUserInfo,
     queryUserInfo,

@@ -1,14 +1,11 @@
 var express = require('express');
 var router = express.Router();
 
-var user = require('../app/db/snake_user');
+var user = require('../app/db/snakeUser');
 
-var logger = require('../app/logger').logger('route_users', 'info');
+var logger = require('../app/logger').logger('route', 'info');
 
 logger.info('router users ')
-
-// db 
-var user = require('../app/db/snake_user.js');
 
 user.createUserTable(function (err, res) {
   if (err) {

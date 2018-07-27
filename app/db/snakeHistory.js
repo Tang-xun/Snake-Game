@@ -1,24 +1,24 @@
-var db = require('./comonPool');
+var db = require('./mysqlPool');
 
-var logger = require('../logger').logger('sanke_history', 'info');
+var logger = require('../logger').logger('history', 'info');
 
 /**
  * create histroy 
  * @param {*} callback 
  */
 var createHistoryTable = function (callback) {
-    let createTableSql = `create table if not exists snake.history (
-        _id int not null auto_increment,
-        openId varchar(256) not null comment 'user open id',
-        gameType bool not null default 0 comment 'game model time:0, endless:1',
-        score	int not null default 0 comment 'game score',
-        length int not null default 0 comment 'snake legnth',
-        bestKill int not null default 0 comment 'kill num',
-        linkKill int not null default 0 comment 'game linked kill num',
+    let createTableSql = `CREATE TABLE IF NOT EXISTS snake.history (
+        id int not null auto_increment,
+        openId varchar(256) NOT NULL COMMENT 'user open id',
+        gameType bool NOT NULL default 0 COMMENT 'game model time:0, endless:1',
+        score	int NOT NULL default 0 COMMENT 'game score',
+        length int NOT NULL default 0 COMMENT 'snake legnth',
+        bestKill int NOT NULL default 0 COMMENT 'kill num',
+        linkKill int NOT NULL default 0 COMMENT 'game linked kill num',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
-        PRIMARY KEY (_id),
+        PRIMARY KEY (id),
         INDEX (openId)
-    ) comment 'game history',
+    ) COMMENT 'game history',
      ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
 
     db.con(function (connection) {
@@ -56,7 +56,7 @@ var addHistory = function (history, callback) {
                     ${history.linkKill}
                 );`;
 
-    
+
     db.con(function (connection) {
         connection.query(addSql, function (err, res) {
             if (err) {
@@ -94,7 +94,6 @@ var queryHistory = function (openid, limit, callback) {
 }
 
 module.exports = {
-    history,
     createHistoryTable,
     addHistory,
     queryHistory,

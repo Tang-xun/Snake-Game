@@ -1,11 +1,11 @@
 var express = require('express');
-var history = require('../app/db/snake_history');
+var history = require('../app/db/snakeHistory');
 
-var user = require('../app/db/snake_user');
+var user = require('../app/db/snakeUser');
 var router = express.Router();
-var bean = require('../app/db/bean');
+var bean = require('../app/db/daoBean');
 
-var logger = require('../app/logger').logger('route_history', 'info');
+var logger = require('../app/logger').logger('route', 'info');
 
 history.createHistoryTable(function (err, res) {
     if (err) {
@@ -37,7 +37,6 @@ function add(req, res, next) {
         });
         res.end();
     } else {
-
         // 查询用户信息，判断是否需要更新游戏记录
         user.queryUserInfo(bean.openid, function (err, userRes) {
             if (err) {
@@ -48,11 +47,11 @@ function add(req, res, next) {
 
                 if (!bean.game_model) {
                     // time
-                    if (bean.length > userRes.t_bestLen){
+                    if (bean.length > userRes.t_bestLen) {
                         userRes.t_bestLen = bean.length;
                         isNeedUpDate = true;
                     }
-                    if (bean.bestKill > userRes.t_mostKill){ 
+                    if (bean.bestKill > userRes.t_mostKill) {
                         userRes.t_mostKill = bean.bestKill;
                         isNeedUpDate = true;
                     }
@@ -62,11 +61,11 @@ function add(req, res, next) {
                     }
                 } else {
                     // end
-                    if (bean.length > userRes.e_bestLen){
+                    if (bean.length > userRes.e_bestLen) {
                         userRes.e_bestLen = bean.length;
                         isNeedUpDate = true;
                     }
-                    if (bean.bestKill > userRes.e_mostKill){ 
+                    if (bean.bestKill > userRes.e_mostKill) {
                         userRes.e_mostKill = bean.bestKill;
                         isNeedUpDate = true;
                     }
@@ -83,10 +82,21 @@ function add(req, res, next) {
 
         history.addHistory(bean, function (err, historyRes) {
             if (err) {
-                
+                console.error(`add error ${err}`);
+                res.render('index', { title: 'add history error', content: `${err}` });
+                res.write(`{
+                    code:601,
+                    msg:${err.msg},
+                }`);
             } else {
-
+                console.error(`add ok ${historyRes}`);
+                res.write(`{
+                    code:200,
+                    msg:ok,
+                }`);
             }
+            res.end();
+
         })
     }
 }

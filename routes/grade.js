@@ -1,28 +1,14 @@
 var express = require('express');
-var grade = require('../app/db/snake_grade');
+var grade = require('../app/db/snakeGrade');
 var router = express.Router();
-var logger = require('../app/logger').logger('route_grade', 'info');
-var Rx = require('rx');
-
-
-
-
+var logger = require('../app/logger').logger('route', 'info');
 
 grade.createGradeTable(function (err, res) {
-
-
-
     if (err) {
         logger.error(`[Event|create table] error ${JSON.stringify(err)}`);
     } else {
         logger.info(`[Event|create table] ok ${JSON.stringify(res)}`);
     }
-})
-
-
-var queryObservable = Rx.Observable.create(observer => {
-    observer.next(res);
-
 })
 
 function query(req, res, next) {
