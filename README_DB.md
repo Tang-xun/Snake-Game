@@ -28,24 +28,24 @@
 #### userInfo
 
 ----
-|name           |type           |not null  |key   |DEFAULT             |Extra                       |comment                |
-|:-             |:-             |:-        |:-    |:-                  |:-                          |:-                     |
-|openId         |int            |true      |PRI   |NULL                |auto_increment              |wx_id                  |
-|nickName       |varchar(256)   |true      |UNI   |NULL               |                           |name                   |
-|honor          |varchar(256)   |true     |     |NULL               |                           |user honor             |
-|honorNum       |int            |true     |     |NULL               |                           |gain honor num         |
-|skin           |int            |true     |     |NULL               |                           |current skin           |
-|curExp         |int            |true     |     |NULL               |                           |current expires        |
-|nextGradeExp   |int            |true     |     |NULL               |                           |next grade expires     |
-|t_bestLen      |int            |true     |     |0                  |                           |best body length       |
-|t_mostKill     |int            |true     |     |0                  |                           |most kill number       |
-|t_linkKill     |int            |true     |     |0                  |                           |best link kill number  |
-|e_bestLen      |int            |true     |     |0                  |                           |best body length       |
-|e_mostKill     |int            |true     |     |0                  |                           |most kill number       |
-|e_linkKill     |int            |true     |     |0                  |                           |best link kill number  |
-|latestLogin    |TIMESTAMP      |false    |     |NULL               |                           |latest                 |
-|createTime     |TIMESTAMP      |false    |     |CURRENT_TIMESTAMP  |                           |create date            |
-|updateTime     |TIMESTAMP      |false    |     |NULL                |on update CURRENT_TIMESTAMP |update date            |
+|name           |type           |not null   |key    |DEFAULT             |Extra                      |comment                 |
+|:-             |:-             |:-         |:-     |:-                  |:-                         |:-                      |
+|openId         |int            |true       |PRI    |NULL                |auto_increment             |wx_id                   |
+|nickName       |varchar(256)   |true       |UNI    |NULL                |                           |name                    |
+|honor          |varchar(256)   |true       |       |NULL                |                           |user honor              |
+|honorNum       |int            |true       |       |NULL                |                           |gain honor num          |
+|skin           |int            |true       |       |NULL                |                           |current skin            |
+|curExp         |int            |true       |       |NULL                |                           |current expires         |
+|nextGradeExp   |int            |true       |       |NULL                |                           |next grade expires      |
+|t_bestLen      |int            |true       |       |0                   |                           |best body length        |
+|t_mostKill     |int            |true       |       |0                   |                           |most kill number        |
+|t_linkKill     |int            |true       |       |0                   |                           |best link kill number   |
+|e_bestLen      |int            |true       |       |0                   |                           |best body length        |
+|e_mostKill     |int            |true       |       |0                   |                           |most kill number        |
+|e_linkKill     |int            |true       |       |0                   |                           |best link kill number   |
+|latestLogin    |TIMESTAMP      |false      |       |NULL                |                           |latest                  |
+|createTime     |TIMESTAMP      |false      |       |CURRENT_TIMESTAMP   |                           |create date             |
+|updateTime     |TIMESTAMP      |false      |       |NULL                |on update CURRENT_TIMESTAMP |update date            |
 ----
 
 ```sql

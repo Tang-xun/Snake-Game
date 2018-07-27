@@ -2,15 +2,6 @@ var db = require('./comonPool');
 
 var logger = require('../logger').logger('sanke_history', 'info');
 
-var history = function () {
-    opendid;
-    game_model = 0;
-    game_score = 0;
-    length = 0;
-    bestKill = 0;
-    linkKill = 0;
-}
-
 /**
  * create histroy 
  * @param {*} callback 
@@ -24,6 +15,7 @@ var createHistoryTable = function (callback) {
         length int not null default 0 comment 'snake legnth',
         bestKill int not null default 0 comment 'kill num',
         linkKill int not null default 0 comment 'game linked kill num',
+        createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
         PRIMARY KEY (_id),
         INDEX (openId)
     ) comment 'game history',
@@ -50,19 +42,21 @@ var createHistoryTable = function (callback) {
 var addHistory = function (history, callback) {
     let addSql = `insert into snake.history (
                     openId, 
-                    gameType, 
-                    score, 
-                    length, 
-                    bestKill, 
+                    gameType,
+                    score,
+                    length,
+                    bestKill,
                     linkKill) 
                 values(
-                    '${history.opendid}',
+                    '${history.openid}',
                     ${history.game_model}
                     ${history.game_score},
                     ${history.length},
                     ${history.bestKill},
                     ${history.linkKill}
-                )`
+                );`;
+
+    
     db.con(function (connection) {
         connection.query(addSql, function (err, res) {
             if (err) {

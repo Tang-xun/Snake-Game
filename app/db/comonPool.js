@@ -1,6 +1,8 @@
 var mysql = require('mysql');
 
 var logger = require('../../app/logger').logger('db-pool', 'info');
+var Rx = require('rxjs');
+
 // root tx147258
 var pool = mysql.createPool({
     host:'localhost',
@@ -9,8 +11,6 @@ var pool = mysql.createPool({
     database:'snake',
     port:3306,
 });
-
-var db = {};
 
 db.con = function(callback) {
     pool.getConnection(function (err, connection) {

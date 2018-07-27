@@ -3,26 +3,7 @@ var db = require('./comonPool');
 
 var logger = require('../logger').logger('sanke_user', 'info');
 
-// data bean
-var User = function () {
-    openid;
-    nickName;
-    honor = '小青蛇';
-    honorNum = 0;
-    skin = 1;
-    curExp = 0;
-    // 下一升级等级
-    nextGradeExp = 500;
-    t_bestLen = 0;
-    t_mostKill = 0;
-    t_linkKill = 0;
-    e_bestLen = 0;
-    e_mostKill = 0;
-    e_linkKill = 0;
-    latestLogin;
-    updateTime;
-    createTime;
-}
+var bean = require('./bean');
 
 /**
  * create user table , when app first start 
@@ -31,9 +12,10 @@ var User = function () {
 var createUserTable = function (callback) {
     console.time();
     let userTable = `create table if not exists user (
-        _id int NOT NULL AUTO_INCREMENT,
+        id int NOT NULL AUTO_INCREMENT,
         openId  varchar(256) NOT NULL COMMENT 'wechat open id',
         nickName  varchar(256) NOT NULL ,
+        headUri varchar(256) ,
         honor  varchar(256) NOT NULL COMMENT 'player current honor',
         honorNum  int NOT NULL COMMENT 'gain honor number',
         skin  int NOT NULL COMMENT 'player current skin id',
@@ -48,7 +30,7 @@ var createUserTable = function (callback) {
         e_linkKill int NOT NULL default 0 COMMENT 'best link kill number',
         latestLogin  TIMESTAMP COMMENT 'latest login time',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
-        updateTime  TIMESTAMP on update CURRENT_TIMESTAMP,
+        updateTime  TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE ,
         PRIMARY KEY ( _id ),
         INDEX (openId),
         unique (openId)
@@ -76,15 +58,16 @@ var createUserTable = function (callback) {
  */
 var insertUserInfo = function (openid, nickName, callback) {
     logger.info(`insert User info ...`);
-    var user = new User();
+    var user = new bean.User();
     user.openid = openid;
     user.nickName = nickName;
 
     let insertUser = `insert into snake.user 
-        (openID, nickName, honor, honorNum, skin, skinNum, curExp, nextGradeExp, latestLogin) 
+        (openID, nickName, headUri, honor, honorNum, skin, skinNum, curExp, nextGradeExp, latestLogin) 
         values(
             "${user.openid}", 
             "${user.nickName}", 
+            "${user.headUri}",
             "${user.honor}", 
             ${user.honorNum}, 
             ${user.skin}, 
@@ -115,7 +98,7 @@ var insertUserInfo = function (openid, nickName, callback) {
  * @param {*} callback 
  */
 var queryUserInfo = function (openid, callback) {
-    let queryUser = `select * from snake.user where openid='${openid}';`;
+    let queryUser = `select * from snake.user where openid=${openid};`;
     db.con(function (connection) {
         connection.query(queryUser, function (err, res) {
             if (err) {
@@ -150,11 +133,36 @@ var updateLoginTime = function (openid, callback) {
     })
 }
 
+/**
+ * when upload history sync judge it's need update user records info ?
+ * 
+ * @param {*} history 
+ */
+var updateHistoryInfo = function (user) {
+    let updateHistorySql = `update snake.user set
+        t_bestLen = ${user.t_bestLen},
+        t_mostKill = ${user.t_mostKill},
+        t_linkKill = ${user.t_linkKill},
+        e_bestLen = ${user.e_bestLen},
+        e_mostKill = ${user.e_mostKill},
+        e_linkKill = ${user.e_linkKill} where openId=${user.openId};`
+    db.con(function (connection) {
+        connection.query(updateHistorySql, function (err, res) {
+            if (err) {
+                logger.info(`[Event|update History query] error ${JSON.stringify(err)}`);
+            } else {
+                logger.info(`[Event|update History query] ok ${JSON.stringify(res)}`);
+            }
+        })
+    });
+}
+
 module.exports = {
     User,
     createUserTable,
     insertUserInfo,
     queryUserInfo,
     updateLoginTime,
+    updateHistoryInfo,
     toString,
 }

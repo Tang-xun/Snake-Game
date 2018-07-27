@@ -10,7 +10,7 @@ var app = new express();
 var indexRoute = require('./routes/index');
 var userRoute = require('./routes/users');
 var gradeRoute = require('./routes/grade');
-var historyRoute = require('./routes/hisory');
+var historyRoute = require('./routes/history');
 
 
 // log4js

@@ -1,13 +1,6 @@
 var db = require('./comonPool');
 var logger = require('../logger').logger('sanke_grade', 'info');
 
-var grade = function () {
-    grade;
-    name;
-    preExp;
-    nextExp;
-}
-
 var createGradeTable = function (callback) {
     var createSql = `CREATE TABLE IF NOT EXISTS snake.grade  (
         id INT NOT NULL AUTO_INCREMENT,
@@ -29,8 +22,8 @@ var createGradeTable = function (callback) {
             }
         })
     });
-
 }
+
 
 module.exports = {
     grade,
