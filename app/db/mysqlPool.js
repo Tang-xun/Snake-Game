@@ -9,8 +9,10 @@ var pool = mysql.createPool({
     database: 'snake',
     port: 3306,
 });
+
 var db = {};
-var con = function (callback) {
+
+db.con = function (callback) {
     pool.getConnection(function (err, connection) {
         if (err) {
             logger.info(`[event|dbconnection error ${JSON.stringify(err)} ...`);

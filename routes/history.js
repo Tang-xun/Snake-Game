@@ -3,7 +3,7 @@ var history = require('../app/db/snakeHistory');
 
 var user = require('../app/db/snakeUser');
 var router = express.Router();
-var bean = require('../app/db/daoBean');
+var dao = require('../app/db/daoBean');
 
 var logger = require('../app/logger').logger('route', 'info');
 
@@ -21,15 +21,20 @@ function query(req, res, next) {
 
 function add(req, res, next) {
     logger.info(`history add`)
-    var bean = new bean.History();
-    bean.openid = req.param('openid');
-    bean.game_model = req.param('game_model');
-    bean.game_score = req.param('game_score');
-    bean.length = req.param('length');
-    bean.bestKill = req.param('bestKill');
-    bean.linkKill = req.param('linkKill');
-
+    
+    let bean = new dao.History();
+    
+    bean.openid = req.param('openId');
+    bean.gameType = parseInt(req.param('gameType'));
+    bean.exp = parseInt(req.param('exp'));
+    bean.length = parseInt(req.param('length'));
+    bean.bestKill = parseInt(req.param('bestKill'));
+    bean.linkKill = parseInt(req.param('linkKill'));
+    
+    logger.info(`add history ${JSON.stringify(bean)}`);
+    
     if (!checkParams(bean)) {
+        logger.info(`checkParams fail`);
         res.write({
             'code': 601,
             'msg': 'params check error',
@@ -40,56 +45,73 @@ function add(req, res, next) {
         // 查询用户信息，判断是否需要更新游戏记录
         user.queryUserInfo(bean.openid, function (err, userRes) {
             if (err) {
-                console.err(`query user err ${err}`);
+                logger.info(`query user err ${err}`);
             } else {
-                console.info(`query user ok ${userRes}`);
+                
+                var oldUser = userRes.length > 0 ? userRes[0] : null;
+                
+                logger.info(`query user ok ${bean}`);
+                
+                logger.info(`query user ok ${JSON.stringify(oldUser)}`);
                 var isNeedUpDate = false;
+                
+                logger.info(`compare time model user info `);
+                logger.info('=======================================');
+                logger.info(`${bean.length} -- ${oldUser.t_length}`);
+                logger.info(`${bean.bestKill} -- ${oldUser.t_bestKill}`);
+                logger.info(`${bean.linkKill} -- ${oldUser.t_linkKill}`);
+                logger.info('---------------------------------------');
+                logger.info(`${bean.length} -- ${oldUser.e_length}`);
+                logger.info(`${bean.bestKill} -- ${oldUser.e_bestKill}`);
+                logger.info(`${bean.linkKill} -- ${oldUser.e_linkKill}`);
+                logger.info('=======================================');
 
-                if (!bean.game_model) {
+                if (!bean.gameType) {
                     // time
-                    if (bean.length > userRes.t_bestLen) {
-                        userRes.t_bestLen = bean.length;
-                        isNeedUpDate = true;
+                    if (bean.length > oldUser.t_length) {
+                        oldUser.t_length = bean.length;
                     }
-                    if (bean.bestKill > userRes.t_mostKill) {
-                        userRes.t_mostKill = bean.bestKill;
-                        isNeedUpDate = true;
+                    if (bean.bestKill > oldUser.t_bestKill) {
+                        oldUser.t_bestKill = bean.bestKill;
                     }
-                    if (bean.linkKill > userRes.t_linkKill) {
-                        userRes.t_linkKill = bean.linkKill;
-                        isNeedUpDate = true;
+                    if (bean.linkKill > oldUser.t_linkKill) {
+                        oldUser.t_linkKill = bean.linkKill;
                     }
                 } else {
                     // end
-                    if (bean.length > userRes.e_bestLen) {
-                        userRes.e_bestLen = bean.length;
-                        isNeedUpDate = true;
+                    if (bean.length > oldUser.e_length) {
+                        oldUser.e_length = bean.length;
                     }
-                    if (bean.bestKill > userRes.e_mostKill) {
-                        userRes.e_mostKill = bean.bestKill;
-                        isNeedUpDate = true;
+                    if (bean.bestKill > oldUser.e_bestKill) {
+                        oldUser.e_bestKill = bean.bestKill;
                     }
-                    if (bean.linkKill > userRes.e_linkKill) {
-                        userRes.t_linkKill = bean.linkKill;
-                        isNeedUpDate = true;
+                    if (bean.linkKill > oldUser.e_linkKill) {
+                        oldUser.e_linkKill = bean.linkKill;
                     }
                 }
-                if (isNeedUpDate) {
-                    user.updateHistoryInfo(userRes);
+
+                // 判断升级逻辑
+                oldUser.curExp += bean.exp;
+                if (oldUser.curExp > oldUser.nextGradeExp) {
+                    oldUser.curExp = (oldUser.curExp - oldUser.nextGradeExp);
+                    oldUser.nextGradeExp *= 2;
                 }
+
+                user.updateHistoryInfo(oldUser);
             }
         });
 
         history.addHistory(bean, function (err, historyRes) {
             if (err) {
-                console.error(`add error ${err}`);
+                logger.info(`add error ${err}`);
                 res.render('index', { title: 'add history error', content: `${err}` });
                 res.write(`{
                     code:601,
                     msg:${err.msg},
                 }`);
             } else {
-                console.error(`add ok ${historyRes}`);
+                logger.info(`add ok ${JSON.stringify(historyRes)}`);
+                res.writeHead(200, { 'Content-Type': 'text/plain' });
                 res.write(`{
                     code:200,
                     msg:ok,
@@ -102,14 +124,17 @@ function add(req, res, next) {
 }
 
 function checkParams(history) {
-    return typeof (history) != 'undefined' && history != null &&
+    console.time('checkParams')
+    var checked =  typeof (history) != 'undefined' && history != null &&
         typeof (history.openid) != 'undefined' && history.openid != null &&
         typeof (history.openid) != 'undefined' && history.openid != null &&
-        typeof (history.game_model) != 'undefined' && history.game_model != null &&
-        typeof (history.game_score) != 'undefined' && history.game_score != null &&
+        typeof (history.gameType) != 'undefined' && history.gameType != null &&
+        typeof (history.exp) != 'undefined' && history.exp != null &&
         typeof (history.length) != 'undefined' && history.length != null &&
         typeof (history.bestKill) != 'undefined' && history.bestKill != null &&
         typeof (history.linkKill) != 'undefined' && history.linkKill != null;
+    console.timeEnd('checkParams')
+    return checked;
 }
 
 function update(req, res, next) {
@@ -118,8 +143,8 @@ function update(req, res, next) {
 
 router.get('/list', query).post('/list', query);
 
-router.get('/add', add).post('/add', add);
+router.post('/add', add);
 
-router.get('/update', update).post('/update', update);
+router.post('/update', update);
 
 module.exports = router;

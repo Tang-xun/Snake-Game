@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-
+var dao = require('../app/db/daoBean');
 var user = require('../app/db/snakeUser');
 
 var logger = require('../app/logger').logger('route', 'info');
@@ -16,12 +16,14 @@ user.createUserTable(function (err, res) {
 });
 
 var add = function (req, res, next) {
-
-  logger.info(` add user info ${req.ip}`);
   printParams(res, req);
-  var openid = req.param('openId');
-  var nickName = req.param('nickName');
-  user.insertUserInfo(openid, nickName, function (err, result) {
+
+  var bean = new dao.User();
+  bean.openid = req.param('openId');
+  bean.nickName = req.param('nickName');
+  bean.headUri = req.param('headUri');
+
+  user.insertUserInfo(bean, function (err, result) {
     if (err) {
       res.render('content', { title: 'user add fail', content: `${JSON.stringify(err)}` });
     } else {

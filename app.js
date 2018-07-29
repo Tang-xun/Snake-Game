@@ -1,6 +1,7 @@
 var cookieParser = require('cookie-parser');
 var createError = require('http-errors');
 var express = require('express');
+var bodyParser = require('body-parser');
 var http = require('http');
 var path = require('path');
 
@@ -15,7 +16,7 @@ var historyRoute = require('./routes/history');
 
 // log4js
 var log4js = require('./app/logger');
-var logger = log4js.logger('app','info');
+var logger = log4js.logger('app', 'info');
 
 // 设置视图
 function setupView() {
@@ -34,9 +35,9 @@ function setupLog() {
 function setupRouter() {
     logger.info(`init router  `);
     app.use('/', indexRoute);
-    app.use('/users', userRoute);
+    app.use('/user', userRoute);
     app.use('/grade', gradeRoute);
-    app.use('/hostory', historyRoute);
+    app.use('/history', historyRoute);
 }
 
 
@@ -77,7 +78,6 @@ function onProcessExit() {
 }
 
 function init() {
-    console.time('app init');
     logger.info(`init start `);
     app.locals.title = 'Sanke_Server';
     app.locals.email = 'tangxun_123@163.com';
@@ -87,10 +87,9 @@ function init() {
     setupRouter();
     setupServerError();
     onProcessExit();
-    console.timeEnd('app init');
 }
 
-function start() {
+function serverStart() {
     init();
     var server = http.createServer(app).listen(8000, function () {
         var host = server.address().address;
@@ -99,6 +98,6 @@ function start() {
     });
 }
 
-start();
+serverStart();
 
 module.exports = app;

@@ -36,8 +36,6 @@ exports.logger = function (name, level) {
 };
 
 exports.use = function (app) {
-
-    console.info('logger use access ... ');
     //加载中间件
     app.use(log4js.connectLogger(log4js.getLogger('access'), {
         level: log4js.levels.INFO,
