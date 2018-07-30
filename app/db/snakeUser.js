@@ -15,6 +15,7 @@ var createUserTable = function (callback) {
         openId  varchar(256) NOT NULL COMMENT 'wechat open id',
         nickName  varchar(256) NOT NULL ,
         headUri varchar(256) ,
+        grade int NOT NULL default 0 COMMENT 'user grade',
         honor  varchar(256) NOT NULL COMMENT 'player current honor',
         honorNum  int NOT NULL COMMENT 'gain honor number',
         skin  int NOT NULL COMMENT 'player current skin id',
@@ -151,6 +152,7 @@ var updateHistoryInfo = function (user) {
         e_length = ${user.e_length},
         e_bestKill = ${user.e_bestKill},
         e_linkKill = ${user.e_linkKill},
+        grade = ${user.grade},
         curExp = ${user.curExp},
         nextGradeExp = ${user.nextGradeExp}
         where openId='${user.openId}';`

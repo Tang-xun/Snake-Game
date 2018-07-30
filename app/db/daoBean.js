@@ -18,6 +18,7 @@ var User = function () {
     this.openid;
     this.nickName;
     this.headUri;
+    this.grade = 0,
     this.honor = '小青蛇';
     this.honorNum = 0;
     this.skin = 1;

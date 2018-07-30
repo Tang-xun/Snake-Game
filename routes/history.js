@@ -95,6 +95,7 @@ function add(req, res, next) {
                 if (oldUser.curExp > oldUser.nextGradeExp) {
                     oldUser.curExp = (oldUser.curExp - oldUser.nextGradeExp);
                     oldUser.nextGradeExp *= 2;
+                    oldUser.grade += 1;
                 }
 
                 user.updateHistoryInfo(oldUser);
