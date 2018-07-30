@@ -17,6 +17,7 @@ var createUserTable = function (callback) {
         headUri varchar(256) ,
         grade int NOT NULL default 0 COMMENT 'user grade',
         honor  varchar(256) NOT NULL COMMENT 'player current honor',
+        score int NOT NULL default 0 COMMENT 'user score',
         honorNum  int NOT NULL COMMENT 'gain honor number',
         skin  int NOT NULL COMMENT 'player current skin id',
         skinNum int NOT NULL COMMENT 'user own skin num',
@@ -37,16 +38,26 @@ var createUserTable = function (callback) {
     ) COMMENT = 'snake user info', 
     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
 
-    db.con(function (connection) {
-        connection.query(userTable, function (err, res) {
-            if (err) {
-                logger.error(`[Event|create tableerror : ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event|create tableok : ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        });
+    // db.con(function (connection) {
+    //     connection.query(userTable, function (err, res) {
+    //         if (err) {
+    //             logger.error(`[Event|create tableerror : ${JSON.stringify(err)}`);
+    //             callback(err, null);
+    //         } else {
+    //             logger.info(`[Event|create tableok : ${JSON.stringify(res)}`);
+    //             callback(null, res);
+    //         }
+    //     });
+    // })
+
+    db.query(userTable, null, function (err, res, fields) {
+        if (err) {
+            logger.error(`[Event|create table] error : ${JSON.stringify(err)}`);
+            callback(err, null);
+        } else {
+            logger.info(`[Event|create table] ok : ${JSON.stringify(res)}  ${JSON.stringify(fields)}`);
+            callback(null, res);
+        }
     })
 }
 
@@ -62,7 +73,9 @@ var insertUserInfo = function (user, callback) {
             openID, 
             nickName, 
             headUri, 
-            honor, 
+            honor,
+            score,
+            grade,
             honorNum, 
             skin, 
             skinNum, 
@@ -74,6 +87,8 @@ var insertUserInfo = function (user, callback) {
             "${user.nickName}", 
             "${user.headUri}",
             "${user.honor}", 
+            ${user.score},
+            ${user.grade},
             ${user.honorNum}, 
             ${user.skin}, 
             ${user.skinNum}, 
@@ -82,18 +97,15 @@ var insertUserInfo = function (user, callback) {
             current_timestamp()
         );`;
     logger.info(`will exce sql ${insertUser}`);
-    db.con(function (connection) {
-        connection.query(insertUser, function (err, res) {
-            if (err) {
-                logger.error(`[Event|insert] error  ${JSON.stringify(err)}`);
-                callback(err, null);
+    db.query(insertUser, null, function (err, res, fields) {
+        if (err) {
+            logger.error(`[Event|insert] error  ${JSON.stringify(err)}`);
+            callback(err, null);
 
-            } else {
-                logger.info(`[Event|insert] ok  ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-
-        })
+        } else {
+            logger.info(`[Event|insert] ok  ${JSON.stringify(res)} ${JSON.stringify(fields)}`);
+            callback(null, res);
+        }
     })
 }
 
@@ -107,6 +119,7 @@ var queryUserInfo = function (openid, callback) {
     logger.info(`will exec sql ${queryUser}`);
     db.con(function (connection) {
         connection.query(queryUser, function (err, res) {
+
             if (err) {
                 logger.error(`[Event| query] ${openid} error  ${JSON.stringify(err)}`);
                 callback(err, null);
@@ -128,6 +141,7 @@ var updateLoginTime = function (openid, callback) {
     logger.info(`will exce sql ${updateLoginTimeSql}`);
     db.con(function (connection) {
         connection.query(updateLoginTimeSql, function (err, res) {
+
             if (err) {
                 logger.info(`[Event|sign ] error ${JSON.stringify(err)}`);
                 callback(err, null);
@@ -152,6 +166,7 @@ var updateHistoryInfo = function (user) {
         e_length = ${user.e_length},
         e_bestKill = ${user.e_bestKill},
         e_linkKill = ${user.e_linkKill},
+        score = ${user.score},
         grade = ${user.grade},
         curExp = ${user.curExp},
         nextGradeExp = ${user.nextGradeExp}
@@ -159,6 +174,7 @@ var updateHistoryInfo = function (user) {
     logger.info(`will exce sql ${updateHistorySql}`);
     db.con(function (connection) {
         connection.query(updateHistorySql, function (err, res) {
+
             if (err) {
                 logger.info(`[Event|update History] error ${JSON.stringify(err)}`);
             } else {
@@ -168,11 +184,50 @@ var updateHistoryInfo = function (user) {
     });
 }
 
+/**
+ * query user count 
+ * @param {*} callback 
+ */
+var getUserCount = function (callback) {
+    db.con(function (connection) {
+        connection.query('select count(*) from snake.user;', function (err, res) {
+
+            if (err) {
+                logger.info(`[Event|user count] error ${JSON.stringify(err)}`);
+                callback(err, null);
+            } else {
+                logger.info(`[Event|user count] ok ${JSON.stringify(res)}`);
+                callback(null, res);
+            }
+        });
+    })
+}
+
+/**
+ * query user score sorted
+ * @param {*} callback 
+ */
+var sortUserScore = function (callback) {
+    db.con(function (connection) {
+        connection.query('select openId ,score from user order by score desc;', function (err, res) {
+
+            if (err) {
+                logger.info(`[Event|score sort] error ${JSON.stringify(err)}`);
+                callback(err, null);
+            } else {
+                logger.info(`[Event|score sort] ok ${JSON.stringify(res)}`);
+                callback(null, res);
+            }
+        });
+    })
+}
+
 module.exports = {
     createUserTable,
     insertUserInfo,
     queryUserInfo,
     updateLoginTime,
     updateHistoryInfo,
-    toString,
+    getUserCount,
+    sortUserScore,
 }

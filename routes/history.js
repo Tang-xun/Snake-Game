@@ -21,18 +21,18 @@ function query(req, res, next) {
 
 function add(req, res, next) {
     logger.info(`history add`)
-    
+
     let bean = new dao.History();
-    
+
     bean.openid = req.param('openId');
     bean.gameType = parseInt(req.param('gameType'));
     bean.exp = parseInt(req.param('exp'));
     bean.length = parseInt(req.param('length'));
     bean.bestKill = parseInt(req.param('bestKill'));
     bean.linkKill = parseInt(req.param('linkKill'));
-    
+
     logger.info(`add history ${JSON.stringify(bean)}`);
-    
+
     if (!checkParams(bean)) {
         logger.info(`checkParams fail`);
         res.write({
@@ -47,14 +47,14 @@ function add(req, res, next) {
             if (err) {
                 logger.info(`query user err ${err}`);
             } else {
-                
+
                 var oldUser = userRes.length > 0 ? userRes[0] : null;
-                
+
                 logger.info(`query user ok ${bean}`);
-                
+
                 logger.info(`query user ok ${JSON.stringify(oldUser)}`);
                 var isNeedUpDate = false;
-                
+
                 logger.info(`compare time model user info `);
                 logger.info('=======================================');
                 logger.info(`${bean.length} -- ${oldUser.t_length}`);
@@ -91,6 +91,7 @@ function add(req, res, next) {
                 }
 
                 // 判断升级逻辑
+                oldUser.score += bean.exp;
                 oldUser.curExp += bean.exp;
                 if (oldUser.curExp > oldUser.nextGradeExp) {
                     oldUser.curExp = (oldUser.curExp - oldUser.nextGradeExp);
@@ -126,7 +127,7 @@ function add(req, res, next) {
 
 function checkParams(history) {
     console.time('checkParams')
-    var checked =  typeof (history) != 'undefined' && history != null &&
+    var checked = typeof (history) != 'undefined' && history != null &&
         typeof (history.openid) != 'undefined' && history.openid != null &&
         typeof (history.openid) != 'undefined' && history.openid != null &&
         typeof (history.gameType) != 'undefined' && history.gameType != null &&

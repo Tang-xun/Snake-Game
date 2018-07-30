@@ -13,6 +13,7 @@ var createGradeTable = function (callback) {
       `;
     db.con(function (connection) {
         connection.query(createSql, function (err, res) {
+            
             if (err) {
                 logger.info(`[Event|cretate table] error ${JSON.stringify(err)}`);
                 callback(err, null);

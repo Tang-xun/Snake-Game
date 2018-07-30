@@ -16,12 +16,13 @@ user.createUserTable(function (err, res) {
 });
 
 var add = function (req, res, next) {
-  printParams(res, req);
+  printParams(req);
 
   var bean = new dao.User();
   bean.openid = req.param('openId');
   bean.nickName = req.param('nickName');
   bean.headUri = req.param('headUri');
+  bean.score = req.param('score');
 
   user.insertUserInfo(bean, function (err, result) {
     if (err) {
@@ -62,7 +63,7 @@ function printParams(req) {
     return;
   }
 
-  logger.info(` ${req.ip} ${req.method}`);
+  logger.info(` ${req.host} ${req.method}`);
   if (req.method = 'GET') {
     logger.info(`param ${JSON.stringify(req.query)}`);
   }

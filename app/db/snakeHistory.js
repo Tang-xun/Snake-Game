@@ -20,7 +20,7 @@ var createHistoryTable = function (callback) {
         INDEX (openId)
     ) COMMENT 'game history',
      ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
-
+    
     db.con(function (connection) {
         connection.query(createTableSql, function (err, res) {
             if (err) {
@@ -59,6 +59,7 @@ var addHistory = function (history, callback) {
     logger.info(`add history ${addSql}`);
     db.con(function (connection) {
         connection.query(addSql, function (err, res) {
+
             if (err) {
                 logger.error(`[Event|add] err ${JSON.stringify(err)}`);
                 callback(err, null);
