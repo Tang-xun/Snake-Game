@@ -37,9 +37,30 @@ var User = function () {
     this.createTime;
 }
 
+var Order = function() {
+    this.orderId;
+    this.productId;
+    this.price;
+    this.num;
+    /**
+     * 0 create
+     * 1 success
+     * 2 fail
+     * 3 cancel
+     * 4 timeout
+     */
+    this.state;
+    this.openId;
+    this.productName;
+    this.totalPrice;
+    this.createTime;
+    this.paymentTime;
+}
+
 
 module.exports = {
     Grade,
     User,
     History,
+    Order,
 }

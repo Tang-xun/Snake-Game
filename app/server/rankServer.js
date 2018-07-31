@@ -13,65 +13,24 @@ let perScore = [];
 const splitCount = 10;
 
 function sortUserScore() {
-    
+
     console.time('sort_score');
     console.info('sortUserScore start')
-    RX.Observable.create(observer => {
-        RX.bindCallback(user.getUserCount)().subscribe(err => {
-            observer.error(err);
-        }, res => {
-            observer.next(res)
-        })
-        RX.bindCallback(user.sortUserScore)().subscribe(err => {
-            observer.error(err);
-        }, res => {
-            observer.next(res)
-        });
-        // observer.complete();
-    }).subscribe(
-        function next(res){
-            console.info(`sub next ${res}`);
-        },
-        function error(err) {
-            console.info(`sub error ${error}`);
-        },
-        function complete(){
-            console.info('sub complete')
-        },
-    )
-    /* RX.bindCallback(user.getUserCount)().subscribe(
-        err => {
-            logger.error(`query user count error ${err}`);
-        },
-        res => {
-            this.userCount = res;
-            logger.info(`query user count ok ${res}`);
-        }
-    );
-
-    RX.bindCallback(user.sortUserScore)().subscribe(
-        err => {
-            logger.error(`sort user socre error ${err}`);
-        },
-        res => {
-            this.userScore = res;
-            logger.info(`sort user socre ok ${res}`);
-        }
-    ); */
+    user.getUserCount().subscribe(next => {
+        console.log(`user count  next ${JSON.stringify(next)}`);
+    }, error => {
+        console.log(`user count  error ${JSON.stringify(error)}`);
+    });
+    user.sortUserScore().subscribe(next => {
+        console.log(`user sort next ${JSON.stringify(next)}`);
+    }, error => {
+        console.log(`user sort error ${JSON.stringify(error)}`);
+    });
     console.timeEnd('sort_score');
     return;
 }
 
+// `select tmp.ranks from(select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user) as tmp where tmp.openId = 1532964784280;`
+
 sortUserScore();
-
-
-/* function updateUserCount() {
-    user.getUserCount(function (err, res) {
-        if (err) {
-            logger.error(`query user count error ${err}`);
-        } else {
-            this.userCount = res;
-        }
-    })
-} */
 

@@ -27,18 +27,18 @@ db.con = function (callback) {
     });
 }
 
-db.query = function(sql, options, callback) {
+db.query = function (sql, options, callback) {
     pool.getConnection(function (err, connection) {
         if (err) {
             logger.info(`[event|dbconnection] error ${JSON.stringify(err)} ...`);
             throw err;
         } else {
-            connection.query(sql, options,function(err, res, fields) {
+            connection.query(sql, options,function(err, res) {
                 connection.release();
                 if (err) {
-                    callback(err, res, fields);
+                    callback(err, null);
                 } else {
-                    callback(null, res, fields);
+                    callback(null, res);
                 }
             })
         }

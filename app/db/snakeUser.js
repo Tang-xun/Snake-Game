@@ -4,6 +4,8 @@ var bean = require('./daoBean');
 
 var logger = require('../logger').logger('user', 'info');
 
+var RX = require('rxjs');
+
 /**
  * create user table , when app first start 
  * @param {callback} callback 
@@ -189,37 +191,36 @@ var updateHistoryInfo = function (user) {
  * @param {*} callback 
  */
 var getUserCount = function (callback) {
-    db.con(function (connection) {
-        connection.query('select count(*) from snake.user;', function (err, res) {
-
-            if (err) {
-                logger.info(`[Event|user count] error ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event|user count] ok ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        });
-    })
+    return RX.bindCallback(db.query)('select count(*) from snake.user;' ,null);
+    /* db.query('select count(*) from snake.user;', null, function (err, res) {
+        if (err) {
+            logger.info(`[Event|user count] error ${JSON.stringify(err)}`);
+            callback(err, null);
+        } else {
+            logger.info(`[Event|user count] ok ${JSON.stringify(res)}`);
+            callback(null, res);
+        }
+    }) */
 }
 
 /**
  * query user score sorted
  * @param {*} callback 
  */
-var sortUserScore = function (callback) {
-    db.con(function (connection) {
-        connection.query('select openId ,score from user order by score desc;', function (err, res) {
+var sortUserScore = function () {
+    let sortUserSql = `select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user;`;
+    
+    return RX.bindCallback(db.query)(sortUserSql, null);
+    // db.query('select openId, score from user order by score desc;', function (err, res) {
 
-            if (err) {
-                logger.info(`[Event|score sort] error ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event|score sort] ok ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        });
-    })
+    //     if (err) {
+    //         logger.info(`[Event|score sort] error ${JSON.stringify(err)}`);
+    //         callback(err, null);
+    //     } else {
+    //         logger.info(`[Event|score sort] ok ${JSON.stringify(res)}`);
+    //         callback(null, res);
+    //     }
+    // });
 }
 
 module.exports = {

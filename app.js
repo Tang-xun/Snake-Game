@@ -10,6 +10,7 @@ var app = new express();
 var indexRoute = require('./routes/index');
 var userRoute = require('./routes/users');
 var gradeRoute = require('./routes/grade');
+var orderRoute = require('./routes/order');
 var historyRoute = require('./routes/history');
 
 
@@ -32,17 +33,18 @@ function setupLog() {
 
 // 设置路由模块
 function setupRouter() {
-    logger.info(`init router  `);
+    logger.info(`init router`);
     app.use('/', indexRoute);
     app.use('/user', userRoute);
     app.use('/grade', gradeRoute);
+    app.use('/order', orderRoute);
     app.use('/history', historyRoute);
 }
 
 
 
 function setupServerError() {
-    logger.info(`init server error handler  `);
+    logger.info(`init server error handler`);
     // catch 404 and forward to error handler
     app.use(function (req, res, next) {
         next(createError(404));
@@ -61,7 +63,7 @@ function setupServerError() {
 
 // 设置其他组件
 function setupBaseMidWare() {
-    logger.info(`init base midWare  `);
+    logger.info(`init base midWare`);
     app.use(express.json());
     app.use(express.urlencoded({ extended: true }));
     app.use(cookieParser());
