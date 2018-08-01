@@ -9,6 +9,8 @@ var pool = mysql.createPool({
     password: 'snake',
     database: 'snake',
     port: 3306,
+    connectionLimit: 20,
+    trace:true,
 });
 
 var query = function (sql, options, callback) {

@@ -116,7 +116,7 @@ var updateHistoryInfo = function (user) {
         e_bestKill = ${user.e_bestKill},
         e_linkKill = ${user.e_linkKill},
         score = ${user.score},
-        ranks = (select sorts.s from (select row_number() over (order by score desc) as s, openId, score from user) as sorts where openId='${user.openId}';)
+        ranks = (select sorts.s from (select row_number() over (order by score desc) as s, openId, score from user) as sorts where openId='${user.openId}'),
         grade = ${user.grade},
         curExp = ${user.curExp},
         nextGradeExp = ${user.nextGradeExp}

@@ -47,10 +47,13 @@ function add(req, res, next) {
         // 查询用户信息，判断是否需要更新游戏记录
         user.queryUserInfo(bean.openid).subscribe(userRes => {
             if (userRes[0] != null) {
-                logger.info(`query user err ${err}`);
+                logger.info(`query user err ${bean.openid}`);
+            } else if(userRes[1] ==null) {
+                logger.info(`not find this user ${bean.openid}`);
             } else {
+                logger.info(`find user ${JSON.stringify(userRes[1])}`);
+                var oldUser = userRes[1][0];
 
-                var oldUser = userRes.length > 0 ? userRes[0] : null;
 
                 logger.info(`compare time model user info `);
                 logger.info('=======================================');
@@ -84,17 +87,22 @@ function add(req, res, next) {
                     oldUser.grade += 1;
                 }
 
-                user.updateHistoryInfo(oldUser);
-                user.sortUserScoreSingle(oldUser.openid);
+                user.updateHistoryInfo(oldUser).subscribe(updatRes=>{
+                    if(updatRes[0]!=null) {
+                        logger.info(`update error ${JSON.stringify(updatRes[0])}`);
+                    } else {
+                        logger.info(`update ok ${JSON.stringify(updatRes[1])}`);
+                    }
+                });
             }
         });
 
         history.addHistory(bean).subscribe(historyRes => {
-            logger.info(`add history ${historyRes}`);
+            logger.info(`add history ${JSON.stringify(historyRes)}`);
             if (historyRes[0] != null) {
-                utils.writeHttpResponse(res, 601, historyRes[0]);
+                utils.writeHttpResponse(res, 601, JSON.stringify(historyRes[0]));
             } else {
-                utils.writeHttpResponse(res, 200, historyRes[1]);
+                utils.writeHttpResponse(res, 200, JSON.stringify(historyRes[1]));
             }
         })
     }
