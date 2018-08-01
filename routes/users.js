@@ -3,15 +3,15 @@ var router = express.Router();
 var dao = require('../app/db/daoBean');
 var user = require('../app/db/snakeUser');
 
+var utils = require('../app/util/comUtils');
+
 var logger = require('../app/logger').logger('route', 'info');
 
-logger.info('router users ')
-
-user.createUserTable(function (err, res) {
-  if (err) {
-    logger.info(`[Event|create table] error ${JSON.stringify(err)}`);
+user.createUserTable().subscribe(res => {
+  if (res[0] != null) {
+    logger.info(`[create user] error ${JSON.stringify(err[0])}`);
   } else {
-    logger.info(`[Event|create table] ok ${JSON.stringify(res)}`);
+    logger.info(`[create user] ok ${JSON.stringify(res[1])}`);
   }
 });
 
@@ -19,40 +19,41 @@ var add = function (req, res, next) {
   printParams(req);
 
   var bean = new dao.User();
-  bean.openid = req.param('openId');
+  bean.openId = req.param('openId');
   bean.nickName = req.param('nickName');
   bean.headUri = req.param('headUri');
   bean.score = req.param('score');
 
-  user.insertUserInfo(bean, function (err, result) {
-    if (err) {
-      res.render('content', { title: 'user add fail', content: `${JSON.stringify(err)}` });
+  user.insertUserInfo(bean).subscribe(addRes => {
+    logger.info(`user add ${addRes}`);
+    if (addRes[0] != null) {
+      utils.writeHttpResponse(res, 600, addRes[0]);
     } else {
-      res.render('content', { title: 'user add ok', content: `${JSON.stringify(result)}` })
+      utils.writeHttpResponse(res, 600, addRes[1]);
     }
   });
 }
 
 var query = function (req, res, next) {
   printParams(req);
-  var openid = req.param('openId');
-  user.queryUserInfo(openid, function (err, result) {
-    if (err) {
-      res.render('content', { title: 'user query faile', content: `${JSON.stringify(err)}` });
+  var openId = req.param('openId');
+  user.queryUserInfo(openId).subscribe(queryRes => {
+    if (queryRes[0] != null) {
+      utils.writeHttpResponse(res, 600, queryRes[0]);
     } else {
-      res.render('content', { title: 'user query ok', content: `${JSON.stringify(result)}` });
+      utils.writeHttpResponse(res, 200, queryRes[1]);
     }
   });
 }
 
 var update = function (req, res, next) {
   printParams(req);
-  var openid = req.param('openId');
-  user.updateLoginTime(openid, function (err, result) {
-    if (err) {
-      res.render('content', { title: 'user updateLoginTime faile', content: `${JSON.stringify(err)}` });
+  var openId = req.param('openId');
+  user.updateLoginTime(openId).subscribe(updateRes => {
+    if (updateRes[0] != null) {
+      utils.writeHttpResponse(res, 600, updateRes[0]);
     } else {
-      res.render('content', { title: 'user updateLoginTime ok', content: `${JSON.stringify(result)}` });
+      utils.writeHttpResponse(res, 600, updateRes[1]);
     }
   });
 }
@@ -62,14 +63,7 @@ function printParams(req) {
     logger.info(`param is null`);
     return;
   }
-
-  logger.info(` ${req.host} ${req.method}`);
-  if (req.method = 'GET') {
-    logger.info(`param ${JSON.stringify(req.query)}`);
-  }
-  else {
-    logger.info(`param ${JSON.stringify(req.body)}`);
-  }
+  logger.info(`print params ${JSON.stringify(req)}`);
 }
 
 /* GET home page. */

@@ -1,6 +1,6 @@
 var RX = require('rxjs');
 var mysql = require('mysql');
-var logger = require('../../app/logger').logger('db-pool', 'info');
+var logger = require('../../app/logger').logger('db', 'info');
 
 
 var pool = mysql.createPool({
@@ -11,23 +11,7 @@ var pool = mysql.createPool({
     port: 3306,
 });
 
-var db = {};
-
-db.con = function (callback) {
-
-    pool.getConnection(function (err, connection) {
-        if (err) {
-            logger.info(`[event|dbconnection error ${JSON.stringify(err)} ...`);
-            connection.release();
-            throw err;
-        } else {
-            callback(connection);
-        }
-        connection.release();
-    });
-}
-
-db.query = function (sql, options, callback) {
+var query = function (sql, options, callback) {
     pool.getConnection(function (err, connection) {
         if (err) {
             logger.info(`[event|dbconnection] error ${JSON.stringify(err)} ...`);
@@ -45,4 +29,6 @@ db.query = function (sql, options, callback) {
     });
 }
 
-module.exports = db;
+module.exports = {
+    query,
+};

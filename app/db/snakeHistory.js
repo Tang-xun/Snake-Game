@@ -1,5 +1,5 @@
 var db = require('./mysqlPool');
-
+var RX = require('rxjs');
 var logger = require('../logger').logger('history', 'info');
 
 /**
@@ -7,7 +7,7 @@ var logger = require('../logger').logger('history', 'info');
  * @param {*} callback 
  */
 var createHistoryTable = function (callback) {
-    let createTableSql = `CREATE TABLE IF NOT EXISTS snake.history (
+    let createSql = `CREATE TABLE IF NOT EXISTS snake.history (
         id int not null auto_increment,
         openId varchar(256) NOT NULL COMMENT 'user open id',
         gameType bool NOT NULL default 0 COMMENT 'game model time:0, endless:1',
@@ -19,19 +19,8 @@ var createHistoryTable = function (callback) {
         PRIMARY KEY (id),
         INDEX (openId)
     ) COMMENT 'game history',
-     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
-    
-    db.con(function (connection) {
-        connection.query(createTableSql, function (err, res) {
-            if (err) {
-                logger.error(`[Event|create table] ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event|create table] ok ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        })
-    });
+    ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
+    return RX.bindCallback(db.query)(createSql);
 }
 
 /**
@@ -57,18 +46,7 @@ var addHistory = function (history, callback) {
                 );`;
 
     logger.info(`add history ${addSql}`);
-    db.con(function (connection) {
-        connection.query(addSql, function (err, res) {
-
-            if (err) {
-                logger.error(`[Event|add] err ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event|add] ok ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        });
-    })
+    return RX.bindCallback(db.query)(addSql);
 }
 
 /**
@@ -78,20 +56,9 @@ var addHistory = function (history, callback) {
  * @param {*} callback 
  */
 var queryHistory = function (openid, limit, callback) {
-    let query = `select * from snake.history where openid='${openid}' order by id desc limit 0,${limit > 0 ? limit : 500}`;
-
-    db.con(function (connection) {
-
-        connection.query(query, function (err, res) {
-            if (err) {
-                logger.error(`[Event|query] err ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event|query]ok ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        });
-    })
+    let querySql = `select * from snake.history where openid='${openid}' order by id desc limit 0,${limit > 0 ? limit : 500}`;
+    logger.info(`query history ${querySql}`);
+    return RX.bindCallback(db.query)(querySql);
 }
 
 module.exports = {

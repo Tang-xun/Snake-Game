@@ -1,5 +1,6 @@
 var db = require('./mysqlPool');
 var logger = require('../logger').logger('grade', 'info');
+var RX = require('rxjs');
 
 var createGradeTable = function (callback) {
     var createSql = `CREATE TABLE IF NOT EXISTS snake.grade  (
@@ -11,18 +12,7 @@ var createGradeTable = function (callback) {
         PRIMARY KEY (id, grade, name))
         COMMENT = 'user grade config sys';
       `;
-    db.con(function (connection) {
-        connection.query(createSql, function (err, res) {
-            
-            if (err) {
-                logger.info(`[Event|cretate table] error ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event|create table] ok ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        })
-    });
+    return RX.bindCallback(db.query)(createSql);
 }
 
 

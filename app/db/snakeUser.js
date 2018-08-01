@@ -11,27 +11,27 @@ var RX = require('rxjs');
  * @param {callback} callback 
  */
 var createUserTable = function (callback) {
-    console.time();
-    let userTable = `CREATE TABLE IF NOT EXISTS snake.user (
-        id int NOT NULL AUTO_INCREMENT,
-        openId  varchar(256) NOT NULL COMMENT 'wechat open id',
-        nickName  varchar(256) NOT NULL ,
-        headUri varchar(256) ,
-        grade int NOT NULL default 0 COMMENT 'user grade',
-        honor  varchar(256) NOT NULL COMMENT 'player current honor',
-        score int NOT NULL default 0 COMMENT 'user score',
-        honorNum  int NOT NULL COMMENT 'gain honor number',
-        skin  int NOT NULL COMMENT 'player current skin id',
-        skinNum int NOT NULL COMMENT 'user own skin num',
-        curExp  int NOT NULL COMMENT 'player current exp num',
+    let createSql = `CREATE TABLE IF NOT EXISTS snake.user (
+        id          int NOT NULL AUTO_INCREMENT,
+        openId      varchar(256) NOT NULL COMMENT 'wechat open id',
+        nickName    varchar(256) NOT NULL ,
+        headUri     varchar(256) ,
+        grade       int NOT NULL default 0 COMMENT 'user grade',
+        honor       varchar(256) NOT NULL COMMENT 'player current honor',
+        score       int NOT NULL default 0 COMMENT 'user score',
+        honorNum    int NOT NULL COMMENT 'gain honor number',
+        skin        int NOT NULL COMMENT 'player current skin id',
+        skinNum     int NOT NULL COMMENT 'user own skin num',
+        curExp      int NOT NULL COMMENT 'player current exp num',
+        ranks       int NOT NULL default 0 COMMENT 'player ranks',
+        t_length    int NOT NULL default 0 COMMENT 'best body length',
+        t_bestKill  int NOT NULL default 0 COMMENT 'most kill number',
+        t_linkKill  int NOT NULL default 0 COMMENT 'best link kill number',
+        e_length    int NOT NULL default 0 COMMENT 'best body length',
+        e_bestKill  int NOT NULL default 0 COMMENT 'most kill number',
+        e_linkKill  int NOT NULL default 0 COMMENT 'best link kill number',
         nextGradeExp  int NOT NULL COMMENT 'next grade exp',
-        t_length int NOT NULL default 0 COMMENT 'best body length',
-        t_bestKill int NOT NULL default 0 COMMENT 'most kill number',
-        t_linkKill int NOT NULL default 0 COMMENT 'best link kill number',
-        e_length int NOT NULL default 0 COMMENT 'best body length',
-        e_bestKill int NOT NULL default 0 COMMENT 'most kill number',
-        e_linkKill int NOT NULL default 0 COMMENT 'best link kill number',
-        latestLogin  TIMESTAMP COMMENT 'latest login time',
+        latestLogin TIMESTAMP COMMENT 'latest login time',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
         updateTime  TIMESTAMP default NULL ON UPDATE CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
@@ -39,28 +39,7 @@ var createUserTable = function (callback) {
         UNIQUE (openId)
     ) COMMENT = 'snake user info', 
     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
-
-    // db.con(function (connection) {
-    //     connection.query(userTable, function (err, res) {
-    //         if (err) {
-    //             logger.error(`[Event|create tableerror : ${JSON.stringify(err)}`);
-    //             callback(err, null);
-    //         } else {
-    //             logger.info(`[Event|create tableok : ${JSON.stringify(res)}`);
-    //             callback(null, res);
-    //         }
-    //     });
-    // })
-
-    db.query(userTable, null, function (err, res, fields) {
-        if (err) {
-            logger.error(`[Event|create table] error : ${JSON.stringify(err)}`);
-            callback(err, null);
-        } else {
-            logger.info(`[Event|create table] ok : ${JSON.stringify(res)}  ${JSON.stringify(fields)}`);
-            callback(null, res);
-        }
-    })
+    return RX.bindCallback(db.query)(createSql);
 }
 
 /**
@@ -69,8 +48,7 @@ var createUserTable = function (callback) {
  * @param {*} nickName 
  */
 var insertUserInfo = function (user, callback) {
-    logger.info(`insert User info ...`);
-
+    
     let insertUser = `INSERT INTO snake.user (
             openID, 
             nickName, 
@@ -98,17 +76,8 @@ var insertUserInfo = function (user, callback) {
             ${user.nextGradeExp},
             current_timestamp()
         );`;
-    logger.info(`will exce sql ${insertUser}`);
-    db.query(insertUser, null, function (err, res, fields) {
-        if (err) {
-            logger.error(`[Event|insert] error  ${JSON.stringify(err)}`);
-            callback(err, null);
-
-        } else {
-            logger.info(`[Event|insert] ok  ${JSON.stringify(res)} ${JSON.stringify(fields)}`);
-            callback(null, res);
-        }
-    })
+    logger.info(`[exec sql] ${insertUser}`);
+    return RX.bindCallback(db.query)(insertUser);
 }
 
 /**
@@ -118,19 +87,8 @@ var insertUserInfo = function (user, callback) {
  */
 var queryUserInfo = function (openid, callback) {
     let queryUser = `select * from snake.user where openid='${openid}';`;
-    logger.info(`will exec sql ${queryUser}`);
-    db.con(function (connection) {
-        connection.query(queryUser, function (err, res) {
-
-            if (err) {
-                logger.error(`[Event| query] ${openid} error  ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event| query] ${openid} ok  ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        });
-    });
+    logger.info(`[exec sql] ${queryUser}`);
+    return RX.bindCallback(db.query)(queryUser);
 }
 
 /**
@@ -140,19 +98,8 @@ var queryUserInfo = function (openid, callback) {
  */
 var updateLoginTime = function (openid, callback) {
     let updateLoginTimeSql = `update snake.user set updateTime=CURRENT_TIMESTAMP where openid='${openid}';`;
-    logger.info(`will exce sql ${updateLoginTimeSql}`);
-    db.con(function (connection) {
-        connection.query(updateLoginTimeSql, function (err, res) {
-
-            if (err) {
-                logger.info(`[Event|sign ] error ${JSON.stringify(err)}`);
-                callback(err, null);
-            } else {
-                logger.info(`[Event|sign ] OK ${JSON.stringify(res)}`);
-                callback(null, res);
-            }
-        });
-    })
+    logger.info(`[exce sql] ${updateLoginTimeSql}`);
+    return RX.bindCallback(db.query)(updateLoginTimeSql);
 }
 
 /**
@@ -169,21 +116,13 @@ var updateHistoryInfo = function (user) {
         e_bestKill = ${user.e_bestKill},
         e_linkKill = ${user.e_linkKill},
         score = ${user.score},
+        ranks = (select sorts.s from (select row_number() over (order by score desc) as s, openId, score from user) as sorts where openId='${user.openId}';)
         grade = ${user.grade},
         curExp = ${user.curExp},
         nextGradeExp = ${user.nextGradeExp}
         where openId='${user.openId}';`
-    logger.info(`will exce sql ${updateHistorySql}`);
-    db.con(function (connection) {
-        connection.query(updateHistorySql, function (err, res) {
-
-            if (err) {
-                logger.info(`[Event|update History] error ${JSON.stringify(err)}`);
-            } else {
-                logger.info(`[Event|update History] ok ${JSON.stringify(res)}`);
-            }
-        })
-    });
+    logger.info(`[exce sql] ${updateHistorySql}`);
+    return RX.bindCallback(db.query)(updateHistorySql);
 }
 
 /**
@@ -191,16 +130,7 @@ var updateHistoryInfo = function (user) {
  * @param {*} callback 
  */
 var getUserCount = function (callback) {
-    return RX.bindCallback(db.query)('select count(*) from snake.user;' ,null);
-    /* db.query('select count(*) from snake.user;', null, function (err, res) {
-        if (err) {
-            logger.info(`[Event|user count] error ${JSON.stringify(err)}`);
-            callback(err, null);
-        } else {
-            logger.info(`[Event|user count] ok ${JSON.stringify(res)}`);
-            callback(null, res);
-        }
-    }) */
+    return RX.bindCallback(db.query)('select count(openId) as count from snake.user;');
 }
 
 /**
@@ -209,18 +139,12 @@ var getUserCount = function (callback) {
  */
 var sortUserScore = function () {
     let sortUserSql = `select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user;`;
-    
-    return RX.bindCallback(db.query)(sortUserSql, null);
-    // db.query('select openId, score from user order by score desc;', function (err, res) {
+    return RX.bindCallback(db.query)(sortUserSql);
+}
 
-    //     if (err) {
-    //         logger.info(`[Event|score sort] error ${JSON.stringify(err)}`);
-    //         callback(err, null);
-    //     } else {
-    //         logger.info(`[Event|score sort] ok ${JSON.stringify(res)}`);
-    //         callback(null, res);
-    //     }
-    // });
+var sortUserScoreSingle = function (openId) {
+    let sortUserSql = `select sorts.ranks from (select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user) as sorts where openId='${openId}';`;
+    return RX.bindCallback(db.query)(sortUserSql);
 }
 
 module.exports = {
@@ -231,4 +155,5 @@ module.exports = {
     updateHistoryInfo,
     getUserCount,
     sortUserScore,
+    sortUserScoreSingle,
 }

@@ -17,15 +17,20 @@ function sortUserScore() {
     console.time('sort_score');
     console.info('sortUserScore start')
     user.getUserCount().subscribe(next => {
-        console.log(`user count  next ${JSON.stringify(next)}`);
-    }, error => {
-        console.log(`user count  error ${JSON.stringify(error)}`);
+        console.log(`next params count is ${next.length}`);
+        console.log(`user count  next ${JSON.stringify(next[1])}`);
     });
-    user.sortUserScore().subscribe(next => {
-        console.log(`user sort next ${JSON.stringify(next)}`);
-    }, error => {
-        console.log(`user sort error ${JSON.stringify(error)}`);
-    });
+    user.sortUserScore().subscribe(res => {
+        if (res == null || res.length == 0) {
+            console.log('not user need for ranks');
+        }
+        var i = 0;
+        var updateRanksSql = `update snake.user set `;
+        updateRanksSql += 
+        res[1].forEach(element => {
+            console.log(`${element.ranks} \t ${element.openId} \t ${element.score}`);
+        });
+    })
     console.timeEnd('sort_score');
     return;
 }

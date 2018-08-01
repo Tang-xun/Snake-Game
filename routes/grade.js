@@ -3,17 +3,15 @@ var grade = require('../app/db/snakeGrade');
 var router = express.Router();
 var logger = require('../app/logger').logger('route', 'info');
 
-grade.createGradeTable(function (err, res) {
-    if (err) {
-        logger.error(`[Event|create table] error ${JSON.stringify(err)}`);
+grade.createGradeTable().subscribe( res=> {
+    if (res[0] != null) {
+        logger.error(`[create grade] error ${JSON.stringify(res[0])}`);
     } else {
-        logger.info(`[Event|create table] ok ${JSON.stringify(res)}`);
+        logger.info(`[create grade] ok ${JSON.stringify(res[1])}`);
     }
 })
 
 function query(req, res, next) {
-
-
     logger.info(`grade query`);
     res.render('index', {title:'grade query' , content:'noting to show '});
 }
@@ -28,10 +26,8 @@ function update(req, res, next) {
     res.render('index', {title:'grade update' , content:'noting to show '});
 }
 
-router.get('/list', query);
-
-router.get('/add', add);
-
-router.get('/update', update);
+router.get('/add', add).post('/add', add);
+router.get('/list', query).post('/list', query);
+router.get('/update', update).post('/update', update);
 
 module.exports = router;
