@@ -5,25 +5,22 @@ var dao = require('../app/db/daoBean');
 var logger = require('../app/logger').logger('route', 'info');
 var utils = require('../app/util/comUtils');
 
-order.createOrderTable().subscribe(res => {
-    if (res[0]) {
-        logger.error(`[create order] error ${JSON.stringify(res[0])}`);
-    } else {
-        logger.info(`[create order] ok ${JSON.stringify(res[1])}`);
-    }
+order.createOrderTable().subscribe(next => {
+    logger.info(`[create order] ok ${JSON.stringify(next)}`);
+}, error => {
+    logger.error(`[create order] error ${JSON.stringify(error)}`);
 });
 
 var queryOrder = function (req, res, next) {
     logger.info(`route queryOrder`);
     var openId = req.param('openId');
     var orderId = req.param('orderId');
-    order.queryOrder(orderId, openId).subscribe(query => {
-        logger.info(`query next ${JSON.stringify(query)}`);
-        if (query[0]) {
-            utils.writeHttpResponse(res, 600, query[0]);
-        } else {
-            utils.writeHttpResponse(res, 200, query[1]);
-        }
+    order.queryOrder(orderId, openId).subscribe(next => {
+        logger.info(`query next ${JSON.stringify(next)}`);
+        utils.writeHttpResponse(res, 200, next);
+    }, error => {
+        logger.info(`query error ${JSON.stringify(error)}`);
+        utils.writeHttpResponse(res, 601, error);
     });
 }
 
@@ -33,29 +30,28 @@ var updatePayment = function (req, res, next) {
     var state = req.param('state');
 
     if (state > 0 && state > 4) {
+        logger.info(`params check error}`);
         utils.writeHttpResponse(res, 601, `error order state ${JSON.stringify(state)}`);
         return;
     }
 
-    order.updateOrderState(orderId, state).subscribe(update => {
-        logger.info(`update next ${JSON.stringify(update)}`);
-        if (update[0]) {
-            utils.writeHttpResponse(res, 600, update[0]);
-        } else {
-            utils.writeHttpResponse(res, 200, update[1]);
-        }
+    order.updateOrderState(orderId, state).subscribe(next => {
+        logger.info(`update next ${JSON.stringify(next)}`);
+        utils.writeHttpResponse(res, 200, next);
+    }, error => {
+        logger.info(`update next ${JSON.stringify(error)}`);
+        utils.writeHttpResponse(res, 601, error);
     });
 }
 
 var queryOrderList = function (req, res, next) {
     logger.info(`route queryOrderList`);
-    order.queryOrderList(openId).subscribe(query => {
-        logger.info(`query next ${JSON.stringify(query)}`);
-        if (query[0]) {
-            utils.writeHttpResponse(res, 600, query[0]);
-        } else {
-            utils.writeHttpResponse(res, 200, query[1]);
-        }
+    order.queryOrderList(openId).subscribe(next => {
+        logger.info(`query next ${JSON.stringify(next)}`);
+        utils.writeHttpResponse(res, 200, next);
+    }, error => {
+        logger.info(`query error ${JSON.stringify(error)}`);
+        utils.writeHttpResponse(res, 601, error);
     });
 
 }
@@ -72,13 +68,12 @@ var addOrder = function (req, res, next) {
     bean.orderState = 0;
     bean.discount = req.param('discount');
     bean.totalPrice = req.param('totalPrice');
-    order.createOrder(bean).subscribe(add => {
-        logger.info(`add order ok ${JSON.stringify(add)}`);
-        if (add[0]) {
-            utils.writeHttpResponse(res, 200, add[0]);
-        } else {
-            utils.writeHttpResponse(res, 200, add[1]);
-        }
+    order.createOrder(bean).subscribe(next => {
+        logger.info(`add order ok ${JSON.stringify(next)}`);
+        utils.writeHttpResponse(res, 200, next);
+    }, error => {
+        logger.info(`add order error ${JSON.stringify(error)}`);
+        utils.writeHttpResponse(res, 601, error);
     });
 }
 

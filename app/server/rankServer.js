@@ -1,7 +1,6 @@
 var logger = require('../logger').logger('history', 'info');
 var user = require('../db/snakeUser');
-
-var RX = require('rxjs');
+var mysql = require('mysql');
 
 var rx = require('rx');
 
@@ -16,64 +15,50 @@ const splitCount = 10;
 
 let userCountUpdate = false;
 
+var pool = mysql.createPool({
+    host: 'localhost',
+    user: 'snake_game',
+    password: 'snake',
+    database: 'snake',
+    port: 3306,
+    connectionLimit: 50,
+    trace: true,
+});
+
 function sortUserScore() {
-    userCountUpdate = false;
-    var start = new Date().getTime();
-    console.log('sortUserScore start');
-
-    user.getUserCount().flatMap(err => {
-        console.info(`error ${err}`);
-    }, res => {
-        console.log(`${res.count}`)
-        userCount = res.count;
-        return user.sortUserScore();
-    }).flatMap(res=>{
-        return rx.Observable.from(res[1]);
-    }).
-
-    // rx.Observable.concat(user.getUserCount(), user.sortUserScore()).subscribe(
-    //     data => {
-    //         console.log(`on next ${JSON.stringify(data)}`);
-    //     }, error => {
-    //         console.log(`on error ${error}`);
-    //     }, () => {
-    //         console.log(`on complete `);
-    //     })
-    /* user.getUserCount().flatMap(
-        res => {
-            console.log(`user count is ${JSON.stringify(res[1])}`);
-            userCount = res[1];
-            return user.sortUserScore();
-        }
-    ).flatMap(res => {
-        throw res[0];
-        if(res[0]) {
-        } else {
-            return rx.Observable.from(res[1]);
-        }
-    }).subscribe(data => {
-        console.log(`${JSON.stringify(data)}`);
+    user.getUserCount().subscribe(next => {
+        console.log(`next ${next}`);
     }, error => {
-        console.log(`on error ${error}`);
-    }, () => {
-        console.log(`on complete `);
-    }) */
-
-
-
-    // .subscribe(next=>{
-    //     if(next[0]) {
-    //         console.log(`sort user score error ${next[0]}`);
-    //     } else {
-    //         console.log(`sort user score success ${JSON.stringify(next[1])}`);
-
-    //     }
-    //     console.log(`speed time ${new Date().getTime() - start} ms`);
-    // });
-    return;
+        console.log(`error ${error}`);
+    }, complete => {
+        console.log(`complete `);
+    });
 }
 
+
+function rxSortScore() {
+    rx.Observable.create(observer => {
+        pool.getConnection((err, connection) => {
+            connection.query('select count(openId) as count from snake.user;', null, (err, res) => {
+                connection.release();
+                if (err) {
+                    console.log(`${JSON.stringify(err)}`);
+                    observer.error(err);
+                } else {
+                    console.log(`${JSON.stringify(res)}`);
+                    observer.next(res);
+                }
+            });
+        });
+    }).subscribe(next => {
+        console.log(`next ${JSON.stringify(next)}`);
+    }, error => {
+        console.log(`error ${JSON.stringify(error)}`);
+
+    }, complete => {
+        console.log(`complete`);
+    });
+}
 // `select tmp.ranks from(select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user) as tmp where tmp.openId = 1532964784280;`
-
 sortUserScore();
-
+// rxSortScore();

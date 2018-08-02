@@ -1,5 +1,4 @@
 var db = require('./mysqlPool');
-var RX = require('rxjs');
 var logger = require('../logger').logger('history', 'info');
 
 /**
@@ -8,19 +7,19 @@ var logger = require('../logger').logger('history', 'info');
  */
 var createHistoryTable = function (callback) {
     let createSql = `CREATE TABLE IF NOT EXISTS snake.history (
-        id int not null auto_increment,
-        openId varchar(256) NOT NULL COMMENT 'user open id',
-        gameType bool NOT NULL default 0 COMMENT 'game model time:0, endless:1',
-        exp	int NOT NULL default 0 COMMENT 'exp increament',
-        length int NOT NULL default 0 COMMENT 'snake legnth',
-        bestKill int NOT NULL default 0 COMMENT 'kill num',
-        linkKill int NOT NULL default 0 COMMENT 'game linked kill num',
+        id          int  NOT NULL auto_increment,
+        openId      varchar(256) NOT NULL COMMENT 'user open id',
+        gameType    bool NOT NULL default 0 COMMENT 'game model time:0, endless:1',
+        exp         int  NOT NULL default 0 COMMENT 'exp increament',
+        length      int  NOT NULL default 0 COMMENT 'snake legnth',
+        bestKill    int  NOT NULL default 0 COMMENT 'kill num',
+        linkKill    int  NOT NULL default 0 COMMENT 'game linked kill num',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
         INDEX (openId)
     ) COMMENT 'game history',
     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
-    return RX.bindCallback(db.query)(createSql);
+    return db.rxQuery(createSql, null);
 }
 
 /**
@@ -37,7 +36,7 @@ var addHistory = function (history, callback) {
                     bestKill,
                     linkKill) 
                 values(
-                    '${history.openid}',
+                    '${history.openId}',
                     ${history.gameType},
                     ${history.exp},
                     ${history.length},
@@ -46,19 +45,19 @@ var addHistory = function (history, callback) {
                 );`;
 
     logger.info(`add history ${addSql}`);
-    return RX.bindCallback(db.query)(addSql);
+    return db.rxQuery(addSql, null);
 }
 
 /**
  * query user history
- * @param {*} openid 
+ * @param {*} openId 
  * @param {*} limit 
  * @param {*} callback 
  */
-var queryHistory = function (openid, limit, callback) {
-    let querySql = `select * from snake.history where openid='${openid}' order by id desc limit 0,${limit > 0 ? limit : 500}`;
+var queryHistory = function (openId, limit, callback) {
+    let querySql = `select * from snake.history where openId='${openId}' order by id desc limit 0,${limit > 0 ? limit : 500}`;
     logger.info(`query history ${querySql}`);
-    return RX.bindCallback(db.query)(querySql);
+    return db.rxQuery(querySql, null);
 }
 
 module.exports = {

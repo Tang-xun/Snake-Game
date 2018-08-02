@@ -4,10 +4,6 @@ var bean = require('./daoBean');
 
 var logger = require('../logger').logger('user', 'info');
 
-var RX = require('rxjs');
-
-var rx = require('rx');
-
 /**
  * create user table , when app first start 
  * @param {callback} callback 
@@ -41,15 +37,15 @@ var createUserTable = function (callback) {
         UNIQUE (openId)
     ) COMMENT = 'snake user info', 
     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
-    return RX.bindCallback(db.query)(createSql);
+    return db.rxQuery(createSql, null);
 }
 
 /**
  * 新增游戏玩家
- * @param {*} openid 
+ * @param {*} openId 
  * @param {*} nickName 
  */
-var insertUserInfo = function (user, callback) {
+var insertUserInfo = function (user) {
     
     let insertUser = `INSERT INTO snake.user (
             openId, 
@@ -79,29 +75,29 @@ var insertUserInfo = function (user, callback) {
             current_timestamp()
         );`;
     logger.info(`[exec sql] ${insertUser}`);
-    return RX.bindCallback(db.query)(insertUser);
+    return db.rxQuery(insertUser, null);
 }
 
 /**
- * 通过openid查询玩家信息
- * @param {*} openid 
+ * 通过openId查询玩家信息
+ * @param {*} openId 
  * @param {*} callback 
  */
-var queryUserInfo = function (openid, callback) {
-    let queryUser = `select * from snake.user where openid='${openid}';`;
+var queryUserInfo = function (openId) {
+    let queryUser = `select * from snake.user where openId='${openId}';`;
     logger.info(`[exec sql] ${queryUser}`);
-    return RX.bindCallback(db.query)(queryUser);
+    return db.rxQuery(queryUser, null);
 }
 
 /**
  * update user latest login time;
- * @param {*} openid 
+ * @param {*} openId 
  * @param {*} callback 
  */
-var updateLoginTime = function (openid, callback) {
-    let updateLoginTimeSql = `update snake.user set updateTime=CURRENT_TIMESTAMP where openid='${openid}';`;
+var updateLoginTime = function (openId) {
+    let updateLoginTimeSql = `update snake.user set updateTime=CURRENT_TIMESTAMP where openId='${openId}';`;
     logger.info(`[exce sql] ${updateLoginTimeSql}`);
-    return RX.bindCallback(db.query)(updateLoginTimeSql);
+    return db.rxQuery(updateLoginTimeSql, null);
 }
 
 /**
@@ -124,7 +120,7 @@ var updateHistoryInfo = function (user) {
         nextGradeExp = ${user.nextGradeExp}
         where openId='${user.openId}';`
     logger.info(`[exce sql] ${updateHistorySql}`);
-    return RX.bindCallback(db.query)(updateHistorySql);
+    return db.rxQuery(updateHistorySql, null);
 }
 
 /**
@@ -137,10 +133,6 @@ var getUserCount = function () {
     return db.rxQuery('select count(openId) as count from snake.user;', null);
 }
 
-/**
- * query user score sorted
- * @param {*} callback 
- */
 var sortUserScore = function () {
     let sortUserSql = `select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user;`;
     return db.rxQuery(sortUserSql, null);
@@ -148,7 +140,7 @@ var sortUserScore = function () {
 
 var sortUserScoreSingle = function (openId) {
     let sortUserSql = `select sorts.ranks from (select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user) as sorts where openId='${openId}';`;
-    return RX.bindCallback(db.query)(sortUserSql);
+    return db.query(sortUserSql, null);
 }
 
 module.exports = {

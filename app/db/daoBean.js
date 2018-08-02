@@ -6,7 +6,7 @@ var Grade = function () {
 }
 
 var History = function () {
-    this.openid;
+    this.openId;
     this.gameType = 0;
     this.exp = 0;
     this.length = 0;
@@ -15,7 +15,7 @@ var History = function () {
 }
 
 var User = function () {
-    this.openid;
+    this.openId;
     this.nickName;
     this.headUri;
     this.grade = 0,
@@ -42,14 +42,7 @@ var Order = function() {
     this.productId;
     this.price;
     this.num;
-    /**
-     * 0 create
-     * 1 success
-     * 2 fail
-     * 3 cancel
-     * 4 timeout
-     */
-    this.state;
+    this.state; //0 create 1 success 2 fail 3 cancel 4 timeout
     this.openId;
     this.productName;
     this.totalPrice;

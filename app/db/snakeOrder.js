@@ -1,5 +1,4 @@
 var db = require('./mysqlPool');
-var RX = require('rxjs');
 var dao = require('domain');
 
 var logger = require('../logger').logger('snakeOrder', 'info');
@@ -26,7 +25,7 @@ var createOrderTable = function () {
         PRIMARY key(id,orderId)
     ) COMMENT 'order table' ,
     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`;
-    return RX.bindCallback(db.query)(createSql);
+    return db.rxQuery(createSql, null);
 }
 
 /**
@@ -36,7 +35,7 @@ var createOrderTable = function () {
 var queryOrder = function (orderId, openId) {
     let querySql = `select * from snake.order where orderId='${orderId}' and openId='${openId}';`;
     logger.info(`will exec sql ${querySql}`);
-    return RX.bindCallback(db.query)(querySql);
+    return db.rxQuery(querySql, null);
 }
 
 /**
@@ -44,7 +43,7 @@ var queryOrder = function (orderId, openId) {
  */
 var queryListOrder = function (openId) {
     let querySql = `select * from snake.order where snake.opendId='${openId}';`;
-    return RX.bindCallback(db.query)(querySql);
+    return db.rxQuery(querySql, null);
 }
 
 /**
@@ -76,7 +75,7 @@ var createOrder = function (order) {
         );`;
 
     logger.info(`will exec sql ${addSql}`);
-    return RX.bindCallback(db.query)(addSql);
+    return db.rxQuery(addSql, null);
 }
 
 /**
@@ -85,7 +84,7 @@ var createOrder = function (order) {
  */
 var updateOrderState = function (orderId, state) {
     let updateSql = `update snake.order set order.state='${state}' where orderId='${orderId}'`;
-    return RX.bindCallback(db.query)(updateSql);
+    return db.rxQuery(updateSql, null);
 }
 
 module.exports = {

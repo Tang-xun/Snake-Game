@@ -82,7 +82,7 @@
     */
     insert into user (openID, nickName, honor, honorNum, skin, curExp, nextGradeExp, latestLogin)  
         values(
-            'openid', 
+            'openId', 
             'wechat_game_user', 
             '小青蛇', 
             10, 
@@ -95,7 +95,7 @@
     /**
     *   update user info
     */
-    update user set honorNum=11 where openID=openid;
+    update user set honorNum=11 where openID=openId;
 ```
 
 
