@@ -6,6 +6,8 @@ var logger = require('../logger').logger('user', 'info');
 
 var RX = require('rxjs');
 
+var rx = require('rx');
+
 /**
  * create user table , when app first start 
  * @param {callback} callback 
@@ -50,7 +52,7 @@ var createUserTable = function (callback) {
 var insertUserInfo = function (user, callback) {
     
     let insertUser = `INSERT INTO snake.user (
-            openID, 
+            openId, 
             nickName, 
             headUri, 
             honor,
@@ -63,7 +65,7 @@ var insertUserInfo = function (user, callback) {
             nextGradeExp, 
             latestLogin) 
         values(
-            "${user.openid}", 
+            "${user.openId}", 
             "${user.nickName}", 
             "${user.headUri}",
             "${user.honor}", 
@@ -129,8 +131,10 @@ var updateHistoryInfo = function (user) {
  * query user count 
  * @param {*} callback 
  */
-var getUserCount = function (callback) {
-    return RX.bindCallback(db.query)('select count(openId) as count from snake.user;');
+var getUserCount = function () {
+    // return RX.bindCallback(db.query)('select count(openId) as count from snake.user;');
+    // return rx.Observable.fromCallback(db.query)('select count(openId) as count from snake.user;');
+    return db.rxQuery('select count(openId) as count from snake.user;', null);
 }
 
 /**
@@ -139,7 +143,7 @@ var getUserCount = function (callback) {
  */
 var sortUserScore = function () {
     let sortUserSql = `select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user;`;
-    return RX.bindCallback(db.query)(sortUserSql);
+    return db.rxQuery(sortUserSql, null);
 }
 
 var sortUserScoreSingle = function (openId) {

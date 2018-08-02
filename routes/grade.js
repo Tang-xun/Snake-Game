@@ -4,7 +4,7 @@ var router = express.Router();
 var logger = require('../app/logger').logger('route', 'info');
 
 grade.createGradeTable().subscribe( res=> {
-    if (res[0] != null) {
+    if (res[0]) {
         logger.error(`[create grade] error ${JSON.stringify(res[0])}`);
     } else {
         logger.info(`[create grade] ok ${JSON.stringify(res[1])}`);

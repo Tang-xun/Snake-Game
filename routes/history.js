@@ -8,7 +8,7 @@ var logger = require('../app/logger').logger('route', 'info');
 
 
 history.createHistoryTable().subscribe(res => {
-    if (res[0] != null) {
+    if (res[0]) {
         logger.info(`[create history] error ${JSON.stringify(res[0])}`);
     } else {
         logger.info(`[create history] ok ${JSON.stringify(res[1])}`);
@@ -21,7 +21,7 @@ function query(req, res, next) {
     logger.info(`history query ${openId} ${limit}`);
     history.queryHistory(openId, limit).subscribe(res => {
         logger.info(`[Event|query] ${JSON.stringify(res)}`);
-        if (res[0] != null) {
+        if (res[0]) {
             utils.writeHttpResponse(res, 600, res[0]);
         } else {
             utils.writeHttpResponse(res, 200, res[1]);
@@ -46,7 +46,7 @@ function add(req, res, next) {
     } else {
         // 查询用户信息，判断是否需要更新游戏记录
         user.queryUserInfo(bean.openid).subscribe(userRes => {
-            if (userRes[0] != null) {
+            if (userRes[0]) {
                 logger.info(`query user err ${bean.openid}`);
             } else if(userRes[1] ==null) {
                 logger.info(`not find this user ${bean.openid}`);
@@ -88,7 +88,7 @@ function add(req, res, next) {
                 }
 
                 user.updateHistoryInfo(oldUser).subscribe(updatRes=>{
-                    if(updatRes[0]!=null) {
+                    if(updatRes[0]) {
                         logger.info(`update error ${JSON.stringify(updatRes[0])}`);
                     } else {
                         logger.info(`update ok ${JSON.stringify(updatRes[1])}`);
@@ -99,7 +99,7 @@ function add(req, res, next) {
 
         history.addHistory(bean).subscribe(historyRes => {
             logger.info(`add history ${JSON.stringify(historyRes)}`);
-            if (historyRes[0] != null) {
+            if (historyRes[0]) {
                 utils.writeHttpResponse(res, 601, JSON.stringify(historyRes[0]));
             } else {
                 utils.writeHttpResponse(res, 200, JSON.stringify(historyRes[1]));

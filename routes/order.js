@@ -6,7 +6,7 @@ var logger = require('../app/logger').logger('route', 'info');
 var utils = require('../app/util/comUtils');
 
 order.createOrderTable().subscribe(res => {
-    if (res[0] != null) {
+    if (res[0]) {
         logger.error(`[create order] error ${JSON.stringify(res[0])}`);
     } else {
         logger.info(`[create order] ok ${JSON.stringify(res[1])}`);
@@ -19,7 +19,7 @@ var queryOrder = function (req, res, next) {
     var orderId = req.param('orderId');
     order.queryOrder(orderId, openId).subscribe(query => {
         logger.info(`query next ${JSON.stringify(query)}`);
-        if (query[0] != null) {
+        if (query[0]) {
             utils.writeHttpResponse(res, 600, query[0]);
         } else {
             utils.writeHttpResponse(res, 200, query[1]);
@@ -39,7 +39,7 @@ var updatePayment = function (req, res, next) {
 
     order.updateOrderState(orderId, state).subscribe(update => {
         logger.info(`update next ${JSON.stringify(update)}`);
-        if (update[0] != null) {
+        if (update[0]) {
             utils.writeHttpResponse(res, 600, update[0]);
         } else {
             utils.writeHttpResponse(res, 200, update[1]);
@@ -51,7 +51,7 @@ var queryOrderList = function (req, res, next) {
     logger.info(`route queryOrderList`);
     order.queryOrderList(openId).subscribe(query => {
         logger.info(`query next ${JSON.stringify(query)}`);
-        if (query[0] != null) {
+        if (query[0]) {
             utils.writeHttpResponse(res, 600, query[0]);
         } else {
             utils.writeHttpResponse(res, 200, query[1]);
@@ -74,7 +74,7 @@ var addOrder = function (req, res, next) {
     bean.totalPrice = req.param('totalPrice');
     order.createOrder(bean).subscribe(add => {
         logger.info(`add order ok ${JSON.stringify(add)}`);
-        if (add[0] != null) {
+        if (add[0]) {
             utils.writeHttpResponse(res, 200, add[0]);
         } else {
             utils.writeHttpResponse(res, 200, add[1]);
