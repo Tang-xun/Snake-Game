@@ -1,64 +1,79 @@
-var logger = require('../logger').logger('history', 'info');
+var logger = require('../logger').logger('ranks', 'info');
 var user = require('../db/snakeUser');
-var mysql = require('mysql');
 
 var rx = require('rx');
 
-// 用户数
-let userCount = 0;
-// 所有的分数
-let userScore = {};
-// 每个分数段上限
-let perScore = [];
-// 分段个数
-const splitCount = 10;
+shortDelay = 2 * 1000;
+shortUpdateDuration = 60 * 1000;
 
-let userCountUpdate = false;
+longDelay = shortDelay * 5;
+longUpdateDuration = shortUpdateDuration * 5;
 
-var pool = mysql.createPool({
-    host: 'localhost',
-    user: 'snake_game',
-    password: 'snake',
-    database: 'snake',
-    port: 3306,
-    connectionLimit: 50,
-    trace: true,
-});
-
-function sortUserScore() {
-    user.getUserCount().subscribe(next => {
-        console.log(`next ${next}`);
-    }, error => {
-        console.log(`error ${error}`);
-    }, complete => {
-        console.log(`complete `);
-    });
+var sysConfig = function () {
+    this.userCount = 0;
+    this.payCount = 0;
+    this.rankScore = [];
 }
 
+var ServerConfig = new sysConfig();
 
-function rxSortScore() {
-    rx.Observable.create(observer => {
-        pool.getConnection((err, connection) => {
-            connection.query('select count(openId) as count from snake.user;', null, (err, res) => {
-                connection.release();
-                if (err) {
-                    console.log(`${JSON.stringify(err)}`);
-                    observer.error(err);
-                } else {
-                    console.log(`${JSON.stringify(res)}`);
-                    observer.next(res);
-                }
-            });
-        });
+/**
+ * fetch user count timeTask
+ */
+function rxFetchUserCount() {
+    logger.info(`shortDelay: ${shortDelay} shortUpdateDuration:${shortUpdateDuration}`);
+    rx.Observable.timer(shortDelay, shortUpdateDuration).flatMap(() => {
+        logger.info(`rxFetchUserCount ${new Date()}`);
+        return user.getUserCount();
+    }).subscribe(data => {
+        logger.info(`fetch user count next ${JSON.stringify(data)}`);
+        global.userCount = data[0].count;
+        ServerConfig.userCount = data[0].count;
+    }, error => {
+        logger.error(`fetch user count error ${error}`);
+    })
+}
+
+/**
+ *  rank user score timeTask
+ */
+function rxRanksTimeTask() {
+    rx.Observable.timer(longDelay, longUpdateDuration).flatMap(() => {
+        logger.info(`rxRanksTimeTask ${new Date()}`);
+        return user.sortUserScore();
+    }).subscribe(
+        next => {
+            logger.info(`next update userRanks message: ${next.message}`);
+        },
+        error => {
+            logger.info(`error sort user score ${error}`);
+        }
+    );
+}
+
+function rxFetchRankScore() {
+    rx.Observable.timer(shortDelay + 1000, shortUpdateDuration).flatMap(() => {
+        logger.info(`rxFetchRankScore ${new Date()}`);
+        if(isNaN(global.userCount)){
+            logger.info(`user count is NaN needn't fetch Rank ${ServerConfig.userCount} ${global.userCount}`);
+            throw Error('user count is NaN');
+        }
+        var groupCount = global.userCount / 20;
+        logger.info(`current user score group ${groupCount}`);
+        return user.fetchRankScore(groupCount);
     }).subscribe(next => {
-        console.log(`next ${JSON.stringify(next)}`);
+        this.rankScore = next;
+        ServerConfig.rankScore = next;
+        logger.info(`next fetch rank score message: ${JSON.stringify(next)}`);
+        logger.info(`print ServerConfig ${JSON.stringify(ServerConfig)}`);
     }, error => {
-        console.log(`error ${JSON.stringify(error)}`);
-
-    }, complete => {
-        console.log(`complete`);
-    });
+        logger.info(`error fetch rank score ${error}`);
+    })
 }
-// `select tmp.ranks from(select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user) as tmp where tmp.openId = 1532964784280;`
-sortUserScore();
-// rxSortScore();
+
+module.exports = {
+    ServerConfig,
+    rxFetchUserCount,
+    rxFetchRankScore,
+    rxRanksTimeTask,
+}

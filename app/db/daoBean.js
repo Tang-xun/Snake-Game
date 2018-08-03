@@ -8,7 +8,7 @@ var Grade = function () {
 var History = function () {
     this.openId;
     this.gameType = 0;
-    this.exp = 0;
+    this.score = 0;
     this.length = 0;
     this.bestKill = 0;
     this.linkKill = 0;

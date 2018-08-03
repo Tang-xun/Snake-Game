@@ -37,7 +37,7 @@ var createUserTable = function (callback) {
         UNIQUE (openId)
     ) COMMENT = 'snake user info', 
     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
-    return db.rxQuery(createSql, null);
+    return db.rxQuery(createSql);
 }
 
 /**
@@ -75,7 +75,7 @@ var insertUserInfo = function (user) {
             current_timestamp()
         );`;
     logger.info(`[exec sql] ${insertUser}`);
-    return db.rxQuery(insertUser, null);
+    return db.rxQuery(insertUser);
 }
 
 /**
@@ -86,7 +86,7 @@ var insertUserInfo = function (user) {
 var queryUserInfo = function (openId) {
     let queryUser = `select * from snake.user where openId='${openId}';`;
     logger.info(`[exec sql] ${queryUser}`);
-    return db.rxQuery(queryUser, null);
+    return db.rxQuery(queryUser);
 }
 
 /**
@@ -97,7 +97,7 @@ var queryUserInfo = function (openId) {
 var updateLoginTime = function (openId) {
     let updateLoginTimeSql = `update snake.user set updateTime=CURRENT_TIMESTAMP where openId='${openId}';`;
     logger.info(`[exce sql] ${updateLoginTimeSql}`);
-    return db.rxQuery(updateLoginTimeSql, null);
+    return db.rxQuery(updateLoginTimeSql);
 }
 
 /**
@@ -114,33 +114,32 @@ var updateHistoryInfo = function (user) {
         e_bestKill = ${user.e_bestKill},
         e_linkKill = ${user.e_linkKill},
         score = ${user.score},
-        ranks = (select sorts.s from (select row_number() over (order by score desc) as s, openId, score from user) as sorts where openId='${user.openId}'),
         grade = ${user.grade},
         curExp = ${user.curExp},
         nextGradeExp = ${user.nextGradeExp}
         where openId='${user.openId}';`
     logger.info(`[exce sql] ${updateHistorySql}`);
-    return db.rxQuery(updateHistorySql, null);
+    return db.rxQuery(updateHistorySql);
 }
 
-/**
- * query user count 
- * @param {*} callback 
- */
 var getUserCount = function () {
-    // return RX.bindCallback(db.query)('select count(openId) as count from snake.user;');
-    // return rx.Observable.fromCallback(db.query)('select count(openId) as count from snake.user;');
-    return db.rxQuery('select count(openId) as count from snake.user;', null);
+    return db.rxQuery('select count(openId) as count from snake.user;');
 }
 
 var sortUserScore = function () {
-    let sortUserSql = `select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user;`;
-    return db.rxQuery(sortUserSql, null);
+    let sortUserSql = `update user, (select row_number() over (order by score desc) as ranks, openId from user) as sorts set user.ranks=sorts.ranks where user.openId=sorts.openId;`;
+    logger.info(`[exec sql] ${sortUserSql}`);
+    return db.rxQuery(sortUserSql);
 }
 
 var sortUserScoreSingle = function (openId) {
     let sortUserSql = `select sorts.ranks from (select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user) as sorts where openId='${openId}';`;
-    return db.query(sortUserSql, null);
+    return db.rxQuery(sortUserSql);
+}
+
+var fetchRankScore = function (count){
+    let rankScoreSql = `select row_number() over (order by score desc) as ranks, score from user where ranks%${count}=0;`
+    return db.rxQuery(rankScoreSql);
 }
 
 module.exports = {
@@ -151,5 +150,6 @@ module.exports = {
     updateHistoryInfo,
     getUserCount,
     sortUserScore,
+    fetchRankScore,
     sortUserScoreSingle,
 }

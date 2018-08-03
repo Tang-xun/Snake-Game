@@ -3,6 +3,7 @@ var createError = require('http-errors');
 var express = require('express');
 var http = require('http');
 var path = require('path');
+var coreServer = require('./app/server/rankServer');
 
 var app = new express();
 
@@ -12,6 +13,7 @@ var userRoute = require('./routes/users');
 var gradeRoute = require('./routes/grade');
 var orderRoute = require('./routes/order');
 var historyRoute = require('./routes/history');
+var wxRoute = require('./routes/wxService');
 
 
 // log4js
@@ -74,8 +76,18 @@ function onProcessExit() {
     // setup process exit listener;
     process.on('exit', function (code) {
         logger.info(`[Event|app exit] exit code is ${code}`);
-        console.trace();
+        logger.trace();
     });
+    
+}
+
+/**
+ * start time task for user ranks
+ */
+function startCoreServer() {
+    coreServer.rxFetchUserCount();
+    coreServer.rxFetchRankScore();
+    coreServer.rxRanksTimeTask();
 }
 
 function init() {
@@ -87,6 +99,7 @@ function init() {
     setupBaseMidWare();
     setupRouter();
     setupServerError();
+    startCoreServer();
     onProcessExit();
 }
 

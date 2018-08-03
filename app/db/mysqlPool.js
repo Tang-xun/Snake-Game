@@ -15,13 +15,17 @@ var pool = mysql.createPool({
 var rxQuery = function (sql, options) {
     return RX.Observable.create(observer => {
         pool.getConnection((err, connection) => {
-            connection.query(sql,options, (err, res) => {
+            if (err) {
+                logger.info(`connect error ${JSON.stringify(err)}`);
+                observer.error(err);
+                return;
+            }
+            connection.query(sql, options, (err, res) => {
                 connection.release();
                 if (err) {
-                    logger.info(`${JSON.stringify(err)}`);
+                    logger.info(`query error ${JSON.stringify(err)}`);
                     observer.error(err);
                 } else {
-                    logger.info(`${JSON.stringify(res)}`);
                     observer.next(res);
                 }
             });

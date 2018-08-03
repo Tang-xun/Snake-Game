@@ -10,7 +10,7 @@ var createHistoryTable = function (callback) {
         id          int  NOT NULL auto_increment,
         openId      varchar(256) NOT NULL COMMENT 'user open id',
         gameType    bool NOT NULL default 0 COMMENT 'game model time:0, endless:1',
-        exp         int  NOT NULL default 0 COMMENT 'exp increament',
+        score       int  NOT NULL default 0 COMMENT 'score increament',
         length      int  NOT NULL default 0 COMMENT 'snake legnth',
         bestKill    int  NOT NULL default 0 COMMENT 'kill num',
         linkKill    int  NOT NULL default 0 COMMENT 'game linked kill num',
@@ -31,14 +31,14 @@ var addHistory = function (history, callback) {
     let addSql = `insert into snake.history (
                     openId, 
                     gameType,
-                    exp,
+                    score,
                     length,
                     bestKill,
                     linkKill) 
                 values(
                     '${history.openId}',
                     ${history.gameType},
-                    ${history.exp},
+                    ${history.score},
                     ${history.length},
                     ${history.bestKill},
                     ${history.linkKill}
