@@ -1,11 +1,11 @@
 var express = require('express');
 var router = express.Router();
-var dao = require('../app/db/daoBean');
-var user = require('../app/db/snakeUser');
+var dao = require('../db/daoBean');
+var user = require('../db/snakeUser');
 var queryString = require('querystring');
-var utils = require('../app/util/comUtils');
+var utils = require('../util/comUtils');
 
-var logger = require('../app/logger').logger('route', 'info');
+var logger = require('../logger').logger('route', 'info');
 
 user.createUserTable().subscribe(next => {
     logger.info(`[create user] ok ${JSON.stringify(next)}`);
@@ -34,7 +34,11 @@ var query = function (req, res, next) {
     printParams(req);
     var openId = req.param('openId');
     user.queryUserInfo(openId).subscribe(next => {
-        utils.writeHttpResponse(res, 200, next);
+        if (utils.isInvalid(next)) {
+            utils.writeHttpResponse(res, 601, `not found user openId : ${openId}`);
+        } else {
+            utils.writeHttpResponse(res, 200, 'ok', JSON.stringify(next[0]));
+        }
     }, error => {
         utils.writeHttpResponse(res, 600, error);
     });

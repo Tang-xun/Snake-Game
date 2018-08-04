@@ -27,8 +27,8 @@ function rxFetchUserCount() {
         return user.getUserCount();
     }).subscribe(data => {
         logger.info(`fetch user count next ${JSON.stringify(data)}`);
-        global.userCount = data[0].count;
-        ServerConfig.userCount = data[0].count;
+        global.userCount = data;
+        ServerConfig.userCount = data;
     }, error => {
         logger.error(`fetch user count error ${error}`);
     })
@@ -59,7 +59,7 @@ function rxFetchRankScore() {
             throw Error('user count is NaN');
         }
         var groupCount = global.userCount / 20;
-        logger.info(`current user score group ${groupCount}`);
+        logger.info(`current user score group count ${groupCount}`);
         return user.fetchRankScore(groupCount);
     }).subscribe(next => {
         this.rankScore = next;

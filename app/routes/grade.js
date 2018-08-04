@@ -1,7 +1,7 @@
 var express = require('express');
-var grade = require('../app/db/snakeGrade');
+var grade = require('../db/snakeGrade');
 var router = express.Router();
-var logger = require('../app/logger').logger('route', 'info');
+var logger = require('../logger').logger('route', 'debug');
 
 grade.createGradeTable().subscribe(next => {
     logger.info(`[create grade] ok ${JSON.stringify(next)}`);

@@ -1,9 +1,9 @@
 var express = require('express');
 var router = express.Router();
-var order = require('../app/db/snakeOrder');
-var dao = require('../app/db/daoBean');
-var logger = require('../app/logger').logger('route', 'info');
-var utils = require('../app/util/comUtils');
+var order = require('../db/snakeOrder');
+var dao = require('../db/daoBean');
+var logger = require('../logger').logger('route', 'info');
+var utils = require('../util/comUtils');
 
 order.createOrderTable().subscribe(next => {
     logger.info(`[create order] ok ${JSON.stringify(next)}`);

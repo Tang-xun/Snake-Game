@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var logger = require('../app/logger').logger('route', 'info');
+var logger = require('../logger').logger('route', 'info');
 
 logger.info(' router indexPage');
 

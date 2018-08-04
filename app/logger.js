@@ -32,6 +32,7 @@ log4js.configure({
 
 exports.logger = function (name, level) {
     var logger = log4js.getLogger(name);
+    logger.level = level;
     return logger;
 };
 

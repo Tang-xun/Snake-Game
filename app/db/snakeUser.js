@@ -46,7 +46,7 @@ var createUserTable = function (callback) {
  * @param {*} nickName 
  */
 var insertUserInfo = function (user) {
-    
+
     let insertUser = `INSERT INTO snake.user (
             openId, 
             nickName, 
@@ -75,7 +75,7 @@ var insertUserInfo = function (user) {
             current_timestamp()
         );`;
     logger.info(`[exec sql] ${insertUser}`);
-    return db.rxQuery(insertUser);
+    return db.rxQuery(insertUser).map(res => res.insertId);
 }
 
 /**
@@ -89,6 +89,13 @@ var queryUserInfo = function (openId) {
     return db.rxQuery(queryUser);
 }
 
+var queryUpdateInfo = function (openId) {
+    let queryFields = 'openId, grade, honorNum, score, curExp, nextGradeExp, ranks, t_length, t_bestKill, t_linkKill, e_length, e_bestKill, e_linkKill';
+    let queryUser = `select ${queryFields} from snake.user where openId='${openId}';`;
+    logger.info(`[exec sql] ${queryUser}`);
+    return db.rxQuery(queryUser).map(it => it[0]);
+}
+
 /**
  * update user latest login time;
  * @param {*} openId 
@@ -96,8 +103,8 @@ var queryUserInfo = function (openId) {
  */
 var updateLoginTime = function (openId) {
     let updateLoginTimeSql = `update snake.user set updateTime=CURRENT_TIMESTAMP where openId='${openId}';`;
-    logger.info(`[exce sql] ${updateLoginTimeSql}`);
-    return db.rxQuery(updateLoginTimeSql);
+    logger.info(`[exec sql] ${updateLoginTimeSql}`);
+    return db.rxQuery(updateLoginTimeSql).map(it => it.changedRows > 0);
 }
 
 /**
@@ -118,12 +125,12 @@ var updateHistoryInfo = function (user) {
         curExp = ${user.curExp},
         nextGradeExp = ${user.nextGradeExp}
         where openId='${user.openId}';`
-    logger.info(`[exce sql] ${updateHistorySql}`);
-    return db.rxQuery(updateHistorySql);
+    logger.info(`[exec sql] ${updateHistorySql}`);
+    return db.rxQuery(updateHistorySql).map(it => it.changedRows > 0);
 }
 
 var getUserCount = function () {
-    return db.rxQuery('select count(openId) as count from snake.user;');
+    return db.rxQuery('select count(openId) as count from snake.user;').map(it => it[0].count);
 }
 
 var sortUserScore = function () {
@@ -137,7 +144,7 @@ var sortUserScoreSingle = function (openId) {
     return db.rxQuery(sortUserSql);
 }
 
-var fetchRankScore = function (count){
+var fetchRankScore = function (count) {
     let rankScoreSql = `select row_number() over (order by score desc) as ranks, score from user where ranks%${count}=0;`
     return db.rxQuery(rankScoreSql);
 }
@@ -148,6 +155,7 @@ module.exports = {
     queryUserInfo,
     updateLoginTime,
     updateHistoryInfo,
+    queryUpdateInfo,
     getUserCount,
     sortUserScore,
     fetchRankScore,

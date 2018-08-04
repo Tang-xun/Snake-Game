@@ -8,13 +8,12 @@ var coreServer = require('./app/server/rankServer');
 var app = new express();
 
 // router 
-var indexRoute = require('./routes/index');
-var userRoute = require('./routes/users');
-var gradeRoute = require('./routes/grade');
-var orderRoute = require('./routes/order');
-var historyRoute = require('./routes/history');
-var wxRoute = require('./routes/wxService');
-
+var wxRoute = require('./app/routes/wx');
+var indexRoute = require('./app/routes/index');
+var userRoute = require('./app/routes/users');
+var gradeRoute = require('./app/routes/grade');
+var orderRoute = require('./app/routes/order');
+var historyRoute = require('./app/routes/history');
 
 // log4js
 var log4js = require('./app/logger');
@@ -37,6 +36,7 @@ function setupLog() {
 function setupRouter() {
     logger.info(`init router`);
     app.use('/', indexRoute);
+    app.use('/wx', wxRoute);
     app.use('/user', userRoute);
     app.use('/grade', gradeRoute);
     app.use('/order', orderRoute);

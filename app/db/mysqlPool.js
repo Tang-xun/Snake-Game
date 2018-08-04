@@ -1,6 +1,6 @@
 var RX = require('rx');
 var mysql = require('mysql');
-var logger = require('../../app/logger').logger('db', 'info');
+var logger = require('../logger').logger('db', 'info');
 
 var pool = mysql.createPool({
     host: 'localhost',

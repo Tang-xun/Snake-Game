@@ -45,7 +45,7 @@ var addHistory = function (history, callback) {
                 );`;
 
     logger.info(`add history ${addSql}`);
-    return db.rxQuery(addSql, null);
+    return db.rxQuery(addSql, null).map(it=>it.insertId);
 }
 
 /**

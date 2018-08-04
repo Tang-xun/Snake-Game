@@ -1,10 +1,10 @@
 var express = require('express');
 var router = express.Router();
-var dao = require('../app/db/daoBean');
-var user = require('../app/db/snakeUser');
-var utils = require('../app/util/comUtils');
-var history = require('../app/db/snakeHistory');
-var logger = require('../app/logger').logger('route', 'info');
+var dao = require('../db/daoBean');
+var user = require('../db/snakeUser');
+var utils = require('../util/comUtils');
+var history = require('../db/snakeHistory');
+var logger = require('../logger').logger('route', 'info');
 var rx = require('rx');
 
 history.createHistoryTable().subscribe(next => {
@@ -40,12 +40,9 @@ function addHistory(req, res, next) {
         return;
     }
 
-    history.addHistory(bean).flatMap(res => {
-        logger.info(`add history ok ${JSON.stringify(res)}`);
-        return user.queryUserInfo(bean.openId);
-    }).flatMap(next => {
+    user.queryUpdateInfo(bean.openId).flatMap(next => {
         logger.info(`do action first ${JSON.stringify(next)}`);
-        var oUser = next[0];
+        var oUser = next;
         // handle user game records logic
         if (!bean.gameType) {
             // time model
@@ -66,14 +63,30 @@ function addHistory(req, res, next) {
             oUser.nextGradeExp *= 2;
             oUser.grade += 1;
         }
-        return user.updateHistoryInfo(oUser);
+        return rx.Observable.combineLatest(
+            history.addHistory(bean),
+            utils.calUserRanks(oUser.score),
+            user.updateHistoryInfo(oUser),
+            user.queryUpdateInfo(oUser.openId));
     }).subscribe(next => {
-        utils.calUserRanks(user.score);
         logger.info(`next ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, 'add history ok ');
+        var historyId = next[0];
+        var percent = next[1];
+        var updateUserInfo = next[2];
+        var userInfo = next[3];
+        var data = `{
+            "historyId":${historyId},
+            "percent":${percent},
+            "updateUser":${updateUserInfo},
+            "userInfo":${JSON.stringify(userInfo)}
+        }`;
+        logger.info(`add history ok ${data}`);
+        utils.writeHttpResponse(res, 200, 'add history ok ', data);
     }, error => {
         logger.info(`error ${JSON.stringify(error)}`);
         utils.writeHttpResponse(res, 600, `add history error ${JSON.stringify(error)} `);
+    }, () => {
+
     });
 }
 
