@@ -10,7 +10,7 @@ var app = new express();
 // router 
 var wxRoute = require('./app/routes/wx');
 var indexRoute = require('./app/routes/index');
-var userRoute = require('./app/routes/users');
+var userRoute = require('./app/routes/user');
 var gradeRoute = require('./app/routes/grade');
 var orderRoute = require('./app/routes/order');
 var historyRoute = require('./app/routes/history');

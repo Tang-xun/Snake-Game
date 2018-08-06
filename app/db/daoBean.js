@@ -18,8 +18,14 @@ var User = function () {
     this.openId;
     this.nickName;
     this.headUri;
-    this.grade = 0,
+    this.grade = 0;
+    this.gender=0;
+    this.language='';
+    this.province='';
+    this.city='';
+    this.country='';
     this.honor = '小青蛇';
+    this.score = 0;
     this.honorNum = 0;
     this.skin = 1;
     this.skinNum = 1;

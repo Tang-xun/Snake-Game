@@ -42,7 +42,7 @@ var queryOrder = function (orderId, openId) {
  * @param {*} openId 
  */
 var queryListOrder = function (openId) {
-    let querySql = `select * from snake.order where snake.opendId='${openId}';`;
+    let querySql = `select * from snake.order where openId='${openId}';`;
     return db.rxQuery(querySql, null);
 }
 
@@ -83,8 +83,8 @@ var createOrder = function (order) {
  * @param {*} state 
  */
 var updateOrderState = function (orderId, state) {
-    let updateSql = `update snake.order set order.state='${state}' where orderId='${orderId}'`;
-    return db.rxQuery(updateSql, null);
+    let updateSql = `update snake.order set order.orderState='${state}' where orderId='${orderId}'`;
+    return db.rxQuery(updateSql, null).map(it => it.changedRows > 0);
 }
 
 module.exports = {

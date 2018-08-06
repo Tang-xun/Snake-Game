@@ -16,8 +16,8 @@ var queryOrder = function (req, res, next) {
     var openId = req.param('openId');
     var orderId = req.param('orderId');
     order.queryOrder(orderId, openId).subscribe(next => {
-        logger.info(`query next ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, next);
+        logger.info(`query next ${JSON.stringify(next[0])}`);
+        utils.writeHttpResponse(res, 200, 'ok', JSON.stringify(next[0]));
     }, error => {
         logger.info(`query error ${JSON.stringify(error)}`);
         utils.writeHttpResponse(res, 601, error);
@@ -36,8 +36,12 @@ var updatePayment = function (req, res, next) {
     }
 
     order.updateOrderState(orderId, state).subscribe(next => {
-        logger.info(`update next ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, next);
+        if (next) {
+            logger.info(`update next ${JSON.stringify(next)}`);
+            utils.writeHttpResponse(res, 200, 'ok');
+        } else {
+            utils.writeHttpResponse(res, 602, 'noting need to update');
+        }
     }, error => {
         logger.info(`update next ${JSON.stringify(error)}`);
         utils.writeHttpResponse(res, 601, error);
@@ -46,9 +50,10 @@ var updatePayment = function (req, res, next) {
 
 var queryOrderList = function (req, res, next) {
     logger.info(`route queryOrderList`);
-    order.queryOrderList(openId).subscribe(next => {
+    var openId = req.param('openId');
+    order.queryListOrder(openId).subscribe(next => {
         logger.info(`query next ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, next);
+        utils.writeHttpResponse(res, 200, 'ok', JSON.stringify(next));
     }, error => {
         logger.info(`query error ${JSON.stringify(error)}`);
         utils.writeHttpResponse(res, 601, error);
@@ -68,9 +73,10 @@ var addOrder = function (req, res, next) {
     bean.orderState = 0;
     bean.discount = req.param('discount');
     bean.totalPrice = req.param('totalPrice');
+
     order.createOrder(bean).subscribe(next => {
         logger.info(`add order ok ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, next);
+        utils.writeHttpResponse(res, 200, 'add order ok');
     }, error => {
         logger.info(`add order error ${JSON.stringify(error)}`);
         utils.writeHttpResponse(res, 601, error);

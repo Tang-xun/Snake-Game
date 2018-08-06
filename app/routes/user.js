@@ -20,13 +20,24 @@ var add = function (req, res, next) {
     bean.openId = req.param('openId');
     bean.nickName = req.param('nickName');
     bean.headUri = req.param('headUri');
+    bean.city = req.param('city');
     bean.score = req.param('score');
-
+    bean.gender = req.param('gender');
+    bean.province = req.param('province');
+    bean.country = req.param('country');
+    bean.language = req.param('language');
+    
+    logger.info(`will add bean ${JSON.stringify(bean)}`);
+    
     user.insertUserInfo(bean).subscribe(next => {
         logger.info(`user add ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, next);
+        if (next>0) {
+            utils.writeHttpResponse(res, 200, 'add user ok');
+        } else {
+            utils.writeHttpResponse(res, 602, `add user error ${next}`);
+        }
     }, error => {
-        utils.writeHttpResponse(res, 600, error);
+        utils.writeHttpResponse(res, 601, error);
     });
 }
 
@@ -35,12 +46,12 @@ var query = function (req, res, next) {
     var openId = req.param('openId');
     user.queryUserInfo(openId).subscribe(next => {
         if (utils.isInvalid(next)) {
-            utils.writeHttpResponse(res, 601, `not found user openId : ${openId}`);
+            utils.writeHttpResponse(res, 602, `not found user openId : ${openId}`);
         } else {
             utils.writeHttpResponse(res, 200, 'ok', JSON.stringify(next[0]));
         }
     }, error => {
-        utils.writeHttpResponse(res, 600, error);
+        utils.writeHttpResponse(res, 601, error);
     });
 }
 
@@ -50,7 +61,7 @@ var update = function (req, res, next) {
     user.updateLoginTime(openId).subscribe(next => {
         utils.writeHttpResponse(res, 200, next);
     }, error => {
-        utils.writeHttpResponse(res, 600, error);
+        utils.writeHttpResponse(res, 601, error);
     });
 }
 

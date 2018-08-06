@@ -17,6 +17,39 @@ mail: tangxun_123@163.com
 6. game orders service 
 	and so on ...
 
+
+### service introduce
+
+
+
+**uri** 		/user/add
+
+**method** 		POST
+
+**params**
+
+|name|type|desc|**|
+|---|---|---|---|
+|openId|string|wx openId||
+|nickName|string|wx nickName||
+|headUri|string|wx head uri||
+
+
+**uri**			/user/query
+
+**method**		POST
+
+**params**
+
+|name|type|desc|**|
+|---|---|---|---|
+|openId|string|wx openId||
+
+	
+
+
+   
+
 ### Works Records
 
 1. use mysql with the db technique
@@ -35,20 +68,20 @@ mail: tangxun_123@163.com
 - [ ] project frame setup 
 - [ ] db design:
 	- [x] user
+	- [x] history 
+	- [x] person ranks
+	- [x] order
+	- [x] history
 	- [ ] grade
-	- [ ] history 
-	- [ ] person ranks
 	- [ ] group ranks
-	- [ ] history
 	- [ ] payment server
-	- [ ] order
 	- [ ] auth
 - [ ] dev:
 	- [x] user
+	- [x] history 
+	- [x] order
+	- [x] person ranks
 	- [ ] grade
-	- [ ] history 
-	- [ ] order
-	- [ ] person ranks
 	- [ ] group ranks
 	- [ ] payment server
 	- [ ] auth
