@@ -58,13 +58,18 @@ function rxFetchRankScore() {
             logger.info(`user count is NaN needn't fetch Rank ${ServerConfig.userCount} ${global.userCount}`);
             throw Error('user count is NaN');
         }
-        var groupCount = global.userCount / 20;
+        var groupCount = parseInt(global.userCount / 20) + 1;
         logger.info(`current user score group count ${groupCount}`);
         return user.fetchRankScore(groupCount);
     }).subscribe(next => {
+        logger.info(`rxFetchRankScore next ${typeof(next)}`);
+        if (next.length < 20) {
+            next.push(JSON.parse('{"ranks":20,"score":0}'));
+        }
         this.rankScore = next;
         ServerConfig.rankScore = next;
-        logger.info(`next fetch rank score message: ${JSON.stringify(next)}`);
+
+
         logger.info(`print ServerConfig ${JSON.stringify(ServerConfig)}`);
     }, error => {
         logger.info(`error fetch rank score ${error}`);

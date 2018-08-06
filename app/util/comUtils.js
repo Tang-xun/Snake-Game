@@ -1,3 +1,4 @@
+
 var rankServer = require('../server/rankServer');
 var logger = require('../logger').logger('utils', 'info');
 var rx = require('rx');
@@ -15,7 +16,11 @@ var calUserRanks = function (score) {
     var rankScore = rankServer.ServerConfig.rankScore;
     return rx.Observable.from(rankScore)
         .first(it => it.score <= score)
-        .map(it => parseFloat(it.ranks / 20) * 100)
+        .map(it => parseFloat(it.ranks / 20) * 100).doOnError(
+            error=>{
+                return rx.Observable.just(100);
+            }
+        )
 }
 
 var isInvalid = function (data) {
