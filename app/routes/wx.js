@@ -1,10 +1,11 @@
 var express = require('express');
 var route = express.Router();
-var logger = require('../logger').logger('wx', 'info');
-var utils = require('../util/comUtils');
 var http = require('https');
-var config = require('../config');
 var rx = require('rx');
+
+var utils = require('../util/comUtils');
+var config = require('../config');
+var logger = require('../logger').logger('wx', 'info');
 
 var code2AccessToken = function (req, res, next) {
     var code = req.param('code');
@@ -23,20 +24,20 @@ var code2AccessToken = function (req, res, next) {
     rx.Observable.fromCallback(http.get)(url).subscribe(
         (resp) => {
             let data = '';
-            resp.on('data', (chunk)=>{
+            resp.on('data', (chunk) => {
                 logger.info(`on data ${chunk}`);
                 data += chunk;
             });
-            resp.on('end', ()=>{
+            resp.on('end', () => {
                 data = JSON.parse(data);
-                logger.info(`on end : ${typeof(data)} ${data}`);
+                logger.info(`on end : ${typeof (data)} ${JSON.stringify(data)}`);
                 if (data.errcode == 0) {
                     utils.writeHttpResponse(res, 200, data);
                 } else {
                     utils.writeHttpResponse(res, 600, data.errmsg);
                 }
             });
-            
+
         }, error => {
             logger.info(`error ${JSON.stringify(error)}`);
         }, complete => {

@@ -2,10 +2,9 @@ var now = function(){
     return new Date().toLocaleTimeString();
 }
 
-let appid = '00001';
-let secret = '';
+let appid = 'wx37723f213a3a9042';
+let secret = 'eec5c27d58f5379c350bbc6883766d5c';
 let grant_type='authorization_code';
-
 
 module.exports = {
     now,

@@ -7,6 +7,8 @@ var coreServer = require('./app/server/rankServer');
 
 var app = new express();
 
+
+
 // router 
 var wxRoute = require('./app/routes/wx');
 var indexRoute = require('./app/routes/index');
@@ -101,11 +103,13 @@ function init() {
     setupServerError();
     startCoreServer();
     onProcessExit();
+    // setup env ['dev', 'prd'];
+    process.env = 'dev';
 }
 
 function serverStart() {
     init();
-    var server = http.createServer(app).listen(8000, function () {
+    var server = http.createServer(app).listen(process.env == 'dev' ? 8000 : 80, function () {
         var host = server.address().address;
         var port = server.address().port;
         logger.info(`[Event|app start] ${app.locals.title} listened on ${host}:${port}`);
