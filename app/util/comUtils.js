@@ -17,7 +17,7 @@ var calUserRanks = function (score) {
     return rx.Observable.from(rankScore)
         .first(it => it.score <= score)
         .map(it => parseFloat(it.ranks / 20) * 100).doOnError(
-            error=>{
+            error => {
                 return rx.Observable.just(100);
             }
         )
@@ -28,8 +28,24 @@ var isInvalid = function (data) {
     return data == 'undefined' || data == null || (typeof (data) == 'number' && isNaN(data)) || data == '';
 }
 
+function printParams(req) {
+    logger.info(`debug printParams ${req.method}`);
+    if (req == 'undefined' || req == null) {
+        logger.info(`param is null`);
+        return;
+    }
+    if (req.method == 'POST') {
+        logger.info(`keys: ${Object.keys(req.body)}`);
+        logger.info(`values: ${Object.values(req.body)}`);
+    } else if (req.method == 'GET') {
+        logger.info(`keys: ${Object.keys(req.query)}`);
+        logger.info(`values: ${Object.values(req.query)}`);
+    }
+}
+
 module.exports = {
     isInvalid,
     calUserRanks,
+    printParams,
     writeHttpResponse,
 }

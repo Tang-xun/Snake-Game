@@ -5,6 +5,8 @@ var http = require('http');
 var path = require('path');
 var coreServer = require('./app/server/rankServer');
 
+var rx = require('rx');
+
 var app = new express();
 
 
@@ -37,6 +39,22 @@ function setupLog() {
 // 设置路由模块
 function setupRouter() {
     logger.info(`init router`);
+
+    app.use(function (req, res, next) {
+
+        obj = req.method == 'POST' ? req.body : req.query;
+        rx.Observable.zip(
+            rx.Observable.from(Object.keys(obj)),
+            rx.Observable.from(Object.values(obj)),
+        ).subscribe(
+            next => {
+                logger.info(`${next}`);
+            }, error => {
+                logger.info(`next ${error}`);
+            }
+        )
+        next();
+    })
     app.use('/', indexRoute);
     app.use('/wx', wxRoute);
     app.use('/user', userRoute);
@@ -80,7 +98,7 @@ function onProcessExit() {
         logger.info(`[Event|app exit] exit code is ${code}`);
         logger.trace();
     });
-    
+
 }
 
 /**
