@@ -31,10 +31,10 @@ var code2AccessToken = function (req, res, next) {
             resp.on('end', () => {
                 data = JSON.parse(data);
                 logger.info(`on end : ${typeof (data)} ${JSON.stringify(data)}`);
-                if (data.errcode == 0) {
-                    utils.writeHttpResponse(res, 200, data);
-                } else {
+                if (data.errcode) {
                     utils.writeHttpResponse(res, 600, data.errmsg);
+                } else {
+                    utils.writeHttpResponse(res, 200, data);
                 }
             });
         }, error => {
