@@ -2,8 +2,9 @@
 var rankServer = require('../server/rankServer');
 var logger = require('../logger').logger('utils', 'info');
 var rx = require('rx');
+
 var writeHttpResponse = function (res, code, msg, data) {
-    res.writeHead(code, { 'Content-Type': 'text/plain' });
+    res.writeHead(code, { 'Content-Type': 'application/json' });
     res.write(`{`);
     res.write(`"code": ${code}, "msg": "${msg}"`);
     if (data) res.write(`,"data": ${data}`);
@@ -28,24 +29,26 @@ var isInvalid = function (data) {
     return data == 'undefined' || data == null || (typeof (data) == 'number' && isNaN(data)) || data == '';
 }
 
-function printParams(req) {
-    logger.info(`debug printParams ${req.method}`);
-    if (req == 'undefined' || req == null) {
-        logger.info(`param is null`);
-        return;
-    }
-    if (req.method == 'POST') {
-        logger.info(`keys: ${Object.keys(req.body)}`);
-        logger.info(`values: ${Object.values(req.body)}`);
-    } else if (req.method == 'GET') {
-        logger.info(`keys: ${Object.keys(req.query)}`);
-        logger.info(`values: ${Object.values(req.query)}`);
-    }
+function checkParams(bean) {
+    rx.Observable.zip(
+        rx.Observable.from(Object.keys(bean)),
+        rx.Observable.from(Object.values(bean)))
+        .find(it => it[1] == 'undefined')
+        .find(it => typeof (it[1]) == 'number' && isNaN(it[1]))
+        .subscribe(
+            next => {
+                logger.info(`next ：${next}`);
+            }, error => {
+                logger.info(`error ：${error}`);
+            }, () => {
+                logger.info(`complete `);
+            }
+        )
 }
 
 module.exports = {
     isInvalid,
     calUserRanks,
-    printParams,
+    checkParams,
     writeHttpResponse,
 }
