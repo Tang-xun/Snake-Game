@@ -5,10 +5,13 @@ var rx = require('rx');
 
 var writeHttpResponse = function (res, code, msg, data) {
     res.writeHead(code, { 'Content-Type': 'application/json' });
-    res.write(`{`);
-    res.write(`"code": ${code}, "msg": "${msg}"`);
-    if (data) res.write(`,"data": ${data}`);
-    res.write(`}`);
+    var resObj = {
+        'code': code,
+        'msg': msg,
+        'data': data
+    };
+    logger.info(`resObj ${JSON.stringify(resObj)}`);
+    res.write(JSON.stringify(resObj));
     res.end();
 }
 
