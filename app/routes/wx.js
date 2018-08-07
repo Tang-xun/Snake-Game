@@ -34,7 +34,7 @@ var code2AccessToken = function (req, res, next) {
                 if (data.errcode) {
                     utils.writeHttpResponse(res, 600, data.errmsg);
                 } else {
-                    utils.writeHttpResponse(res, 200, data);
+                    utils.writeHttpResponse(res, 200, 'ok', data);
                 }
             });
         }, error => {
