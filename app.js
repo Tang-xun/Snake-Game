@@ -9,14 +9,13 @@ var rx = require('rx');
 
 var app = new express();
 
-
-
 // router 
 var wxRoute = require('./app/routes/wx');
 var indexRoute = require('./app/routes/index');
 var userRoute = require('./app/routes/user');
 var gradeRoute = require('./app/routes/grade');
 var orderRoute = require('./app/routes/order');
+var honorRoute = require('./app/routes/honor');
 var historyRoute = require('./app/routes/history');
 
 // log4js
@@ -60,6 +59,7 @@ function setupRouter() {
     app.use('/user', userRoute);
     app.use('/grade', gradeRoute);
     app.use('/order', orderRoute);
+    app.use('/honor', honorRoute);
     app.use('/history', historyRoute);
 }
 

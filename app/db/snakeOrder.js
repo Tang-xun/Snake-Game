@@ -5,7 +5,7 @@ var logger = require('../logger').logger('snakeOrder', 'info');
 /**
  * 
  */
-var createOrderTable = function () {
+function createOrderTable () {
     let createSql = `CREATE TABLE IF NOT EXISTS snake.order (
         id int NOT NULL auto_increment,
         openId varchar(256) NULL COMMENT 'player id',
@@ -32,7 +32,7 @@ var createOrderTable = function () {
  * @param {*} orderId 
  * @param {*} openId 
  */
-var queryOrder = function (orderId, openId) {
+function queryOrder (orderId, openId) {
     let querySql = `select * from snake.order where orderId='${orderId}' and openId='${openId}';`;
     logger.info(`will exec sql ${querySql}`);
     return db.rxQuery(querySql, null);
@@ -41,7 +41,7 @@ var queryOrder = function (orderId, openId) {
 /**
  * @param {*} openId 
  */
-var queryListOrder = function (openId) {
+function queryListOrder (openId) {
     let querySql = `select * from snake.order where openId='${openId}';`;
     return db.rxQuery(querySql, null);
 }
@@ -49,7 +49,7 @@ var queryListOrder = function (openId) {
 /**
  * @param {*} order 
  */
-var createOrder = function (order) {
+function createOrder (order) {
     let addSql = `insert into snake.order (
             openId,
             orderId,
@@ -82,7 +82,7 @@ var createOrder = function (order) {
  * @param {*} orderId 
  * @param {*} state 
  */
-var updateOrderState = function (orderId, state) {
+function updateOrderState (orderId, state) {
     let updateSql = `update snake.order set order.orderState='${state}' where orderId='${orderId}'`;
     return db.rxQuery(updateSql, null).map(it => it.changedRows > 0);
 }

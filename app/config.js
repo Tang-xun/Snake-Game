@@ -1,4 +1,4 @@
-var now = function(){
+function now(){
     return new Date().toLocaleTimeString();
 }
 

@@ -3,7 +3,7 @@ var rankServer = require('../server/rankServer');
 var logger = require('../logger').logger('utils', 'info');
 var rx = require('rx');
 
-var writeHttpResponse = function (res, code, msg, data) {
+function writeHttpResponse (res, code, msg, data) {
     res.writeHead(code, { 'Content-Type': 'application/json' });
     var resObj = {
         'code': code,
@@ -15,7 +15,7 @@ var writeHttpResponse = function (res, code, msg, data) {
     res.end();
 }
 
-var calUserRanks = function (score) {
+function calUserRanks (score) {
     logger.info(`calUserRanks start ${score}`);
     var rankScore = rankServer.ServerConfig.rankScore;
     return rx.Observable.from(rankScore)
@@ -27,7 +27,7 @@ var calUserRanks = function (score) {
         )
 }
 
-var isInvalid = function (data) {
+function isInvalid (data) {
     logger.debug(`isInvalid ${data}`);
     return data == 'undefined' || data == null || (typeof (data) == 'number' && isNaN(data)) || data == '';
 }

@@ -1,12 +1,10 @@
 var express = require('express');
 var router = express.Router();
+
 var dao = require('../db/daoBean');
 var user = require('../db/snakeUser');
 var utils = require('../util/comUtils');
-
 var logger = require('../logger').logger('route', 'info');
-
-const { check, validationResult } = require('express-validator/check');
 
 user.createUserTable().subscribe(next => {
     logger.info(`[create user] ok ${JSON.stringify(next)}`);
@@ -14,9 +12,8 @@ user.createUserTable().subscribe(next => {
     logger.info(`[create user] error ${JSON.stringify(error)}`);
 });
 
-var add = function (req, res, next) {
+function add (req, res, next) {
     var bean = new dao.User();
-
     bean.openId = req.body.openId;
     bean.nickName = req.body.nickName;
     bean.headUri = req.body.headUri;
@@ -26,26 +23,30 @@ var add = function (req, res, next) {
     bean.province = req.body.province;
     bean.country = req.body.country;
     bean.language = req.body.language;
-    logger.info(`will add bean ${JSON.stringify(bean)}`);
-    
-    const errors = validationResult(req);
-    logger.info(`query errors ${JSON.stringify(errors)}`);
 
+    logger.info(`first ${JSON.stringify(bean)}`);
+    
+    utils.checkParams(bean);
+
+    bean.language = 'undefined';
+
+    utils.checkParams(bean);
+
+    logger.info(`second ${JSON.stringify(bean)}`);
 
     user.insertUserInfo(bean).subscribe(next => {
-        logger.info(`user add ${JSON.stringify(next)}`);
-        if (next > 0) {
-            utils.writeHttpResponse(res, 200, 'add user ok');
-        } else {
-            utils.writeHttpResponse(res, 602, `add user error ${next}`);
-        }
+        logger.info(`user add insertId : ${JSON.stringify(next)}`);
+        utils.writeHttpResponse(res, 200, 'add user ok');
     }, error => {
-        utils.writeHttpResponse(res, 601, error);
+        if (error.code == 'ER_DUP_ENTRY' && error.errno == 1062) {
+            utils.writeHttpResponse(res, 602, 'user has bean registered');
+        } else {
+            utils.writeHttpResponse(res, 601, error);
+        }
     });
-
 }
 
-var query = function (req, res, next) {
+function query (req, res, next) {
 
     const errors = validationResult(req);
     logger.info(`query errors ${JSON.stringify(errors)}`);
@@ -65,7 +66,7 @@ var query = function (req, res, next) {
     });
 }
 
-var update = function (req, res, next) {
+function update (req, res, next) {
     var openId = req.param('openId');
     user.updateLoginTime(openId).subscribe(next => {
         utils.writeHttpResponse(res, 200, next);
@@ -75,14 +76,9 @@ var update = function (req, res, next) {
 }
 
 /* GET home page. */
-router.get('/add', add).post('/add', [
-    check('openId').isLength({ min: 5 }),
-    check('nickName').isLength({ min: 5 })
-], add);
+router.get('/add', add).post('/add', add);
 
-router.get('/query', query).post('/query', [
-    check('openId').isEmail()
-], query);
+router.get('/query', query).post('/query', query);
 
 router.get('/update', update).post('update', update);
 

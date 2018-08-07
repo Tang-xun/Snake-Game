@@ -2,7 +2,7 @@ var db = require('./mysqlPool');
 var logger = require('../logger').logger('grade', 'info');
 var RX = require('rxjs');
 
-var createGradeTable = function (callback) {
+function createGradeTable (callback) {
     var createSql = `CREATE TABLE IF NOT EXISTS snake.grade  (
         id int NOT NULL AUTO_INCREMENT,
         grade int NOT NULL COMMENT 'user grade',

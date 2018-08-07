@@ -7,7 +7,7 @@ var utils = require('../util/comUtils');
 var config = require('../config');
 var logger = require('../logger').logger('wx', 'info');
 
-var code2AccessToken = function (req, res, next) {
+function code2AccessToken (req, res, next) {
     var code = req.param('code');
     logger.info(`code2AccessToken ${req.method} code:${code}`);
     if (utils.isInvalid(code)) {
@@ -39,6 +39,7 @@ var code2AccessToken = function (req, res, next) {
             });
         }, error => {
             logger.info(`error ${JSON.stringify(error)}`);
+            utils.writeHttpResponse(res, 600, 'sys error', JSON.stringify(error));
         }, complete => {
             logger.info('complete');
         }

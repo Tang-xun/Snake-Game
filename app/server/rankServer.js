@@ -9,7 +9,7 @@ shortUpdateDuration = 60 * 1000;
 longDelay = shortDelay * 5;
 longUpdateDuration = shortUpdateDuration * 5;
 
-var sysConfig = function () {
+function sysConfig() {
     this.userCount = 0;
     this.payCount = 0;
     this.rankScore = [];
@@ -54,15 +54,19 @@ function rxRanksTimeTask() {
 function rxFetchRankScore() {
     rx.Observable.timer(shortDelay + 1000, shortUpdateDuration).flatMap(() => {
         logger.info(`rxFetchRankScore ${new Date()}`);
-        if(isNaN(global.userCount)){
+        if (isNaN(global.userCount)) {
             logger.info(`user count is NaN needn't fetch Rank ${ServerConfig.userCount} ${global.userCount}`);
             throw Error('user count is NaN');
         }
-        var groupCount = parseInt(global.userCount / 20) + 1;
-        logger.info(`current user score group count ${groupCount}`);
-        return user.fetchRankScore(groupCount);
+        if (global.userCount < 20) {
+            return user.fetchRankScore(1);
+        } else {
+            var groupCount = parseInt(global.userCount / 20) + 1;
+            logger.info(`current user score group count ${groupCount}`);
+            return user.fetchRankScore(groupCount);
+        }
     }).subscribe(next => {
-        logger.info(`rxFetchRankScore next ${typeof(next)}`);
+        logger.info(`rxFetchRankScore next ${typeof (next)}`);
         if (next.length < 20) {
             next.push(JSON.parse('{"ranks":20,"score":0}'));
         }

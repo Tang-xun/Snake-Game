@@ -11,7 +11,7 @@ order.createOrderTable().subscribe(next => {
     logger.error(`[create order] error ${JSON.stringify(error)}`);
 });
 
-var queryOrder = function (req, res, next) {
+function queryOrder (req, res, next) {
     logger.info(`route queryOrder`);
     var openId = req.param('openId');
     var orderId = req.param('orderId');
@@ -24,7 +24,7 @@ var queryOrder = function (req, res, next) {
     });
 }
 
-var updatePayment = function (req, res, next) {
+function updatePayment (req, res, next) {
     logger.info(`route updatePayment`);
     var orderId = req.param('orderId');
     var state = req.param('state');
@@ -48,7 +48,7 @@ var updatePayment = function (req, res, next) {
     });
 }
 
-var queryOrderList = function (req, res, next) {
+function queryOrderList (req, res, next) {
     logger.info(`route queryOrderList`);
     var openId = req.param('openId');
     order.queryListOrder(openId).subscribe(next => {
@@ -60,7 +60,7 @@ var queryOrderList = function (req, res, next) {
     });
 
 }
-var addOrder = function (req, res, next) {
+function addOrder (req, res, next) {
     logger.info(`route addOrder`);
     let bean = new dao.Order();
     bean.openId = req.param('openId');

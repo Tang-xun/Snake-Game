@@ -1,11 +1,11 @@
-var Grade = function () {
+function Grade () {
     this.grade;
     this.name;
     this.preExp;
     this.nextExp;
 }
 
-var History = function () {
+function History () {
     this.openId;
     this.gameType = 0;
     this.score = 0;
@@ -14,7 +14,17 @@ var History = function () {
     this.linkKill = 0;
 }
 
-var User = function () {
+function Honor() {
+    this.name;
+    this.gameType;  //{0:time, 1:endless, 2:any}
+    this.gainType;  //{0:gameRank, 1:winCount, 2:kill, 3:linkKill, 4:length, 5:time, 6:weekWrodRank, 7:weekFriendRank, 8:skinNum}
+    this.v;
+    this.rewardExp;
+    this.skinType;
+    this.shareContent;
+}
+
+function User () {
     this.openId;
     this.nickName;
     this.headUri;
@@ -43,7 +53,7 @@ var User = function () {
     this.createTime;
 }
 
-var Order = function() {
+function Order() {
     this.orderId;
     this.productId;
     this.price;
@@ -62,4 +72,5 @@ module.exports = {
     User,
     History,
     Order,
+    Honor,
 }

@@ -4,7 +4,7 @@ var logger = require('../logger').logger('route', 'info');
 
 logger.info(' router indexPage');
 
-var indexPage = function(req, res, next) {
+function indexPage(req, res, next) {
     res.render('index', { title: 'Express' });
 };
 

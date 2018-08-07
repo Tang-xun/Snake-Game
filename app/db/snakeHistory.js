@@ -5,7 +5,7 @@ var logger = require('../logger').logger('history', 'info');
  * create histroy 
  * @param {*} callback 
  */
-var createHistoryTable = function (callback) {
+function createHistoryTable (callback) {
     let createSql = `CREATE TABLE IF NOT EXISTS snake.history (
         id          int  NOT NULL auto_increment,
         openId      varchar(256) NOT NULL COMMENT 'user open id',
@@ -27,7 +27,7 @@ var createHistoryTable = function (callback) {
  * @param {*} history 
  * @param {*} callback 
  */
-var addHistory = function (history, callback) {
+function addHistory (history, callback) {
     let addSql = `insert into snake.history (
                     openId, 
                     gameType,
@@ -54,7 +54,7 @@ var addHistory = function (history, callback) {
  * @param {*} limit 
  * @param {*} callback 
  */
-var queryHistory = function (openId, limit, callback) {
+function queryHistory (openId, limit, callback) {
     let querySql = `select * from snake.history where openId='${openId}' order by id desc limit 0,${limit > 0 ? limit : 500}`;
     logger.info(`query history ${querySql}`);
     return db.rxQuery(querySql, null);

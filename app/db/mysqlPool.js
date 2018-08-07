@@ -12,7 +12,7 @@ var pool = mysql.createPool({
     trace: true,
 });
 
-var rxQuery = function (sql, options) {
+function rxQuery (sql, options) {
     return RX.Observable.create(observer => {
         pool.getConnection((err, connection) => {
             if (err) {
@@ -28,6 +28,7 @@ var rxQuery = function (sql, options) {
                 } else {
                     observer.next(res);
                 }
+                observer.onCompleted();
             });
         });
     });

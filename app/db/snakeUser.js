@@ -1,6 +1,4 @@
-var config = require('../config');
 var db = require('./mysqlPool');
-var bean = require('./daoBean');
 
 var logger = require('../logger').logger('user', 'info');
 
@@ -8,7 +6,7 @@ var logger = require('../logger').logger('user', 'info');
  * create user table , when app first start 
  * @param {callback} callback 
  */
-var createUserTable = function (callback) {
+function createUserTable(callback) {
     let createSql = `CREATE TABLE IF NOT EXISTS snake.user (
         id          int NOT NULL AUTO_INCREMENT,
         openId      varchar(256) NOT NULL COMMENT 'wechat open id',
@@ -50,7 +48,7 @@ var createUserTable = function (callback) {
  * @param {*} openId 
  * @param {*} nickName 
  */
-var insertUserInfo = function (user) {
+function insertUserInfo(user) {
 
     let insertUser = `INSERT INTO snake.user (
             openId, 
@@ -98,13 +96,13 @@ var insertUserInfo = function (user) {
  * @param {*} openId 
  * @param {*} callback 
  */
-var queryUserInfo = function (openId) {
+function queryUserInfo(openId) {
     let queryUser = `select * from snake.user where openId='${openId}';`;
     logger.info(`[exec sql] ${queryUser}`);
     return db.rxQuery(queryUser);
 }
 
-var queryUpdateInfo = function (openId) {
+function queryUpdateInfo(openId) {
     let queryFields = 'openId, grade, honorNum, score, curExp, nextGradeExp, ranks, t_length, t_bestKill, t_linkKill, e_length, e_bestKill, e_linkKill';
     let queryUser = `select ${queryFields} from snake.user where openId='${openId}';`;
     logger.info(`[exec sql] ${queryUser}`);
@@ -116,7 +114,7 @@ var queryUpdateInfo = function (openId) {
  * @param {*} openId 
  * @param {*} callback 
  */
-var updateLoginTime = function (openId) {
+function updateLoginTime(openId) {
     let updateLoginTimeSql = `update snake.user set updateTime=CURRENT_TIMESTAMP where openId='${openId}';`;
     logger.info(`[exec sql] ${updateLoginTimeSql}`);
     return db.rxQuery(updateLoginTimeSql).map(it => it.changedRows > 0);
@@ -127,7 +125,7 @@ var updateLoginTime = function (openId) {
  * 
  * @param {*} user
  */
-var updateHistoryInfo = function (user) {
+function updateHistoryInfo(user) {
     let updateHistorySql = `update snake.user set
         t_length = ${user.t_length},
         t_bestKill = ${user.t_bestKill},
@@ -144,22 +142,22 @@ var updateHistoryInfo = function (user) {
     return db.rxQuery(updateHistorySql).map(it => it.changedRows > 0);
 }
 
-var getUserCount = function () {
+function getUserCount() {
     return db.rxQuery('select count(openId) as count from snake.user;').map(it => it[0].count);
 }
 
-var sortUserScore = function () {
+function sortUserScore() {
     let sortUserSql = `update user, (select row_number() over (order by score desc) as ranks, openId from user) as sorts set user.ranks=sorts.ranks where user.openId=sorts.openId;`;
     logger.info(`[exec sql] ${sortUserSql}`);
     return db.rxQuery(sortUserSql);
 }
 
-var sortUserScoreSingle = function (openId) {
+function sortUserScoreSingle(openId) {
     let sortUserSql = `select sorts.ranks from (select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user) as sorts where openId='${openId}';`;
     return db.rxQuery(sortUserSql);
 }
 
-var fetchRankScore = function (count) {
+function fetchRankScore(count) {
     let rankScoreSql = `select row_number() over (order by score desc) as ranks, score from user where ranks%${count}=0;`
     return db.rxQuery(rankScoreSql);
 }
