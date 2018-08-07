@@ -17,7 +17,7 @@ var code2AccessToken = function (req, res, next) {
     let url = 'https://api.weixin.qq.com/sns/jscode2session?'
     url += `appid=${config.appid}&`;
     url += `secret=${config.secret}`;
-    url += `js_code=${code}`;
+    url += `js_code='${code}'`;
     url += 'grant_type=authorization_code';
     logger.info(`http ${url}`);
 
@@ -37,7 +37,6 @@ var code2AccessToken = function (req, res, next) {
                     utils.writeHttpResponse(res, 600, data.errmsg);
                 }
             });
-
         }, error => {
             logger.info(`error ${JSON.stringify(error)}`);
         }, complete => {
