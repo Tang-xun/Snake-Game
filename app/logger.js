@@ -1,4 +1,4 @@
-var log4js = require('log4js');
+const log4js = require('log4js');
 
 levels = {
     'trace': log4js.levels.TRACE,
@@ -31,7 +31,7 @@ log4js.configure({
 });
 
 exports.logger = function (name, level) {
-    var logger = log4js.getLogger(name);
+    let logger = log4js.getLogger(name);
     logger.level = level;
     return logger;
 };

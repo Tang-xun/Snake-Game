@@ -1,7 +1,7 @@
-var logger = require('../logger').logger('ranks', 'info');
-var user = require('../db/snakeUser');
+const logger = require('../logger').logger('ranks', 'info');
+const user = require('../db/snakeUser');
 
-var rx = require('rx');
+const rx = require('rx');
 
 shortDelay = 2 * 1000;
 shortUpdateDuration = 60 * 1000;
@@ -15,7 +15,7 @@ function sysConfig() {
     this.rankScore = [];
 }
 
-var ServerConfig = new sysConfig();
+let ServerConfig = new sysConfig();
 
 /**
  * fetch user count timeTask
@@ -61,7 +61,7 @@ function rxFetchRankScore() {
         if (global.userCount < 20) {
             return user.fetchRankScore(1);
         } else {
-            var groupCount = parseInt(global.userCount / 20) + 1;
+            let groupCount = parseInt(global.userCount / 20) + 1;
             logger.info(`current user score group count ${groupCount}`);
             return user.fetchRankScore(groupCount);
         }

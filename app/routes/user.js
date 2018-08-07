@@ -1,10 +1,10 @@
-var express = require('express');
-var router = express.Router();
+const express = require('express');
+const dao = require('../db/daoBean');
+const user = require('../db/snakeUser');
+const utils = require('../util/comUtils');
+const logger = require('../logger').logger('route', 'info');
 
-var dao = require('../db/daoBean');
-var user = require('../db/snakeUser');
-var utils = require('../util/comUtils');
-var logger = require('../logger').logger('route', 'info');
+let router = express.Router();
 
 user.createUserTable().subscribe(next => {
     logger.info(`[create user] ok ${JSON.stringify(next)}`);
@@ -12,8 +12,8 @@ user.createUserTable().subscribe(next => {
     logger.info(`[create user] error ${JSON.stringify(error)}`);
 });
 
-function add (req, res, next) {
-    var bean = new dao.User();
+function add(req, res, next) {
+    let bean = new dao.User();
     bean.openId = req.body.openId;
     bean.nickName = req.body.nickName;
     bean.headUri = req.body.headUri;
@@ -25,7 +25,7 @@ function add (req, res, next) {
     bean.language = req.body.language;
 
     logger.info(`first ${JSON.stringify(bean)}`);
-    
+
     utils.checkParams(bean);
 
     bean.language = 'undefined';
@@ -38,40 +38,33 @@ function add (req, res, next) {
         logger.info(`user add insertId : ${JSON.stringify(next)}`);
         utils.writeHttpResponse(res, 200, 'add user ok');
     }, error => {
-        if (error.code == 'ER_DUP_ENTRY' && error.errno == 1062) {
+        if (error.errno == 1062) {
             utils.writeHttpResponse(res, 602, 'user has bean registered');
         } else {
-            utils.writeHttpResponse(res, 601, error);
+            utils.writeHttpResponse(res, 601, 'error', error);
         }
     });
 }
 
-function query (req, res, next) {
-
-    const errors = validationResult(req);
-    logger.info(`query errors ${JSON.stringify(errors)}`);
-    if (!errors.isEmpty()) {
-        utils.writeHttpResponse(res, 600, 'check params error', JSON.stringify(errors));
-        return;
-    }
-    var openId = req.body.openId;
+function query(req, res, next) {
+    let openId = req.body.openId;
     user.queryUserInfo(openId).subscribe(next => {
         if (utils.isInvalid(next)) {
             utils.writeHttpResponse(res, 602, `not found user openId : ${openId}`);
         } else {
-            utils.writeHttpResponse(res, 200, 'ok', JSON.stringify(next[0]));
+            utils.writeHttpResponse(res, 200, 'ok', next[0]);
         }
     }, error => {
-        utils.writeHttpResponse(res, 601, error);
+        utils.writeHttpResponse(res, 601, 'error', error);
     });
 }
 
-function update (req, res, next) {
-    var openId = req.param('openId');
+function update(req, res, next) {
+    let openId = req.param('openId');
     user.updateLoginTime(openId).subscribe(next => {
-        utils.writeHttpResponse(res, 200, next);
+        utils.writeHttpResponse(res, 200, 'ok', next);
     }, error => {
-        utils.writeHttpResponse(res, 601, error);
+        utils.writeHttpResponse(res, 601, 'ok', error);
     });
 }
 

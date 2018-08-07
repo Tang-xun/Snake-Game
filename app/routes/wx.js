@@ -1,14 +1,15 @@
-var express = require('express');
-var route = express.Router();
-var http = require('https');
-var rx = require('rx');
+const express = require('express');
+const http = require('https');
+const rx = require('rx');
 
-var utils = require('../util/comUtils');
-var config = require('../config');
-var logger = require('../logger').logger('wx', 'info');
+const utils = require('../util/comUtils');
+const config = require('../config');
+const logger = require('../logger').logger('wx', 'info');
+
+let route = express.Router();
 
 function code2AccessToken (req, res, next) {
-    var code = req.param('code');
+    let code = req.param('code');
     logger.info(`code2AccessToken ${req.method} code:${code}`);
     if (utils.isInvalid(code)) {
         utils.writeHttpResponse(res, 600, 'code is invalid');
@@ -32,14 +33,14 @@ function code2AccessToken (req, res, next) {
                 data = JSON.parse(data);
                 logger.info(`on end : ${typeof (data)} ${JSON.stringify(data)}`);
                 if (data.errcode) {
-                    utils.writeHttpResponse(res, 600, data.errmsg);
+                    utils.writeHttpResponse(res, 600, 'error', data);
                 } else {
-                    utils.writeHttpResponse(res, 200, 'ok', JSON.stringify(data));
+                    utils.writeHttpResponse(res, 200, 'ok', data);
                 }
             });
         }, error => {
             logger.info(`error ${JSON.stringify(error)}`);
-            utils.writeHttpResponse(res, 600, 'sys error', JSON.stringify(error));
+            utils.writeHttpResponse(res, 600, 'error', error);
         }, complete => {
             logger.info('complete');
         }

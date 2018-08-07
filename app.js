@@ -1,26 +1,26 @@
-var cookieParser = require('cookie-parser');
-var createError = require('http-errors');
-var express = require('express');
-var http = require('http');
-var path = require('path');
-var coreServer = require('./app/server/rankServer');
+const cookieParser = require('cookie-parser');
+const createError = require('http-errors');
+const express = require('express');
+const http = require('http');
+const path = require('path');
+const coreServer = require('./app/server/rankServer');
 
-var rx = require('rx');
+const rx = require('rx');
 
-var app = new express();
+let app = new express();
 
 // router 
-var wxRoute = require('./app/routes/wx');
-var indexRoute = require('./app/routes/index');
-var userRoute = require('./app/routes/user');
-var gradeRoute = require('./app/routes/grade');
-var orderRoute = require('./app/routes/order');
-var honorRoute = require('./app/routes/honor');
-var historyRoute = require('./app/routes/history');
+const wxRoute = require('./app/routes/wx');
+const indexRoute = require('./app/routes/index');
+const userRoute = require('./app/routes/user');
+const gradeRoute = require('./app/routes/grade');
+const orderRoute = require('./app/routes/order');
+const honorRoute = require('./app/routes/honor');
+const historyRoute = require('./app/routes/history');
 
 // log4js
-var log4js = require('./app/logger');
-var logger = log4js.logger('app', 'info');
+const log4js = require('./app/logger');
+let logger = log4js.logger('app', 'info');
 
 // 设置视图
 function setupView() {
@@ -47,9 +47,9 @@ function setupRouter() {
             rx.Observable.from(Object.values(obj)),
         ).subscribe(
             next => {
-                logger.info(`${next}`);
+                logger.info(next);
             }, error => {
-                logger.info(`next ${error}`);
+                logger.info(error);
             }
         )
         next();
@@ -127,9 +127,9 @@ function init() {
 
 function serverStart() {
     init();
-    var server = http.createServer(app).listen(process.env == 'dev' ? 8000 : 80, function () {
-        var host = server.address().address;
-        var port = server.address().port;
+    let server = http.createServer(app).listen(process.env == 'dev' ? 8000 : 80, function () {
+        let host = server.address().address;
+        let port = server.address().port;
         logger.info(`[Event|app start] ${app.locals.title} listened on ${host}:${port}`);
     });
 }

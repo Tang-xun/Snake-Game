@@ -1,11 +1,11 @@
 
-var rankServer = require('../server/rankServer');
-var logger = require('../logger').logger('utils', 'info');
-var rx = require('rx');
+const rankServer = require('../server/rankServer');
+const logger = require('../logger').logger('utils', 'info');
+const rx = require('rx');
 
 function writeHttpResponse (res, code, msg, data) {
     res.writeHead(code, { 'Content-Type': 'application/json' });
-    var resObj = {
+    let resObj = {
         'code': code,
         'msg': msg,
         'data': data
@@ -17,7 +17,7 @@ function writeHttpResponse (res, code, msg, data) {
 
 function calUserRanks (score) {
     logger.info(`calUserRanks start ${score}`);
-    var rankScore = rankServer.ServerConfig.rankScore;
+    let rankScore = rankServer.ServerConfig.rankScore;
     return rx.Observable.from(rankScore)
         .first(it => it.score <= score)
         .map(it => parseFloat(it.ranks / 20) * 100).doOnError(

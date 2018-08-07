@@ -1,9 +1,10 @@
-var express = require('express');
-var router = express.Router();
-var order = require('../db/snakeOrder');
-var dao = require('../db/daoBean');
-var logger = require('../logger').logger('route', 'info');
-var utils = require('../util/comUtils');
+const express = require('express');
+const order = require('../db/snakeOrder');
+const dao = require('../db/daoBean');
+const logger = require('../logger').logger('route', 'info');
+const utils = require('../util/comUtils');
+
+let router = express.Router();
 
 order.createOrderTable().subscribe(next => {
     logger.info(`[create order] ok ${JSON.stringify(next)}`);
@@ -13,50 +14,44 @@ order.createOrderTable().subscribe(next => {
 
 function queryOrder (req, res, next) {
     logger.info(`route queryOrder`);
-    var openId = req.param('openId');
-    var orderId = req.param('orderId');
+    let openId = req.param('openId');
+    let orderId = req.param('orderId');
     order.queryOrder(orderId, openId).subscribe(next => {
-        logger.info(`query next ${JSON.stringify(next[0])}`);
-        utils.writeHttpResponse(res, 200, 'ok', JSON.stringify(next[0]));
+        utils.writeHttpResponse(res, 200, 'ok', next[0]);
     }, error => {
-        logger.info(`query error ${JSON.stringify(error)}`);
-        utils.writeHttpResponse(res, 601, error);
+        utils.writeHttpResponse(res, 601, 'error', error);
     });
 }
 
 function updatePayment (req, res, next) {
     logger.info(`route updatePayment`);
-    var orderId = req.param('orderId');
-    var state = req.param('state');
+    let orderId = req.param('orderId');
+    let state = req.param('state');
 
     if (state > 0 && state > 4) {
         logger.info(`params check error}`);
-        utils.writeHttpResponse(res, 601, `error order state ${JSON.stringify(state)}`);
+        utils.writeHttpResponse(res, 601, `error order state ${state}`);
         return;
     }
 
     order.updateOrderState(orderId, state).subscribe(next => {
         if (next) {
-            logger.info(`update next ${JSON.stringify(next)}`);
             utils.writeHttpResponse(res, 200, 'ok');
         } else {
             utils.writeHttpResponse(res, 602, 'noting need to update');
         }
     }, error => {
-        logger.info(`update next ${JSON.stringify(error)}`);
         utils.writeHttpResponse(res, 601, error);
     });
 }
 
 function queryOrderList (req, res, next) {
     logger.info(`route queryOrderList`);
-    var openId = req.param('openId');
+    let openId = req.param('openId');
     order.queryListOrder(openId).subscribe(next => {
-        logger.info(`query next ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, 'ok', JSON.stringify(next));
+        utils.writeHttpResponse(res, 200, 'ok', next);
     }, error => {
-        logger.info(`query error ${JSON.stringify(error)}`);
-        utils.writeHttpResponse(res, 601, error);
+        utils.writeHttpResponse(res, 601,'query error', error);
     });
 
 }
@@ -75,11 +70,14 @@ function addOrder (req, res, next) {
     bean.totalPrice = req.param('totalPrice');
 
     order.createOrder(bean).subscribe(next => {
-        logger.info(`add order ok ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, 'add order ok');
+        utils.writeHttpResponse(res, 200, 'ok', next);
     }, error => {
-        logger.info(`add order error ${JSON.stringify(error)}`);
-        utils.writeHttpResponse(res, 601, error);
+        if (error.errno == 1062) {
+            utils.writeHttpResponse(res, 602, 'order has bean add');
+        } else {
+            utils.writeHttpResponse(res, 601, 'error', error);
+        }
+
     });
 }
 

@@ -1,7 +1,6 @@
-var db = require('./mysqlPool');
-var dao = require('domain');
-
-var logger = require('../logger').logger('snakeOrder', 'info');
+const db = require('./mysqlPool');
+const dao = require('domain');
+const logger = require('../logger').logger('snakeOrder', 'info');
 /**
  * 
  */

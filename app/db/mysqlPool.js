@@ -1,8 +1,8 @@
-var RX = require('rx');
-var mysql = require('mysql');
-var logger = require('../logger').logger('db', 'info');
+const RX = require('rx');
+const mysql = require('mysql');
+const logger = require('../logger').logger('db', 'info');
 
-var pool = mysql.createPool({
+let pool = mysql.createPool({
     host: 'localhost',
     user: 'snake_game',
     password: 'snake',

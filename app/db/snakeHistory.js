@@ -1,5 +1,5 @@
-var db = require('./mysqlPool');
-var logger = require('../logger').logger('history', 'info');
+const db = require('./mysqlPool');
+const logger = require('../logger').logger('history', 'info');
 
 /**
  * create histroy 

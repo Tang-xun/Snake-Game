@@ -1,9 +1,9 @@
-var express = require('express');
-var router = express.Router();
-var logger = require('../logger').logger('route', 'info');
+const express = require('express');
+const logger = require('../logger').logger('route', 'info');
+
+let router = express.Router();
 
 logger.info(' router indexPage');
-
 function indexPage(req, res, next) {
     res.render('index', { title: 'Express' });
 };

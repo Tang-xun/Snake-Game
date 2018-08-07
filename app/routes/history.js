@@ -1,11 +1,12 @@
-var express = require('express');
-var router = express.Router();
-var dao = require('../db/daoBean');
-var user = require('../db/snakeUser');
-var utils = require('../util/comUtils');
-var history = require('../db/snakeHistory');
-var logger = require('../logger').logger('route', 'info');
-var rx = require('rx');
+const express = require('express');
+const dao = require('../db/daoBean');
+const user = require('../db/snakeUser');
+const utils = require('../util/comUtils');
+const history = require('../db/snakeHistory');
+const logger = require('../logger').logger('route', 'info');
+const rx = require('rx');
+
+let router = express.Router();
 
 history.createHistoryTable().subscribe(next => {
     logger.info(`[create history] ok ${JSON.stringify(next)}`);
@@ -14,13 +15,13 @@ history.createHistoryTable().subscribe(next => {
 });
 
 function query(req, res, next) {
-    var openId = req.param('openId');
-    var limit = req.param('limit');
+    let openId = req.param('openId');
+    let limit = req.param('limit');
     logger.info(`history query ${openId} ${limit}`);
     history.queryHistory(openId, limit).subscribe(next => {
-        utils.writeHttpResponse(res, 200, JSON.stringify(next));
+        utils.writeHttpResponse(res, 200, 'ok', next);
     }, error => {
-        utils.writeHttpResponse(res, 600, error);
+        utils.writeHttpResponse(res, 600, 'error', error);
     });
 }
 
@@ -42,7 +43,7 @@ function addHistory(req, res, next) {
 
     user.queryUpdateInfo(bean.openId).flatMap(next => {
         logger.info(`do action first ${JSON.stringify(next)}`);
-        var oUser = next;
+        let oUser = next;
         // handle user game records logic
         if (!bean.gameType) {
             // time model
@@ -70,29 +71,21 @@ function addHistory(req, res, next) {
             user.queryUpdateInfo(oUser.openId));
     }).subscribe(next => {
         logger.info(`next ${JSON.stringify(next)}`);
-        var historyId = next[0];
-        var percent = next[1];
-        var updateUserInfo = next[2];
-        var userInfo = next[3];
-        var data = `{
-            "historyId":${historyId},
-            "percent":${percent},
-            "updateUser":${updateUserInfo},
-            "userInfo":${JSON.stringify(userInfo)}
-        }`;
-        logger.info(`add history ok ${data}`);
+        let data = {
+            historyId: next[0],
+            percent: next[1],
+            updateUser: next[2],
+            userInfo: next[3]
+        };
         utils.writeHttpResponse(res, 200, 'add history ok ', data);
     }, error => {
-        logger.info(`error ${JSON.stringify(error)}`);
-        utils.writeHttpResponse(res, 600, `add history error ${JSON.stringify(error)} `);
-    }, () => {
-
+        utils.writeHttpResponse(res, 600, `add history error`, error);
     });
 }
 
 
 function checkParams(history) {
-    var checked = (history == null ||
+    let checked = (history == null ||
         history.openId.trim().length == 0 ||
         history.gameType == null ||
         isNaN(history.score) ||

@@ -1,5 +1,5 @@
-var db = require('./mysqlPool');
-var logger = require('../logger').logger('user', 'info');
+const db = require('./mysqlPool');
+const logger = require('../logger').logger('user', 'info');
 
 function createTable() {
     let createSql = `
