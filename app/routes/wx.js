@@ -9,7 +9,7 @@ const logger = require('../logger').logger('wx', 'info');
 let route = express.Router();
 
 function code2AccessToken (req, res, next) {
-    let code = req.param('code');
+    let code = req.body.code;
     logger.info(`code2AccessToken ${req.method} code:${code}`);
     if (utils.isInvalid(code)) {
         utils.writeHttpResponse(res, 600, 'code is invalid');

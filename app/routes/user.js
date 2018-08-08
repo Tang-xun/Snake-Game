@@ -60,7 +60,7 @@ function query(req, res, next) {
 }
 
 function update(req, res, next) {
-    let openId = req.param('openId');
+    let openId = req.body.openId;
     user.updateLoginTime(openId).subscribe(next => {
         utils.writeHttpResponse(res, 200, 'ok', next);
     }, error => {

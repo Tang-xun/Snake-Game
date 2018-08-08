@@ -15,8 +15,8 @@ history.createHistoryTable().subscribe(next => {
 });
 
 function query(req, res, next) {
-    let openId = req.param('openId');
-    let limit = req.param('limit');
+    let openId = req.body.openId;
+    let limit = req.body.limit;
     logger.info(`history query ${openId} ${limit}`);
     history.queryHistory(openId, limit).subscribe(next => {
         utils.writeHttpResponse(res, 200, 'ok', next);
@@ -27,12 +27,12 @@ function query(req, res, next) {
 
 function addHistory(req, res, next) {
     let bean = new dao.History();
-    bean.openId = req.param('openId');
-    bean.gameType = parseInt(req.param('gameType'));
-    bean.score = parseInt(req.param('score'));
-    bean.length = parseInt(req.param('length'));
-    bean.bestKill = parseInt(req.param('bestKill'));
-    bean.linkKill = parseInt(req.param('linkKill'));
+    bean.openId = req.body.openId;
+    bean.gameType = parseInt(req.body.gameType);
+    bean.score = parseInt(req.body.score);
+    bean.length = parseInt(req.body.length);
+    bean.bestKill = parseInt(req.body.bestKill);
+    bean.linkKill = parseInt(req.body.linkKill);
     logger.info(`add history ${JSON.stringify(bean)}`);
 
     if (checkParams(bean)) {

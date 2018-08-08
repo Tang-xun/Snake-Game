@@ -14,8 +14,8 @@ order.createOrderTable().subscribe(next => {
 
 function queryOrder (req, res, next) {
     logger.info(`route queryOrder`);
-    let openId = req.param('openId');
-    let orderId = req.param('orderId');
+    let openId = req.body.openId;
+    let orderId = req.body.orderId;
     order.queryOrder(orderId, openId).subscribe(next => {
         utils.writeHttpResponse(res, 200, 'ok', next[0]);
     }, error => {
@@ -25,8 +25,8 @@ function queryOrder (req, res, next) {
 
 function updatePayment (req, res, next) {
     logger.info(`route updatePayment`);
-    let orderId = req.param('orderId');
-    let state = req.param('state');
+    let orderId = req.body.orderId;
+    let state = req.body.state;
 
     if (state > 0 && state > 4) {
         logger.info(`params check error}`);
@@ -47,7 +47,7 @@ function updatePayment (req, res, next) {
 
 function queryOrderList (req, res, next) {
     logger.info(`route queryOrderList`);
-    let openId = req.param('openId');
+    let openId = req.body.openId;
     order.queryListOrder(openId).subscribe(next => {
         utils.writeHttpResponse(res, 200, 'ok', next);
     }, error => {
@@ -58,16 +58,16 @@ function queryOrderList (req, res, next) {
 function addOrder (req, res, next) {
     logger.info(`route addOrder`);
     let bean = new dao.Order();
-    bean.openId = req.param('openId');
-    bean.orderId = req.param('orderId');
-    bean.productId = req.param('productId');
-    bean.productName = req.param('productName');
-    bean.productDesc = req.param('productDesc');
-    bean.productPrice = req.param('productPrice');
-    bean.productNum = req.param('productNum');
+    bean.openId = req.body.openId;
+    bean.orderId = req.body.orderId;
+    bean.productId = req.body.productId;
+    bean.productName = req.body.productName;
+    bean.productDesc = req.body.productDesc;
+    bean.productPrice = req.body.productPrice;
+    bean.productNum = req.body.productNum;
     bean.orderState = 0;
-    bean.discount = req.param('discount');
-    bean.totalPrice = req.param('totalPrice');
+    bean.discount = req.body.discount;
+    bean.totalPrice = req.body.totalPrice;
 
     order.createOrder(bean).subscribe(next => {
         utils.writeHttpResponse(res, 200, 'ok', next);
