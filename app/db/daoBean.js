@@ -17,7 +17,7 @@ function History () {
 function Honor() {
     this.name;
     this.gameType;  //{0:time, 1:endless, 2:any}
-    this.gainType;  //{0:gameRank, 1:winCount, 2:kill, 3:linkKill, 4:length, 5:time, 6:weekWrodRank, 7:weekFriendRank, 8:skinNum}
+    this.gainType;  //{1:winCount, 2:kill, 3:linkKill, 4:length, 5:time, 6:weekWrodRank, 7:weekFriendRank, 8:skinNum}
     this.v;
     this.rewardExp;
     this.skinType;
