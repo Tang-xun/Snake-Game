@@ -4,6 +4,7 @@ const user = require('../db/snakeUser');
 const utils = require('../util/comUtils');
 const history = require('../db/snakeHistory');
 const logger = require('../logger').logger('route', 'info');
+const rankServer = require('../server/rankServer');
 const rx = require('rx');
 
 let router = express.Router();
@@ -66,7 +67,7 @@ function addHistory(req, res, next) {
         }
         return rx.Observable.combineLatest(
             history.addHistory(bean),
-            utils.calUserRanks(oUser.score),
+            rankServer            .calUserRanks(oUser.score),
             user.updateHistoryInfo(oUser),
             user.queryUpdateInfo(oUser.openId));
     }).subscribe(next => {

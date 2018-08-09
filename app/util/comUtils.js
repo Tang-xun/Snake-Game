@@ -15,17 +15,6 @@ function writeHttpResponse (res, code, msg, data) {
     res.end();
 }
 
-function calUserRanks (score) {
-    logger.info(`calUserRanks start ${score}`);
-    let rankScore = rankServer.ServerConfig.rankScore;
-    return rx.Observable.from(rankScore)
-        .first(it => it.score <= score)
-        .map(it => parseFloat(it.ranks / 20) * 100).doOnError(
-            error => {
-                return rx.Observable.just(100);
-            }
-        )
-}
 
 function isInvalid (data) {
     logger.debug(`isInvalid ${data}`);
@@ -51,7 +40,6 @@ function checkParams(bean) {
 
 module.exports = {
     isInvalid,
-    calUserRanks,
     checkParams,
     writeHttpResponse,
 }

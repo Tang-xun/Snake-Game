@@ -30,6 +30,6 @@ INSERT INTO `snake`.`honor` (`name`, `gameType`, `gainType`, `v`, `rewardExp`, `
 /**skinNum*/
 INSERT INTO `snake`.`honor` (`name`, `gameType`, `gainType`, `v`, `rewardExp`, `skinType`, `shareContent`) VALUES ('拆迁户', '2', '8', '10', '500', '2', '[@我]这个，这个，这个，我都不要，剩下的全包了');
 INSERT INTO `snake`.`honor` (`name`, `gameType`, `gainType`, `v`, `rewardExp`, `skinType`, `shareContent`) VALUES ('煤老板', '2', '8', '20', '500', '1', '[@我]这个，这个，这个，我都要，算了这栋我买了');
-INSERT INTO `snake`.`honor` (`name`, `gameType`, `gainType`, `v`, `rewardExp`, `skinType`, `shareContent`) VALUES ('不知妻没大强子', '2', '8', '100', '500', '2', '[@我]我要开价奶茶店');
+INSERT INTO `snake`.`honor` (`name`, `gameType`, `gainType`, `v`, `rewardExp`, `skinType`, `shareContent`) VALUES ('不知妻美大强子', '2', '8', '100', '500', '2', '[@我]我要开价奶茶店');
 INSERT INTO `snake`.`honor` (`name`, `gameType`, `gainType`, `v`, `rewardExp`, `skinType`, `shareContent`) VALUES ('悔创啊力杰克马', '2', '8', '150', '500', '2', '[@我]我从来没碰过前，我对钱不感兴趣');
 INSERT INTO `snake`.`honor` (`name`, `gameType`, `gainType`, `v`, `rewardExp`, `skinType`, `shareContent`) VALUES ('普通家庭小马哥', '2', '8', '200', '500', '2', '[@我]都是普通人，顶多就是房子大一点');

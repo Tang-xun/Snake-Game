@@ -1,18 +1,19 @@
+const rx = require('rx');
+
 const logger = require('../logger').logger('ranks', 'info');
 const user = require('../db/snakeUser');
 
-const rx = require('rx');
 
-shortDelay = 2 * 1000;
-shortUpdateDuration = 60 * 1000;
+let shortDelay = 2 * 1000;
+let shortUpdateDuration = 5 * 60 * 1000;
 
-longDelay = shortDelay * 5;
-longUpdateDuration = shortUpdateDuration * 5;
+let longDelay = shortDelay * 2;
+let longUpdateDuration = shortUpdateDuration * 2;
 
+let rankScore = [];
 function sysConfig() {
     this.userCount = 0;
     this.payCount = 0;
-    this.rankScore = [];
 }
 
 let ServerConfig = new sysConfig();
@@ -70,9 +71,7 @@ function rxFetchRankScore() {
         if (next.length < 20) {
             next.push(JSON.parse('{"ranks":20,"score":0}'));
         }
-        this.rankScore = next;
-        ServerConfig.rankScore = next;
-
+        rankScore = next;
 
         logger.info(`print ServerConfig ${JSON.stringify(ServerConfig)}`);
     }, error => {
@@ -80,8 +79,20 @@ function rxFetchRankScore() {
     })
 }
 
+function calUserRanks(score) {
+    logger.info(`calUserRanks start ${score}`);
+    return rx.Observable.from(rankScore)
+        .first(it => it.score <= score)
+        .map(it => parseFloat(it.ranks / 20) * 100).doOnError(
+            error => {
+                return rx.Observable.just(100);
+            }
+        )
+}
+
 module.exports = {
     ServerConfig,
+    calUserRanks,
     rxFetchUserCount,
     rxFetchRankScore,
     rxRanksTimeTask,
