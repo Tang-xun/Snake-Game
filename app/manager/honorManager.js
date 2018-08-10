@@ -1,6 +1,5 @@
 const rx = require('rx');
 const honor = require('../db/snakeHonor');
-
 const logger = require('../logger').logger('honors', 'info');
 
 let honorRule = {};
@@ -12,6 +11,7 @@ let honorKeys = { win: 10, kill: 22, linkKill: 32, length: 41, time: 51, skinNum
 honor.listHonors().flatMap(it => {
     return rx.Observable.from(it);
 }).subscribe(it => {
+    console.log(it);
     key = it.gainType * 10 + it.gameType;
     if (!honorRule[key]) {
         honorRule[key] = [];
@@ -47,25 +47,18 @@ function fetchHonorFromHistroy(winCount, length, kill, linkKill, time, skinNum) 
         it[3] > -1 ? honorKeys.linkKill * 10 + it[3] : null,
         it[4] > -1 ? honorKeys.time * 10 + it[4] : null,
         it[5] > -1 ? honorKeys.skinNum * 10 + it[5] : null,
-    ]).subscribe(console.log);
+    ]).subscribe(it => console.log(it));
 }
 
 function fetchHonorWithCode(code) {
-    let key = code/10;
-    let index = code % 100;
+    let key = parseInt(code / 10);
+    let index = code - key * 10;
 
     console.log(`${key}, ${index}`);
     return honorRule[key][index];
 }
 
-setTimeout(() => {
-    fetchHonorFromHistroy(1, 10000000, 40000, 20, 60 * 1000 * 60 * 2, 11);
-    fetchHonorWithCode(100);
-    fetchHonorWithCode(413);
-    fetchHonorWithCode(223);
-    fetchHonorWithCode(321);
-}, 50);
-
 module.exports = {
     fetchHonorFromHistroy,
+    fetchHonorWithCode,
 }

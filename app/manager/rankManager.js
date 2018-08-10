@@ -41,7 +41,7 @@ function rxFetchUserCount() {
 function rxRanksTimeTask() {
     rx.Observable.timer(longDelay, longUpdateDuration).flatMap(() => {
         logger.info(`rxRanksTimeTask ${new Date()}`);
-        return user.sortUserScore();
+        return user.sortUserExp();
     }).subscribe(
         next => {
             logger.info(`next update userRanks message: ${next.message}`);
@@ -59,13 +59,9 @@ function rxFetchRankScore() {
             logger.info(`user count is NaN needn't fetch Rank ${ServerConfig.userCount} ${global.userCount}`);
             throw Error('user count is NaN');
         }
-        if (global.userCount < 20) {
-            return user.fetchRankScore(1);
-        } else {
-            let groupCount = parseInt(global.userCount / 20) + 1;
-            logger.info(`current user score group count ${groupCount}`);
-            return user.fetchRankScore(groupCount);
-        }
+        let groupCount = Math.round(global.userCount / 20);
+        logger.info(`current user score group count ${groupCount}`);
+        return user.fetchRankExp(groupCount);
     }).subscribe(next => {
         logger.info(`rxFetchRankScore next ${typeof (next)}`);
         if (next.length < 20) {

@@ -21,7 +21,6 @@ function createUserTable(callback) {
         country     varchar(64) COMMENT 'user country',
         grade       int NOT NULL default 0 COMMENT 'user grade',
         gradeName   varchar(256) NOT NULL COMMENT 'player current honor',
-        score       int NOT NULL default 0 COMMENT 'user score',
         honorNum    int NOT NULL COMMENT 'gain honor number',
         skin        int NOT NULL COMMENT 'player current skin id',
         skinNum     int NOT NULL COMMENT 'user own skin num',
@@ -34,12 +33,12 @@ function createUserTable(callback) {
         e_bestKill  int NOT NULL default 0 COMMENT 'most kill number',
         e_linkKill  int NOT NULL default 0 COMMENT 'best link kill number',
         winCount    int NOT NULL default 0 COMMENT 'win count',
-        winHonor    int NOT NULl default 100 COMMENT 'win honor level',
-        killHonor   int NOT NULL default 220 COMMENT 'kill honor level',
-        linkKillHonor int NOT NULL default 230 COMMENT 'link kill honor level',
-        lengthHonor int NOT NULL default 410 COMMENT 'length honor level',
-        timeHonor   int NOT NULL default 510 COMMENT 'live time honor level',
-        skinHonor   int NOT NULL default 820 COMMENT 'skin num level',
+        winHonor    int NOT NULl default 10 COMMENT 'win honor level',
+        killHonor   int NOT NULL default 22 COMMENT 'kill honor level',
+        linkKillHonor int NOT NULL default 23 COMMENT 'link kill honor level',
+        lengthHonor int NOT NULL default 41 COMMENT 'length honor level',
+        timeHonor   int NOT NULL default 51 COMMENT 'live time honor level',
+        skinHonor   int NOT NULL default 82 COMMENT 'skin num level',
         nextGradeExp  int NOT NULL COMMENT 'next grade exp',
         latestLogin TIMESTAMP COMMENT 'latest login time',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
@@ -60,27 +59,26 @@ function createUserTable(callback) {
 function insertUserInfo(user) {
 
     let insertUser = `INSERT INTO snake.user (
-            openId
-            nickName
-            headUri
-            gender
-            language
-            province
-            city
-            country
-            grade
-            gradeName
-            score
-            honorNum
-            skin
-            skinNum
-            curExp
+            openId,
+            nickName,
+            headUri,
+            gender,
+            language,
+            province,
+            city,
+            country,
+            grade,
+            gradeName,
+            honorNum,
+            skin,
+            skinNum,
+            curExp,
             nextGradeExp, 
             latestLogin) 
         values(
             '${user.openId}',
             '${user.nickName}',
-            '${user.headUri},
+            '${user.headUri}',
             ${user.gender},
             '${user.language}',
             '${user.province}',
@@ -88,7 +86,6 @@ function insertUserInfo(user) {
             '${user.country}',
             ${user.grade},
             '${user.gradeName}',
-            ${user.score},
             ${user.honorNum},
             ${user.skin},
             ${user.skinNum},
@@ -111,11 +108,26 @@ function queryUserInfo(openId) {
     return db.rxQuery(queryUser);
 }
 
+/**
+ * 通过openId查询玩家信息
+ * @param {*} id 
+ * @param {*} callback 
+ */
+function queryUserInfoWithId(id) {
+    let queryUser = `select * from snake.user where id='${id}';`;
+    logger.info(`[exec sql] ${queryUser}`);
+    return db.rxQuery(queryUser);
+}
+
 function queryUpdateInfo(openId) {
-    let queryFields = 'openId, grade, honorNum, score, curExp, nextGradeExp, ranks, t_length, t_bestKill, t_linkKill, e_length, e_bestKill, e_linkKill';
-    let queryUser = `select ${queryFields} from snake.user where openId='${openId}';`;
+    let queryUser = `select * from snake.user where openId='${openId}';`;
     logger.info(`[exec sql] ${queryUser}`);
     return db.rxQuery(queryUser).map(it => it[0]);
+}
+
+function isRegisteredUser(openId) {
+    let querySql = 'select count(openId) as res from user where openId = ' + openId + ';';
+    return db.rxQuery(querySql).map(it => it.res > 0);
 }
 
 /**
@@ -159,22 +171,22 @@ function updateHistoryInfo(user) {
 }
 
 function getUserCount() {
-    return db.rxQuery('select count(openId) as count from snake.user;').map(it => it[0].count);
+    return db.rxQuery('select count(openId) as count from user;').map(it => it[0].count);
 }
 
-function sortUserScore() {
-    let sortUserSql = `update user, (select row_number() over (order by score desc) as ranks, openId from user) as sorts set user.ranks=sorts.ranks where user.openId=sorts.openId;`;
+function sortUserExp() {
+    let sortUserSql = `update user, (select row_number() over (order by curExp desc) as ranks, openId from user) as sorts set user.ranks=sorts.ranks where user.openId=sorts.openId;`;
     logger.info(`[exec sql] ${sortUserSql}`);
     return db.rxQuery(sortUserSql);
 }
 
-function sortUserScoreSingle(openId) {
-    let sortUserSql = `select sorts.ranks from (select row_number() over(order by user.score desc) as ranks, user.score, user.openId from snake.user) as sorts where openId='${openId}';`;
+function sortUserExpSingle(openId) {
+    let sortUserSql = `select sorts.ranks from (select row_number() over(order by curExp desc) as ranks, curExp, openId from snake.user) as sorts where openId='${openId}';`;
     return db.rxQuery(sortUserSql);
 }
 
-function fetchRankScore(count) {
-    let rankScoreSql = `select row_number() over (order by score desc) as ranks, score from user where ranks%${count}=0;`
+function fetchRankExp(count) {
+    let rankScoreSql = `select row_number() over (order by curExp desc) as ranks, curExp from user where ranks%${count}=0 ;`
     return db.rxQuery(rankScoreSql);
 }
 
@@ -182,13 +194,12 @@ module.exports = {
     createUserTable,
     insertUserInfo,
     queryUserInfo,
+    queryUserInfoWithId,
     updateLoginTime,
     updateHistoryInfo,
     queryUpdateInfo,
     getUserCount,
-    sortUserScore,
-    fetchRankScore,
-    sortUserScoreSingle,
+    sortUserExp,
+    fetchRankExp,
+    sortUserExpSingle,
 }
-
-autoInser();

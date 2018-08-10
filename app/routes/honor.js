@@ -108,9 +108,6 @@ function update(req, res, next) {
     bean.skinType = req.body.skinType;
     bean.shareContent = req.body.shareContent;
 
-    logger.info(`update bean ${Object.values(bean)}`);
-    logger.info(`update bean ${Object.keys(bean)}`);
-
     let observer = rx.Observer.create(
         next => {
             logger.info(`next ${next}`);

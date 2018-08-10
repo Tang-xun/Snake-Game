@@ -31,9 +31,11 @@ function add(req, res, next) {
     bean.nextGradeExp = curentGrade.exps[1];
     bean.gradeName = curentGrade.name;
     bean.grade = curentGrade.grade;
-    user.insertUserInfo(bean).subscribe(next => {
+    user.insertUserInfo(bean).flatMap(it=>{
+        return user.queryUserInfoWithId(it);
+    }).subscribe(next => {
         logger.info(`user add insertId : ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, 'add user ok');
+        utils.writeHttpResponse(res, 200, 'add user ok', next);
     }, error => {
         if (error.errno == 1062) {
             utils.writeHttpResponse(res, 602, 'user has bean registered');

@@ -1,5 +1,5 @@
 
-const rankServer = require('../server/rankServer');
+const rankServer = require('../manager/rankManager');
 const logger = require('../logger').logger('utils', 'info');
 const rx = require('rx');
 

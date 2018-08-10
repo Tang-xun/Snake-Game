@@ -3,8 +3,10 @@ const dao = require('../db/daoBean');
 const user = require('../db/snakeUser');
 const utils = require('../util/comUtils');
 const history = require('../db/snakeHistory');
+const rankServer = require('../manager/rankManager');
+const gradeManager = require('../manager/gradeManager');
+
 const logger = require('../logger').logger('route', 'info');
-const rankServer = require('../server/rankServer');
 const rx = require('rx');
 
 let router = express.Router();
@@ -46,6 +48,10 @@ function addHistory(req, res, next) {
     }
 
     user.queryUpdateInfo(bean.openId).flatMap(next => {
+        if (next == undefined) {
+            return rx.Observable.throwError(`not found user , maybe incorrect openId`)
+        }
+
         logger.info(`do action first ${JSON.stringify(next)}`);
         let oUser = next;
         // handle user game records logic
@@ -60,17 +66,25 @@ function addHistory(req, res, next) {
             if (bean.bestKill > oUser.e_bestKill) oUser.e_bestKill = bean.bestKill;
             if (bean.linkKill > oUser.e_linkKill) oUser.e_linkKill = bean.linkKill;
         }
+        // round rank first 
+        if (bean.rank == 1) oUser.winCount++;
+
         // 判断升级逻辑
-        oUser.score += bean.score;
-        oUser.curExp += bean.score;
+        let increament_exp = gradeManager.calculExp(bean.rank, bean.bestKill, bean.linkKill, bean.time, bean.deadTimes);
+        oUser.curExp += increament_exp;
+
+        let gradeInfo = gradeManager.calculGrade(oUser.curExp);
+        logger.info(`cal grader ${gradeInfo}`);
+
         if (oUser.curExp > oUser.nextGradeExp) {
-            oUser.curExp = (oUser.curExp - oUser.nextGradeExp);
-            oUser.nextGradeExp *= 2;
-            oUser.grade += 1;
+            oUser.grade = gradeInfo.grade;
+            oUser.nextGradeExp = gradeInfo.exps[1];
+            oUser.gradeName = gradeInfo.name;
         }
+
         return rx.Observable.combineLatest(
             history.addHistory(bean),
-            rankServer.calUserRanks(oUser.score),
+            rankServer.calUserRanks(oUser.curExp),
             user.updateHistoryInfo(oUser),
             user.queryUpdateInfo(oUser.openId));
     }).subscribe(next => {

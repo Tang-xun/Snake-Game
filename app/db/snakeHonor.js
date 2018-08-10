@@ -80,7 +80,7 @@ function updateHonor(honor) {
         }
     });
     updateSql += ` where name='${honor.name}';`
-    console.log(`[exec sql] ${updateSql}`);
+    logger.info(`[exec sql] ${updateSql}`);
     // return db.rxQuery(updateSql);
 }
 

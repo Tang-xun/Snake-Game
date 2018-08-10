@@ -56,7 +56,7 @@ function initExpRoute() {
 }
 
 function calculGrade(exp) {
-    console.log(`cal Grade ${exp}`);
+    logger.info(`cal Grade ${exp}`);
 
     let expInt = Math.floor(exp);
     if (expInt > expDiffCycle[expDiffCycle.length - 1] || expInt < expDiffCycle[0]) {
