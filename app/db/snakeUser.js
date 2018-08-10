@@ -1,5 +1,8 @@
 const db = require('./mysqlPool');
+const dao = require('./daoBean');
+const rx = require('rx');
 const logger = require('../logger').logger('user', 'info');
+
 
 /**
  * create user table , when app first start 
@@ -17,7 +20,7 @@ function createUserTable(callback) {
         city        varchar(64) COMMENT 'user city',
         country     varchar(64) COMMENT 'user country',
         grade       int NOT NULL default 0 COMMENT 'user grade',
-        honor       varchar(256) NOT NULL COMMENT 'player current honor',
+        gradeName   varchar(256) NOT NULL COMMENT 'player current honor',
         score       int NOT NULL default 0 COMMENT 'user score',
         honorNum    int NOT NULL COMMENT 'gain honor number',
         skin        int NOT NULL COMMENT 'player current skin id',
@@ -30,6 +33,13 @@ function createUserTable(callback) {
         e_length    int NOT NULL default 0 COMMENT 'best body length',
         e_bestKill  int NOT NULL default 0 COMMENT 'most kill number',
         e_linkKill  int NOT NULL default 0 COMMENT 'best link kill number',
+        winCount    int NOT NULL default 0 COMMENT 'win count',
+        winHonor    int NOT NULl default 100 COMMENT 'win honor level',
+        killHonor   int NOT NULL default 220 COMMENT 'kill honor level',
+        linkKillHonor int NOT NULL default 230 COMMENT 'link kill honor level',
+        lengthHonor int NOT NULL default 410 COMMENT 'length honor level',
+        timeHonor   int NOT NULL default 510 COMMENT 'live time honor level',
+        skinHonor   int NOT NULL default 820 COMMENT 'skin num level',
         nextGradeExp  int NOT NULL COMMENT 'next grade exp',
         latestLogin TIMESTAMP COMMENT 'latest login time',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
@@ -50,39 +60,39 @@ function createUserTable(callback) {
 function insertUserInfo(user) {
 
     let insertUser = `INSERT INTO snake.user (
-            openId, 
-            nickName, 
-            headUri, 
-            gender,
-            language,
-            province,
-            city,
-            country,
-            honor,
-            score,
-            grade,
-            honorNum, 
-            skin, 
-            skinNum, 
-            curExp, 
+            openId
+            nickName
+            headUri
+            gender
+            language
+            province
+            city
+            country
+            grade
+            gradeName
+            score
+            honorNum
+            skin
+            skinNum
+            curExp
             nextGradeExp, 
             latestLogin) 
         values(
-            "${user.openId}", 
-            "${user.nickName}", 
-            "${user.headUri}",
+            '${user.openId}',
+            '${user.nickName}',
+            '${user.headUri},
             ${user.gender},
-            "${user.language}",
-            "${user.province}",
-            "${user.city}",
-            "${user.country}",
-            "${user.honor}", 
-            ${user.score},
+            '${user.language}',
+            '${user.province}',
+            '${user.city}',
+            '${user.country}',
             ${user.grade},
-            ${user.honorNum}, 
-            ${user.skin}, 
-            ${user.skinNum}, 
-            ${user.curExp}, 
+            '${user.gradeName}',
+            ${user.score},
+            ${user.honorNum},
+            ${user.skin},
+            ${user.skinNum},
+            ${user.curExp},
             ${user.nextGradeExp},
             current_timestamp()
         );`;
@@ -135,7 +145,14 @@ function updateHistoryInfo(user) {
         score = ${user.score},
         grade = ${user.grade},
         curExp = ${user.curExp},
-        nextGradeExp = ${user.nextGradeExp}
+        nextGradeExp = ${user.nextGradeExp},
+        winCount = ${user.winCount},
+        winHonor = ${user.winHonor},
+        killHonor = ${user.killHonor},
+        linkKillHonor = ${user.linkKillHonor},
+        lengthHonor = ${user.lengthHonor},
+        timeHonor = ${user.timeHonor},
+        skinHonor = ${user.skinHonor}
         where openId='${user.openId}';`
     logger.info(`[exec sql] ${updateHistorySql}`);
     return db.rxQuery(updateHistorySql).map(it => it.changedRows > 0);
@@ -173,3 +190,5 @@ module.exports = {
     fetchRankScore,
     sortUserScoreSingle,
 }
+
+autoInser();

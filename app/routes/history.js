@@ -29,11 +29,14 @@ function query(req, res, next) {
 function addHistory(req, res, next) {
     let bean = new dao.History();
     bean.openId = req.body.openId;
-    bean.gameType = parseInt(req.body.gameType);
-    bean.score = parseInt(req.body.score);
-    bean.length = parseInt(req.body.length);
-    bean.bestKill = parseInt(req.body.bestKill);
-    bean.linkKill = parseInt(req.body.linkKill);
+    bean.gameType = req.body.gameType;
+    bean.score = req.body.score;
+    bean.rank = req.body.rank;
+    bean.time = req.body.time;
+    bean.length = req.body.length;
+    bean.bestKill = req.body.bestKill;
+    bean.linkKill = req.body.linkKill;
+    bean.deadTimes = req.body.deadTimes;
     logger.info(`add history ${JSON.stringify(bean)}`);
 
     if (checkParams(bean)) {
@@ -67,7 +70,7 @@ function addHistory(req, res, next) {
         }
         return rx.Observable.combineLatest(
             history.addHistory(bean),
-            rankServer            .calUserRanks(oUser.score),
+            rankServer.calUserRanks(oUser.score),
             user.updateHistoryInfo(oUser),
             user.queryUpdateInfo(oUser.openId));
     }).subscribe(next => {

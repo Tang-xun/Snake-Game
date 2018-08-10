@@ -60,14 +60,9 @@ function calculGrade(exp) {
 
     let expInt = Math.floor(exp);
     if (expInt > expDiffCycle[expDiffCycle.length - 1] || expInt < expDiffCycle[0]) {
-        return rx.Observable.create(observer => {
-            observer.error(`exp is not legal value ${exp}`);
-        });
+        throw Error('exp is invable ' + exp);
     }
-
-    return rx.Observable.from(expRoute).first(it =>
-        it.exps[0] <= expInt && it.exps[1] >= expInt
-    )
+    return expRoute.find(it =>it.exps[0] <= expInt && it.exps[1] >= expInt);
 }
 
 function calculExp(roudRank, kill, linkKill, time, deadTimes) {

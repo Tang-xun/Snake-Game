@@ -3,7 +3,7 @@ const createError = require('http-errors');
 const express = require('express');
 const http = require('http');
 const path = require('path');
-const coreServer = require('./app/server/rankServer');
+const coreServer = require('./app/manager/rankManager');
 
 const rx = require('rx');
 

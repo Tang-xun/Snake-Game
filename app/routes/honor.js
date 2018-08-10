@@ -1,6 +1,11 @@
 const express = require('express');
+
 const dao = require('../db/daoBean');
+const user = require('../db/snakeUser')
 const honor = require('../db/snakeHonor');
+const history = require('../db/snakeHistory');
+const honorManager = require('../manager/honorManager');
+
 const utils = require('../util/comUtils');
 const logger = require('../logger').logger('route', 'info');
 const rx = require('rx');
@@ -40,10 +45,26 @@ function add(req, res, next) {
     )
 }
 
+function query2(req, res, next) {
+    let openId = '1533544865326';
+    
+    let userOb = user.queryUserInfo(openId)
+    let historyOb = history.queryHistory(openId, 1);
+
+    rx.Observable.concat(userOb, historyOb).flatMap(it=>{
+            let winCount = it[1].winCount;
+            let time = it[0].time;
+            let kill = it[0].kill;
+            let length = it[0].length;
+            let linkKill = it[0].linkKill;
+
+            // winCount, length, kill, linkKill, time
+            return honorManager.fetchHonorFromHistroy();
+    });
+}
 
 function query(req, res, next) {
     let name = req.body.name;
-    let honorId = req.body.honorId;
     let observer = rx.Observer.create(
         next => {
             logger.info(`next ${JSON.stringify(next)}`);
@@ -51,16 +72,12 @@ function query(req, res, next) {
         }, error => {
             logger.info(`error ${JSON.stringify(error)}`);
             utils.writeHttpResponse(res, 601, 'error', error);
-        }, () => {
-            logger.info(`complete`)
         }
     );
-    if (honorId) {
-        honor.queryHonorWithId(honorId).subscribe(observer);
-    } else if (name) {
+    if (name) {
         honor.queryHonorWithName(name).subscribe(observer);
     } else {
-        utils.writeHttpResponse(601, 'params error need name or honorId');
+        utils.writeHttpResponse(601, 'params error need name');
     }
 }
 
@@ -77,7 +94,6 @@ function list(req, res, next) {
         }
     );
     honor.listHonors().subscribe(observer);
-
 }
 
 function update(req, res, next) {
@@ -115,3 +131,6 @@ router.get('/list', list).post('/list', list);
 router.get('/update', update).post('/update', update);
 
 module.exports = router;
+
+
+query2();

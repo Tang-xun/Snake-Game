@@ -2,6 +2,8 @@ const express = require('express');
 const dao = require('../db/daoBean');
 const user = require('../db/snakeUser');
 const utils = require('../util/comUtils');
+const gradeManager = require('../manager/gradeManager');
+
 const logger = require('../logger').logger('route', 'info');
 
 let router = express.Router();
@@ -14,26 +16,21 @@ user.createUserTable().subscribe(next => {
 
 function add(req, res, next) {
     let bean = new dao.User();
+    let curentGrade  = gradeManager.calculGrade(1);
+
     bean.openId = req.body.openId;
     bean.nickName = req.body.nickName;
     bean.headUri = req.body.headUri;
-    bean.city = req.body.city;
-    bean.score = req.body.score;
     bean.gender = req.body.gender;
-    bean.province = req.body.province;
-    bean.country = req.body.country;
     bean.language = req.body.language;
-
-    logger.info(`first ${JSON.stringify(bean)}`);
-
-    utils.checkParams(bean);
-
-    bean.language = 'undefined';
-
-    utils.checkParams(bean);
-
-    logger.info(`second ${JSON.stringify(bean)}`);
-
+    bean.province = req.body.province;
+    bean.city = req.body.city;
+    bean.country = req.body.country;
+    bean.score = req.body.score;
+    bean.curExp = 1;
+    bean.nextGradeExp = curentGrade.exps[1];
+    bean.gradeName = curentGrade.name;
+    bean.grade = curentGrade.grade;
     user.insertUserInfo(bean).subscribe(next => {
         logger.info(`user add insertId : ${JSON.stringify(next)}`);
         utils.writeHttpResponse(res, 200, 'add user ok');
@@ -50,7 +47,7 @@ function query(req, res, next) {
     let openId = req.body.openId;
     user.queryUserInfo(openId).subscribe(next => {
         if (utils.isInvalid(next)) {
-            utils.writeHttpResponse(res, 602, `not found user openId : ${openId}`);
+            utils.writeHttpResponse(res, 603, `not found user openId : ${openId}`);
         } else {
             utils.writeHttpResponse(res, 200, 'ok', next[0]);
         }

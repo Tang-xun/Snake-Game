@@ -38,7 +38,7 @@ function updatePayment (req, res, next) {
         if (next) {
             utils.writeHttpResponse(res, 200, 'ok');
         } else {
-            utils.writeHttpResponse(res, 602, 'noting need to update');
+            utils.writeHttpResponse(res, 603, 'noting need to update');
         }
     }, error => {
         utils.writeHttpResponse(res, 601, error);

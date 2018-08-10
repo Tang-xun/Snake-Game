@@ -58,23 +58,30 @@ function queryHonorWithName(name) {
 }
 
 function listHonors() {
-    let querySql = `select * from snake.honor;`;
+    let querySql = `select name,gameType,gainType,v,rewardExp,skinType,shareContent from snake.honor;`;
     logger.info(`[exec sql] ${querySql}`);
     return db.rxQuery(querySql);
 }
 
 function updateHonor(honor) {
-    let updateSql = `update snake.honor set 
-    name = '${honor.name}',
-    gameType = ${honor.gameType},
-    gainType = ${honor.gainType},
-    v = ${honor.v},
-    rewardExp = ${honor.rewardExp},
-    skinType = ${honor.skinType},
-    shareContent = '${honor.shareContent}'
-    where id = ${honor.honorId} or name = '${honor.name}';`
-    logger.info(`[exec sql] ${updateSql}`);
-    return db.rxQuery(updateSql);
+    let updateSql = `update snake.honor set `
+
+    let first = true;
+    Object.keys(honor).filter(it => honor[it] != undefined).forEach(it => {
+        if (it == 'name') return;
+        if (!first) {
+            updateSql+=',';
+        }
+        first=false;
+        if (typeof honor[it] == 'string') {
+            updateSql += `${it}='${honor[it]}'`
+        } else {
+            updateSql += `${it}=${honor[it]}`
+        }
+    });
+    updateSql += ` where name='${honor.name}';`
+    console.log(`[exec sql] ${updateSql}`);
+    // return db.rxQuery(updateSql);
 }
 
 module.exports = {

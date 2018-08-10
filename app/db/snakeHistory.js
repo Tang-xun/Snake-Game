@@ -11,9 +11,12 @@ function createHistoryTable (callback) {
         openId      varchar(256) NOT NULL COMMENT 'user open id',
         gameType    bool NOT NULL default 0 COMMENT 'game model time:0, endless:1',
         score       int  NOT NULL default 0 COMMENT 'score increament',
+        rank        int  NOT NULL default -1 comment 'game rank',
+        time        int  NOT NULL default 0 comment 'live time when endless model',
         length      int  NOT NULL default 0 COMMENT 'snake legnth',
         bestKill    int  NOT NULL default 0 COMMENT 'kill num',
         linkKill    int  NOT NULL default 0 COMMENT 'game linked kill num',
+        deadTimes   int  NOT NULL default 0 COMMENT 'dead times this round',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
         PRIMARY KEY (id),
         INDEX (openId)
@@ -32,16 +35,22 @@ function addHistory (history, callback) {
                     openId, 
                     gameType,
                     score,
+                    rank,
+                    time,
                     length,
                     bestKill,
-                    linkKill) 
+                    linkKill,
+                    deadTime) 
                 values(
                     '${history.openId}',
                     ${history.gameType},
                     ${history.score},
+                    ${history.rank},
+                    ${history.time},
                     ${history.length},
                     ${history.bestKill},
-                    ${history.linkKill}
+                    ${history.linkKill},
+                    ${history.deadTimes}
                 );`;
 
     logger.info(`add history ${addSql}`);
@@ -59,7 +68,6 @@ function queryHistory (openId, limit, callback) {
     logger.info(`query history ${querySql}`);
     return db.rxQuery(querySql, null);
 }
-
 module.exports = {
     createHistoryTable,
     addHistory,

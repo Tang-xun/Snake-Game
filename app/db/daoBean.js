@@ -1,17 +1,20 @@
-function Grade () {
+function Grade() {
     this.grade;
     this.name;
     this.preExp;
     this.nextExp;
 }
 
-function History () {
+function History() {
     this.openId;
     this.gameType = 0;
     this.score = 0;
+    this.rank = -1;
+    this.time = 0;
     this.length = 0;
     this.bestKill = 0;
     this.linkKill = 0;
+    this.deadTimes = 0;
 }
 
 function Honor() {
@@ -24,16 +27,16 @@ function Honor() {
     this.shareContent;
 }
 
-function User () {
+function User() {
     this.openId;
     this.nickName;
     this.headUri;
     this.grade = 0;
-    this.gender=0;
-    this.language='';
-    this.province='';
-    this.city='';
-    this.country='';
+    this.gender = 0;
+    this.language = '';
+    this.province = '';
+    this.city = '';
+    this.country = '';
     this.honor = '小青蛇';
     this.score = 0;
     this.honorNum = 0;
@@ -41,7 +44,14 @@ function User () {
     this.skinNum = 1;
     this.curExp = 0;
     // 下一升级等级
-    this.nextGradeExp = 500;
+    this.nextGradeExp = 199;
+    this.winCount = 0;
+    this.winHonor = 10;
+    this.killHonor = 22;
+    this.linkKillHonor = 23;
+    this.lengthHonor = 41;
+    this.timeHonor = 51;
+    this.skinHonor = 82;
     this.t_length = 0;
     this.t_bestKill = 0;
     this.t_linkKill = 0;

@@ -3,8 +3,8 @@ const rankServer = require('../server/rankServer');
 const logger = require('../logger').logger('utils', 'info');
 const rx = require('rx');
 
-function writeHttpResponse (res, code, msg, data) {
-    res.writeHead(code, { 'Content-Type': 'application/json' });
+function writeHttpResponse(res, code, msg, data) {
+    res.writeHead(200, { 'Content-Type': 'application/json' });
     let resObj = {
         'code': code,
         'msg': msg,
@@ -16,7 +16,7 @@ function writeHttpResponse (res, code, msg, data) {
 }
 
 
-function isInvalid (data) {
+function isInvalid(data) {
     logger.debug(`isInvalid ${data}`);
     return data == 'undefined' || data == null || (typeof (data) == 'number' && isNaN(data)) || data == '';
 }
@@ -25,7 +25,7 @@ function checkParams(bean) {
     rx.Observable.zip(
         rx.Observable.from(Object.keys(bean)),
         rx.Observable.from(Object.values(bean)))
-        .find(it => it[1] == 'undefined')
+        .find(it => it[1] == undefined)
         .find(it => typeof (it[1]) == 'number' && isNaN(it[1]))
         .subscribe(
             next => {
