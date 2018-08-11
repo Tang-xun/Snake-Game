@@ -1,3 +1,5 @@
+import { throwError } from 'rxjs';
+
 const express = require('express');
 const dao = require('../db/daoBean');
 const user = require('../db/snakeUser');
@@ -28,8 +30,8 @@ function query(req, res, next) {
     });
 }
 
-function addHistory(req, res, next) {
-    let bean = new dao.History();
+function createHistory(res) {
+    let history = new dao.History();
     bean.openId = req.body.openId;
     bean.gameType = req.body.gameType;
     bean.score = req.body.score;
@@ -39,6 +41,11 @@ function addHistory(req, res, next) {
     bean.bestKill = req.body.bestKill;
     bean.linkKill = req.body.linkKill;
     bean.deadTimes = req.body.deadTimes;
+    return history;
+}
+
+function addHistory(req, res, next) {
+    let bean = createHistory(res);
     logger.info(`add history ${JSON.stringify(bean)}`);
 
     if (checkParams(bean)) {
@@ -48,9 +55,8 @@ function addHistory(req, res, next) {
     }
 
     user.queryUpdateInfo(bean.openId).flatMap(next => {
-        if (next == undefined) {
-            return rx.Observable.throwError(`not found user , maybe incorrect openId`)
-        }
+        
+        return rx.Observable.ifThen(next == undefined, rx.Observable.throwError('User info not found'), )
 
         logger.info(`do action first ${JSON.stringify(next)}`);
         let oUser = next;
@@ -97,6 +103,7 @@ function addHistory(req, res, next) {
         };
         utils.writeHttpResponse(res, 200, 'add history ok ', data);
     }, error => {
+        logger.error(`error ${error}`);
         utils.writeHttpResponse(res, 600, `add history error`, error);
     });
 }
