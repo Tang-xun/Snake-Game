@@ -62,14 +62,17 @@ function calculGrade(exp) {
     if (expInt > expDiffCycle[expDiffCycle.length - 1] || expInt < expDiffCycle[0]) {
         throw Error('exp is invable ' + exp);
     }
-    return expRoute.find(it =>it.exps[0] <= expInt && it.exps[1] >= expInt);
+    return expRoute.find(it => it.exps[0] <= expInt && it.exps[1] >= expInt);
 }
 
 function calculExp(roudRank, kill, linkKill, time, deadTimes) {
+
+    logger.info(`calculExp ${roudRank} ${kill} ${linkKill} ${time} ${deadTimes}`);
+
     let totalExp = 0;
     // rank exp
     if (roudRank < 11) {
-        totalExp += expConfig.level_1[roudRank];
+        totalExp += expConfig.level_1[1][roudRank];
     } else if (roudRank < 21) {
         totalExp += -expConfig.level_2[1];
     } else if (roudRank < 31) {
@@ -81,15 +84,13 @@ function calculExp(roudRank, kill, linkKill, time, deadTimes) {
     }
     // kill exp
     totalExp += kill * expConfig.kill[1];
-
     // linkKill exp
     totalExp += linkKill * expConfig.linkKill[1];
-
     // time exp
-    totalExp += time / expConfig.time[0] * expConfig.time[1];
-
+    totalExp += (time / expConfig.time[0]) * expConfig.time[1];
     // deadTimes exp
     totalExp += deadTimes / expConfig.deadTimes[0] * expConfig.deadTimes[1];
+    logger.info(`calculExp total Exp is ${totalExp}`);
 
     return totalExp;
 }

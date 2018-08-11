@@ -8,9 +8,8 @@ function Grade() {
 function History() {
     this.openId;
     this.gameType = 0;
-    this.score = 0;
-    this.rank = -1;
-    this.time = 0;
+    this.roundRank = -1;
+    this.liveTime = 0;
     this.length = 0;
     this.bestKill = 0;
     this.linkKill = 0;
@@ -48,7 +47,7 @@ function User() {
     this.winCount = 0;
     this.winHonor = 10;
     this.killHonor = 22;
-    this.linkKillHonor = 23;
+    this.linkKillHonor = 32;
     this.lengthHonor = 41;
     this.timeHonor = 51;
     this.skinHonor = 82;
@@ -58,6 +57,7 @@ function User() {
     this.e_length = 0;
     this.e_bestKill = 0;
     this.e_linkKill = 0;
+    this.liveTime = 0;
     this.latestLogin;
     this.updateTime;
     this.createTime;

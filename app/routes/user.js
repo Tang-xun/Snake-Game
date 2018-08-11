@@ -26,7 +26,6 @@ function add(req, res, next) {
     bean.province = req.body.province;
     bean.city = req.body.city;
     bean.country = req.body.country;
-    bean.score = req.body.score;
     bean.curExp = 1;
     bean.nextGradeExp = curentGrade.exps[1];
     bean.gradeName = curentGrade.name;

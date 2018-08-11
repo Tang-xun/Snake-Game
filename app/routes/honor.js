@@ -32,34 +32,78 @@ function add(req, res, next) {
     utils.checkParams(bean);
 
     honor.addHonor(bean)
-    .subscribe(
-        next => {
-            utils.writeHttpResponse(res, 200, 'ok', next);
-        }, error => {
-            if (error.errno == 1062) {
-                utils.writeHttpResponse(res, 602, 'honor has been add');
-            } else {
-                utils.writeHttpResponse(res, 600, 'add honor error', error);
+        .subscribe(
+            next => {
+                utils.writeHttpResponse(res, 200, 'ok', next);
+            }, error => {
+                if (error.errno == 1062) {
+                    utils.writeHttpResponse(res, 602, 'honor has been add');
+                } else {
+                    utils.writeHttpResponse(res, 600, 'add honor error', error);
+                }
             }
-        }
-    )
+        )
 }
 
 function query2(req, res, next) {
-    let openId = '1533544865326';
-    
+    logger.info(`${JSON.stringify(req.body)}`);
+
+    let openId = req.body.openId;
+
     let userOb = user.queryUserInfo(openId)
     let historyOb = history.queryHistory(openId, 1);
 
-    rx.Observable.concat(userOb, historyOb).flatMap(it=>{
-            let winCount = it[1].winCount;
-            let time = it[0].time;
-            let kill = it[0].kill;
-            let length = it[0].length;
-            let linkKill = it[0].linkKill;
+    rx.Observable.zip(userOb, historyOb).flatMap(it => {
+        // user
+        let tUser = it[0][0];
+        // last history
+        let tHistory = it[1][0];
 
-            // winCount, length, kill, linkKill, time
-            return honorManager.fetchHonorFromHistroy();
+        let honorNum = tUser.honorNum;
+
+        let winCount = tUser.winCount;
+        let skinNum = tUser.skinNum;
+        let liveTime = tHistory.liveTime;
+        let kill = tHistory.kill;
+        let length = tHistory.length;
+        let linkKill = tHistory.linkKill;
+
+        let honorRecord = [tUser.winHonor, tUser.lengthHonor, tUser.killHonor, tUser.linkKillHonor,  tUser.timeHonor, tUser.skinHonor];
+
+        logger.info(`honorRecord ${honorRecord}`);
+        // winCount, length, kill, linkKill, time
+        return rx.Observable.zip(
+            honorManager.fetchHonorFromHistroy(winCount, length, kill, linkKill, liveTime, skinNum),
+            rx.Observable.just(honorRecord),
+            rx.Observable.just(honorNum)
+        )
+    }).flatMap(it => {
+        logger.info(`flat map ${JSON.stringify(it)}`);
+        let lastHonor = it[0];
+        let oldHonor = it[1];
+        var newHonor = [];
+        for (var i = 0; i < lastHonor.length; i++) {
+            if (lastHonor[i] != oldHonor[i]) {
+                logger.info(`gain new honor ${lastHonor[i]}`);
+                newHonor.push(honorManager.fetchHonorWithCode(lastHonor[i]));
+            }
+        }
+        return rx.Observable.just({
+            code: lastHonor,
+            honors: newHonor,
+            honorNum: it[2]
+        })
+    }).doAction(it => {
+        logger.info(`it.honors ${JSON.stringify(it)}`);
+        if (it.honors) {
+            user.updateHonors(openId, it.code, it.honorNum + it.honors.length);
+        }
+    }).subscribe(next => {
+        logger.info(`next ${next}`);
+        utils.writeHttpResponse(res, 200, 'query honor ok', next.honors);
+    }, error => {
+        logger.info(`error ${error}`);
+        utils.writeHttpResponse(res, 600, 'query honor error', error);
     });
 }
 
@@ -123,11 +167,8 @@ function update(req, res, next) {
 }
 
 router.get('/add', add).post('/add', add);
-router.get('/query', query).post('/query', query);
+router.get('/query', query2).post('/query', query2);
 router.get('/list', list).post('/list', list);
 router.get('/update', update).post('/update', update);
 
 module.exports = router;
-
-
-query2();

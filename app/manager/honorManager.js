@@ -32,22 +32,21 @@ honor.listHonors().flatMap(it => {
 function fetchHonorFromHistroy(winCount, length, kill, linkKill, time, skinNum) {
     console.log(`${winCount} \t ${length} \t ${kill} \t ${linkKill} \t ${time}`);
 
-    rx.Observable.create(observer => {
+    return rx.Observable.create(observer => {
         observer.onNext([honorScope[honorKeys.win].filter(it => it < winCount).length - 1,
         honorScope[honorKeys.length].filter(it => it < length).length - 1,
         honorScope[honorKeys.kill].filter(it => it < kill).length - 1,
         honorScope[honorKeys.linkKill].filter(it => it < linkKill).length - 1,
         honorScope[honorKeys.time].filter(it => it < time).length - 1,
         honorScope[honorKeys.skinNum].filter(it => it < skinNum).length - 1]);
-
     }).map(it => [
         it[0] > -1 ? honorKeys.win * 10 + it[0] : honorKeys.win,
-        it[1] > -1 ? honorKeys.length * 10 + it[1] : null,
-        it[2] > -1 ? honorKeys.kill * 10 + it[2] : null,
-        it[3] > -1 ? honorKeys.linkKill * 10 + it[3] : null,
-        it[4] > -1 ? honorKeys.time * 10 + it[4] : null,
-        it[5] > -1 ? honorKeys.skinNum * 10 + it[5] : null,
-    ]).subscribe(it => console.log(it));
+        it[1] > -1 ? honorKeys.length * 10 + it[1] : honorKeys.length,
+        it[2] > -1 ? honorKeys.kill * 10 + it[2] : honorKeys.kill,
+        it[3] > -1 ? honorKeys.linkKill * 10 + it[3] : honorKeys.linkKill,
+        it[4] > -1 ? honorKeys.time * 10 + it[4] : honorKeys.time,
+        it[5] > -1 ? honorKeys.skinNum * 10 + it[5] : honorKeys.skinNum,
+    ]);
 }
 
 function fetchHonorWithCode(code) {

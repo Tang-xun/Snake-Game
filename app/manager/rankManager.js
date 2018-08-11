@@ -10,7 +10,7 @@ let shortUpdateDuration = 5 * 60 * 1000;
 let longDelay = shortDelay * 2;
 let longUpdateDuration = shortUpdateDuration * 2;
 
-let rankScore = [];
+let rankExp = [];
 function sysConfig() {
     this.userCount = 0;
     this.payCount = 0;
@@ -61,29 +61,27 @@ function rxFetchRankScore() {
         }
         let groupCount = Math.round(global.userCount / 20);
         logger.info(`current user score group count ${groupCount}`);
-        return user.fetchRankExp(groupCount);
+        return user.fetchRankExp(groupCount > 0 ? groupCount : 1);
     }).subscribe(next => {
-        logger.info(`rxFetchRankScore next ${typeof (next)}`);
-        if (next.length < 20) {
-            next.push(JSON.parse('{"ranks":20,"score":0}'));
-        }
-        rankScore = next;
-
+        logger.info(`rxFetchRankScore next ${JSON.stringify(next)}`);
+        rankExp = next;
         logger.info(`print ServerConfig ${JSON.stringify(ServerConfig)}`);
     }, error => {
         logger.info(`error fetch rank score ${error}`);
     })
 }
 
-function calUserRanks(score) {
-    logger.info(`calUserRanks start ${score}`);
-    return rx.Observable.from(rankScore)
-        .first(it => it.score <= score)
-        .map(it => parseFloat(it.ranks / 20) * 100).doOnError(
+function calUserRanks(curExp) {
+    logger.info(`calUserRanks start ${curExp}`);
+    return rx.Observable.from(rankExp)
+        .first(it => it.curExp <= curExp)
+        .map(it => Math.floor(it.ranks / (rankExp.length) * 100))
+        .doOnError(
             error => {
+                logger.info(`calUserRanks ${error}`)
                 return rx.Observable.just(100);
             }
-        )
+        );
 }
 
 module.exports = {

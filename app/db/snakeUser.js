@@ -32,10 +32,11 @@ function createUserTable(callback) {
         e_length    int NOT NULL default 0 COMMENT 'best body length',
         e_bestKill  int NOT NULL default 0 COMMENT 'most kill number',
         e_linkKill  int NOT NULL default 0 COMMENT 'best link kill number',
+        liveTime    int NOT NULL default 0 COMMENT 'endless live time',
         winCount    int NOT NULL default 0 COMMENT 'win count',
         winHonor    int NOT NULl default 10 COMMENT 'win honor level',
         killHonor   int NOT NULL default 22 COMMENT 'kill honor level',
-        linkKillHonor int NOT NULL default 23 COMMENT 'link kill honor level',
+        linkKillHonor int NOT NULL default 32 COMMENT 'link kill honor level',
         lengthHonor int NOT NULL default 41 COMMENT 'length honor level',
         timeHonor   int NOT NULL default 51 COMMENT 'live time honor level',
         skinHonor   int NOT NULL default 82 COMMENT 'skin num level',
@@ -48,6 +49,7 @@ function createUserTable(callback) {
         UNIQUE (openId)
     ) COMMENT = 'snake user info', 
     ENGINE=InnoDB DEFAULT CHARSET=UTF8MB3;`
+    logger.info(`[exec sql] ${createSql}`);
     return db.rxQuery(createSql);
 }
 
@@ -127,6 +129,7 @@ function queryUpdateInfo(openId) {
 
 function isRegisteredUser(openId) {
     let querySql = 'select count(openId) as res from user where openId = ' + openId + ';';
+    logger.info(`[exec sql] ${querySql}`);
     return db.rxQuery(querySql).map(it => it.res > 0);
 }
 
@@ -154,8 +157,9 @@ function updateHistoryInfo(user) {
         e_length = ${user.e_length},
         e_bestKill = ${user.e_bestKill},
         e_linkKill = ${user.e_linkKill},
-        score = ${user.score},
+        liveTime = ${user.liveTime},
         grade = ${user.grade},
+        gradeName = '${user.gradeName}',
         curExp = ${user.curExp},
         nextGradeExp = ${user.nextGradeExp},
         winCount = ${user.winCount},
@@ -168,6 +172,20 @@ function updateHistoryInfo(user) {
         where openId='${user.openId}';`
     logger.info(`[exec sql] ${updateHistorySql}`);
     return db.rxQuery(updateHistorySql).map(it => it.changedRows > 0);
+}
+
+function updateHonors(openId, honors, honorNum) {
+    let updateHonorSql = `update snake.user set
+    honorNum = ${honorNum},
+    winHonor = ${honors[0]},
+    killHonor = ${honors[1]},
+    linkKillHonor = ${honors[2]},
+    lengthHonor = ${honors[3]},
+    timeHonor = ${honors[4]},
+    skinHonor = ${honors[5]}
+    where openId='${openId}} ';`;
+    logger.info(`[exec sql] ${updateHonorSql}`);
+    return db.rxQuery(updateHonorSql).map(it => it.changedRows > 0);
 }
 
 function getUserCount() {
@@ -195,6 +213,7 @@ module.exports = {
     insertUserInfo,
     queryUserInfo,
     queryUserInfoWithId,
+    updateHonors,
     updateLoginTime,
     updateHistoryInfo,
     queryUpdateInfo,
