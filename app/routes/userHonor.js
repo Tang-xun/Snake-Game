@@ -9,9 +9,9 @@ const utils = require('../util/comUtils');
 
 honorRecords.createHonorRecordsTable().subscribe(
     next => {
-        logger.info(`[create honorrecords] ok ${next}`);
+        logger.info(`[create honorrecords] ok ${JSON.stringify(next)}`);
     }, error => {
-        logger.error(`[create honorrecords] error ${error}`);
+        logger.error(`[create honorrecords] error ${JSON.stringify(error)}`);
     }
 );
 
