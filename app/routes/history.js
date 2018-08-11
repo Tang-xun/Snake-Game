@@ -57,8 +57,7 @@ function addHistory(req, res, next) {
     let midError = '';
     user.queryUpdateInfo(bean.openId).flatMap(next => {
         if (next == undefined) {
-            midError = 'user not exists';
-            throw Error('user not exists');
+            throw { error: 'user not exists' };
         }
         return rx.Observable.just(next);
     }).flatMap(next => {
@@ -118,8 +117,8 @@ function addHistory(req, res, next) {
         };
         utils.writeHttpResponse(res, 200, 'add history ok ', data);
     }, error => {
-        logger.error(`error ${JSON.stringify(midError)} ${JSON.stringify(error)}`);
-        utils.writeHttpResponse(res, 600, `add history error ` + (midError ? midError : ''));
+        logger.error(`error  ${JSON.stringify(error)}`);
+        utils.writeHttpResponse(res, 600, `add history error `, error);
     });
 }
 

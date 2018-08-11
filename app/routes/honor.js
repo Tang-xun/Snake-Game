@@ -4,6 +4,7 @@ const dao = require('../db/daoBean');
 const user = require('../db/snakeUser')
 const honor = require('../db/snakeHonor');
 const history = require('../db/snakeHistory');
+const userHonors = require('../db/snakeHonorRecords');
 const honorManager = require('../manager/honorManager');
 
 const utils = require('../util/comUtils');
@@ -45,10 +46,9 @@ function add(req, res, next) {
         )
 }
 
-function query2(req, res, next) {
-    logger.info(`${JSON.stringify(req.body)}`);
+function queryHonor(req, res, next) {
 
-    let openId = req.body.openId;
+    let openId = req.query.openId;
 
     let userOb = user.queryUserInfo(openId)
     let historyOb = history.queryHistory(openId, 1);
@@ -59,6 +59,14 @@ function query2(req, res, next) {
         // last history
         let tHistory = it[1][0];
 
+        if (tUser == undefined) {
+            throw { error: `user[${openId}] not found ` };
+        }
+
+        if (tHistory == undefined) {
+            throw { error: `history[${openId}] not found ` };
+        }
+
         let honorNum = tUser.honorNum;
 
         let winCount = tUser.winCount;
@@ -68,7 +76,7 @@ function query2(req, res, next) {
         let length = tHistory.length;
         let linkKill = tHistory.linkKill;
 
-        let honorRecord = [tUser.winHonor, tUser.lengthHonor, tUser.killHonor, tUser.linkKillHonor,  tUser.timeHonor, tUser.skinHonor];
+        let honorRecord = [tUser.winHonor, tUser.lengthHonor, tUser.killHonor, tUser.linkKillHonor, tUser.timeHonor, tUser.skinHonor];
 
         logger.info(`honorRecord ${honorRecord}`);
         // winCount, length, kill, linkKill, time
@@ -96,7 +104,7 @@ function query2(req, res, next) {
     }).doAction(it => {
         logger.info(`it.honors ${JSON.stringify(it)}`);
         if (it.honors) {
-            user.updateHonors(openId, it.code, it.honorNum + it.honors.length);
+            updateHonorRecords(it, openId);
         }
     }).subscribe(next => {
         logger.info(`next ${next}`);
@@ -104,6 +112,23 @@ function query2(req, res, next) {
     }, error => {
         logger.info(`error ${error}`);
         utils.writeHttpResponse(res, 600, 'query honor error', error);
+    });
+}
+
+function updateHonorRecords(it, openId) {
+    logger.info(`${JSON.stringify(it)}, ${openId}`);
+    let userHonorAdOb = rx.Observable.from(it.honors).flatMap(element => {
+        element.openId = openId;
+        let rewrdExp = element.rewardExp;
+        let skinType = element.skinType;
+        return userHonors.addHonorRecords(element);
+    });
+    let userHonorOb = user.updateHonors(openId, it.code, it.honorNum + it.honors.length);
+
+    rx.Observable.zip(userHonorAdOb, userHonorOb).subscribe(next => {
+        logger.info(`update honors next ${next}`);
+    }, error => {
+        logger.info(`update honors error ${error}`);
     });
 }
 
@@ -167,7 +192,8 @@ function update(req, res, next) {
 }
 
 router.get('/add', add).post('/add', add);
-router.get('/query', query2).post('/query', query2);
+router.get('/query', query).post('/query', query);
+router.get('/queryHonor', queryHonor).post('/queryHonor', queryHonor);
 router.get('/list', list).post('/list', list);
 router.get('/update', update).post('/update', update);
 

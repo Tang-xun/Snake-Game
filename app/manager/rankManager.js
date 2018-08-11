@@ -57,7 +57,7 @@ function rxFetchRankScore() {
         logger.info(`rxFetchRankScore ${new Date()}`);
         if (isNaN(global.userCount)) {
             logger.info(`user count is NaN needn't fetch Rank ${ServerConfig.userCount} ${global.userCount}`);
-            throw Error('user count is NaN');
+            throw { error: 'user count is NaN' };
         }
         let groupCount = Math.round(global.userCount / 20);
         logger.info(`current user score group count ${groupCount}`);

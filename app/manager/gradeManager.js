@@ -60,7 +60,7 @@ function calculGrade(exp) {
 
     let expInt = Math.floor(exp);
     if (expInt > expDiffCycle[expDiffCycle.length - 1] || expInt < expDiffCycle[0]) {
-        throw Error('exp is invable ' + exp);
+        throw { error: 'exp is invable ' + exp };
     }
     return expRoute.find(it => it.exps[0] <= expInt && it.exps[1] >= expInt);
 }

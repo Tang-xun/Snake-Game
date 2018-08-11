@@ -5,16 +5,16 @@
     {
       "type": "Project",
       "description": "",
-      "id": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123",
-      "lastModified": "2018-08-10T16:35:56.106+08:00",
+      "id": "4d8ee0a8-3b72-4e0e-b875-e3a3402a3066",
+      "lastModified": "2018-08-11T22:49:04.895+08:00",
       "name": "snake_server"
     },
     {
       "type": "Service",
-      "id": "c335295e-8c83-444c-8603-e43082e797fe",
-      "lastModified": "2018-08-04T16:00:51.613+08:00",
+      "id": "eb52a98d-108f-4ed2-97c4-e90060c044b5",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "grade",
-      "parentId": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123"
+      "parentId": "4d8ee0a8-3b72-4e0e-b875-e3a3402a3066"
     },
     {
       "type": "Request",
@@ -51,8 +51,8 @@
         "host": "${host}:${port}",
         "path": "/grade/add/"
       },
-      "id": "896f4afe-50cc-4b0c-bb6b-522f1e3a1ad6",
-      "lastModified": "2018-08-07T19:31:35.592+08:00",
+      "id": "1de65514-17fb-482c-bb86-3c951f091441",
+      "lastModified": "2018-08-11T19:21:02.242+08:00",
       "name": "add",
       "headers": [
         {
@@ -64,15 +64,15 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "c335295e-8c83-444c-8603-e43082e797fe"
+      "parentId": "eb52a98d-108f-4ed2-97c4-e90060c044b5"
     },
     {
       "type": "Service",
       "description": "玩家记录",
-      "id": "549abd98-90ce-49c4-b466-af3a4425012b",
-      "lastModified": "2018-08-06T11:43:30.344+08:00",
+      "id": "2024cb58-703f-4f10-be66-a3821ad43108",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "history",
-      "parentId": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123"
+      "parentId": "4d8ee0a8-3b72-4e0e-b875-e3a3402a3066"
     },
     {
       "type": "Request",
@@ -101,12 +101,6 @@
             {
               "enabled": true,
               "type": "Text",
-              "name": "score",
-              "value": "200"
-            },
-            {
-              "enabled": true,
-              "type": "Text",
               "name": "length",
               "value": "1000"
             },
@@ -121,6 +115,24 @@
               "type": "Text",
               "name": "linkKill",
               "value": "6"
+            },
+            {
+              "enabled": true,
+              "type": "Text",
+              "name": "roundRank",
+              "value": "1"
+            },
+            {
+              "enabled": true,
+              "type": "Text",
+              "name": "deadTimes",
+              "value": "3"
+            },
+            {
+              "enabled": true,
+              "type": "Text",
+              "name": "liveTime",
+              "value": "300000"
             }
           ]
         },
@@ -141,8 +153,8 @@
         "host": "${host}:${port}",
         "path": "/history/add"
       },
-      "id": "7a063c7d-a810-4eba-9060-b67e506ef8e6",
-      "lastModified": "2018-08-07T20:48:47.041+08:00",
+      "id": "4093fb57-428d-4ace-a9b2-a97d09a61428",
+      "lastModified": "2018-08-11T22:14:59.622+08:00",
       "name": "add",
       "headers": [
         {
@@ -154,7 +166,7 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "549abd98-90ce-49c4-b466-af3a4425012b"
+      "parentId": "2024cb58-703f-4f10-be66-a3821ad43108"
     },
     {
       "type": "Request",
@@ -198,8 +210,8 @@
         "host": "${host}:${port}",
         "path": "/history/query"
       },
-      "id": "87eb04e9-51a8-49fc-8801-43f131b412a8",
-      "lastModified": "2018-08-10T16:35:56.106+08:00",
+      "id": "04c19aa1-4eb0-4b3a-98ca-874d6fb0b946",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "query",
       "headers": [
         {
@@ -211,15 +223,15 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "549abd98-90ce-49c4-b466-af3a4425012b"
+      "parentId": "2024cb58-703f-4f10-be66-a3821ad43108"
     },
     {
       "type": "Service",
       "description": "",
-      "id": "2687c405-c3fa-4947-8e30-ad0d65fcec44",
-      "lastModified": "2018-08-07T17:36:42.501+08:00",
+      "id": "dfadc4e4-a35e-4b25-9d72-5a37f28ff6a2",
+      "lastModified": "2018-08-11T19:21:02.242+08:00",
       "name": "honor",
-      "parentId": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123"
+      "parentId": "4d8ee0a8-3b72-4e0e-b875-e3a3402a3066"
     },
     {
       "type": "Request",
@@ -293,8 +305,8 @@
         "host": "${host}:${port}",
         "path": "/honor/add"
       },
-      "id": "9e82b656-f172-4978-9e2f-32ebb4a05562",
-      "lastModified": "2018-08-07T20:57:20.557+08:00",
+      "id": "4b0b612a-be6e-4418-a997-51ea3dee0449",
+      "lastModified": "2018-08-11T19:21:02.242+08:00",
       "name": "add",
       "headers": [
         {
@@ -306,7 +318,7 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "2687c405-c3fa-4947-8e30-ad0d65fcec44"
+      "parentId": "dfadc4e4-a35e-4b25-9d72-5a37f28ff6a2"
     },
     {
       "type": "Request",
@@ -336,14 +348,14 @@
         "host": "${host}:${port}",
         "path": "/honor/list"
       },
-      "id": "db5bb857-a191-4fee-8d18-928e30b6e5de",
-      "lastModified": "2018-08-07T19:40:35.668+08:00",
+      "id": "ba361c6b-d4c0-48a6-8a42-7535992b26ef",
+      "lastModified": "2018-08-11T19:21:02.242+08:00",
       "name": "list",
       "headers": [],
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "2687c405-c3fa-4947-8e30-ad0d65fcec44"
+      "parentId": "dfadc4e4-a35e-4b25-9d72-5a37f28ff6a2"
     },
     {
       "type": "Request",
@@ -381,8 +393,8 @@
         "host": "${host}:${port}",
         "path": "/honor/query"
       },
-      "id": "cad43a8d-6066-4ddb-bdcd-b07fed1292aa",
-      "lastModified": "2018-08-07T19:40:40.357+08:00",
+      "id": "5259e261-4592-44e9-899c-79b280b3fa0c",
+      "lastModified": "2018-08-11T19:21:02.242+08:00",
       "name": "query",
       "headers": [
         {
@@ -394,7 +406,50 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "2687c405-c3fa-4947-8e30-ad0d65fcec44"
+      "parentId": "dfadc4e4-a35e-4b25-9d72-5a37f28ff6a2"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": [
+            {
+              "enabled": true,
+              "name": "openId",
+              "value": "${openId}"
+            }
+          ]
+        },
+        "scheme": {
+          "name": "http",
+          "version": "V11"
+        },
+        "host": "${host}:${port}",
+        "path": "/honor/queryHonor"
+      },
+      "id": "e7893627-9363-49ca-8b3d-d368424bacd3",
+      "lastModified": "2018-08-11T21:38:46.676+08:00",
+      "name": "queryHonor",
+      "headers": [],
+      "metaInfo": {
+        "ownerId": "github|11735631"
+      },
+      "parentId": "dfadc4e4-a35e-4b25-9d72-5a37f28ff6a2"
     },
     {
       "type": "Request",
@@ -444,8 +499,8 @@
         "host": "${host}:${port}",
         "path": "/honor/update"
       },
-      "id": "58867b3f-9a88-47b2-825e-fd2c70015592",
-      "lastModified": "2018-08-07T20:57:27.676+08:00",
+      "id": "61cb1b4d-fc30-45fc-a21a-a464e04a1fba",
+      "lastModified": "2018-08-11T19:21:02.242+08:00",
       "name": "update",
       "headers": [
         {
@@ -457,15 +512,15 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "2687c405-c3fa-4947-8e30-ad0d65fcec44"
+      "parentId": "dfadc4e4-a35e-4b25-9d72-5a37f28ff6a2"
     },
     {
       "type": "Service",
       "description": "订单信息",
-      "id": "bf431631-efea-4755-86be-ea10320b68b5",
-      "lastModified": "2018-08-06T11:43:54.798+08:00",
+      "id": "e8070d17-cf44-47e8-90a7-dc65aa83bcf5",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "order",
-      "parentId": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123"
+      "parentId": "4d8ee0a8-3b72-4e0e-b875-e3a3402a3066"
     },
     {
       "type": "Request",
@@ -551,8 +606,8 @@
         "host": "${host}:${port}",
         "path": "/order/add"
       },
-      "id": "99782d29-eaf5-4b59-9e86-c47ba3691298",
-      "lastModified": "2018-08-07T19:45:51.598+08:00",
+      "id": "e89c7f04-c491-4c7c-8354-b184f1d3b025",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "add",
       "headers": [
         {
@@ -564,7 +619,7 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "bf431631-efea-4755-86be-ea10320b68b5"
+      "parentId": "e8070d17-cf44-47e8-90a7-dc65aa83bcf5"
     },
     {
       "type": "Request",
@@ -602,8 +657,8 @@
         "host": "${host}:${port}",
         "path": "/order/list"
       },
-      "id": "b527a9b6-e46d-46f5-9c8c-7cb0db05e7e4",
-      "lastModified": "2018-08-07T19:41:05.921+08:00",
+      "id": "41c75b4f-4236-45b0-98a5-5afe50c1de6c",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "list",
       "headers": [
         {
@@ -615,7 +670,7 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "bf431631-efea-4755-86be-ea10320b68b5"
+      "parentId": "e8070d17-cf44-47e8-90a7-dc65aa83bcf5"
     },
     {
       "type": "Request",
@@ -659,8 +714,8 @@
         "host": "${host}:${port}",
         "path": "/order/query"
       },
-      "id": "1edcaabf-b3a7-4027-bf87-332df1289cd5",
-      "lastModified": "2018-08-07T19:41:14.931+08:00",
+      "id": "b58b12b6-2f4e-4d4a-baac-e1730b7bef0d",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "query",
       "headers": [
         {
@@ -672,7 +727,7 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "bf431631-efea-4755-86be-ea10320b68b5"
+      "parentId": "e8070d17-cf44-47e8-90a7-dc65aa83bcf5"
     },
     {
       "type": "Request",
@@ -716,8 +771,8 @@
         "host": "${host}:${port}",
         "path": "/order/update"
       },
-      "id": "05d77ae8-06ef-4099-9c6a-25a24d59cd81",
-      "lastModified": "2018-08-07T19:47:32.953+08:00",
+      "id": "e860429b-64fd-4ad8-bcd7-c90eb5b20c09",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "update",
       "headers": [
         {
@@ -729,15 +784,15 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "bf431631-efea-4755-86be-ea10320b68b5"
+      "parentId": "e8070d17-cf44-47e8-90a7-dc65aa83bcf5"
     },
     {
       "type": "Service",
       "description": "用户信息",
-      "id": "ecd86e98-5666-47f3-bad7-b6bdaaff453c",
-      "lastModified": "2018-08-06T11:44:02.446+08:00",
+      "id": "3e9743b5-563f-492e-a278-89cf50af47ed",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "user",
-      "parentId": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123"
+      "parentId": "4d8ee0a8-3b72-4e0e-b875-e3a3402a3066"
     },
     {
       "type": "Request",
@@ -823,8 +878,8 @@
         "host": "${host}:${port}",
         "path": "/user/add"
       },
-      "id": "036c0c75-570b-4b30-8f12-126c4adc0fd2",
-      "lastModified": "2018-08-07T19:46:16.245+08:00",
+      "id": "999aaef8-60eb-4a65-8f72-cb2f04f86e77",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "add",
       "headers": [
         {
@@ -836,7 +891,7 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "ecd86e98-5666-47f3-bad7-b6bdaaff453c"
+      "parentId": "3e9743b5-563f-492e-a278-89cf50af47ed"
     },
     {
       "type": "Request",
@@ -875,8 +930,8 @@
         "host": "${host}:${port}",
         "path": "/user/query"
       },
-      "id": "df705be5-bc1b-457a-a140-75cf3d195fe5",
-      "lastModified": "2018-08-07T20:57:36.996+08:00",
+      "id": "b32b1a31-09c3-4362-9a83-f5113b8b7487",
+      "lastModified": "2018-08-11T19:21:02.241+08:00",
       "name": "query",
       "headers": [
         {
@@ -888,14 +943,65 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "ecd86e98-5666-47f3-bad7-b6bdaaff453c"
+      "parentId": "3e9743b5-563f-492e-a278-89cf50af47ed"
     },
     {
       "type": "Service",
-      "id": "fe1e9c0d-09e5-42a8-89d3-827616bb7945",
-      "lastModified": "2018-08-04T15:52:32.757+08:00",
+      "description": "",
+      "id": "94dd1421-5825-4aef-a304-ded18c60be4c",
+      "lastModified": "2018-08-11T22:48:43.577+08:00",
+      "name": "userHonorManager",
+      "parentId": "4d8ee0a8-3b72-4e0e-b875-e3a3402a3066"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": [
+            {
+              "enabled": true,
+              "name": "openId",
+              "value": "${openId}"
+            }
+          ]
+        },
+        "scheme": {
+          "name": "http",
+          "version": "V11"
+        },
+        "host": "${host}:${port}",
+        "path": "/userHonor/query"
+      },
+      "id": "9fbcf592-a23c-41a5-9e39-adc26b3f70b0",
+      "lastModified": "2018-08-11T22:49:04.895+08:00",
+      "name": "query",
+      "headers": [],
+      "metaInfo": {
+        "ownerId": "github|11735631"
+      },
+      "parentId": "94dd1421-5825-4aef-a304-ded18c60be4c"
+    },
+    {
+      "type": "Service",
+      "id": "981b4ba0-1ecb-4c0a-ae4d-2ed46026ab36",
+      "lastModified": "2018-08-11T19:21:02.242+08:00",
       "name": "wx",
-      "parentId": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123"
+      "parentId": "4d8ee0a8-3b72-4e0e-b875-e3a3402a3066"
     },
     {
       "type": "Request",
@@ -933,8 +1039,8 @@
         "host": "${host}:${port}",
         "path": "/wx/accessToken"
       },
-      "id": "7872568f-fbe7-4196-8eeb-6e48bd25f790",
-      "lastModified": "2018-08-07T19:41:41.423+08:00",
+      "id": "9c2c49c1-6808-4383-bc37-58ecee859f85",
+      "lastModified": "2018-08-11T19:21:02.242+08:00",
       "name": "code2access",
       "headers": [
         {
@@ -946,12 +1052,12 @@
       "metaInfo": {
         "ownerId": "github|11735631"
       },
-      "parentId": "fe1e9c0d-09e5-42a8-89d3-827616bb7945"
+      "parentId": "981b4ba0-1ecb-4c0a-ae4d-2ed46026ab36"
     },
     {
       "type": "Context",
       "id": "32633d30-471b-4565-b374-c51506fea9e6",
-      "lastModified": "2018-08-10T16:11:17.179+08:00",
+      "lastModified": "2018-08-11T22:17:33.607+08:00",
       "name": "local",
       "variables": [
         {
@@ -967,7 +1073,7 @@
         {
           "enabled": true,
           "name": "openId",
-          "value": "1533544865326"
+          "value": "1533996972432"
         }
       ]
     },
@@ -991,6 +1097,24 @@
           "enabled": true,
           "name": "openId",
           "value": "1533645788538"
+        }
+      ]
+    },
+    {
+      "type": "Context",
+      "id": "ce5a916e-72f0-4839-a80c-6c64300816d9",
+      "lastModified": "2018-08-01T11:23:49.623+08:00",
+      "name": "snake_stg",
+      "variables": [
+        {
+          "enabled": true,
+          "name": "host",
+          "value": "localhost"
+        },
+        {
+          "enabled": true,
+          "name": "port",
+          "value": "8000"
         }
       ]
     }

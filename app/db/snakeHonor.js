@@ -58,7 +58,7 @@ function queryHonorWithName(name) {
 }
 
 function listHonors() {
-    let querySql = `select name,gameType,gainType,v,rewardExp,skinType,shareContent from snake.honor;`;
+    let querySql = `select id,name,gameType,gainType,v,rewardExp,skinType,shareContent from snake.honor;`;
     logger.info(`[exec sql] ${querySql}`);
     return db.rxQuery(querySql);
 }
