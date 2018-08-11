@@ -3,7 +3,7 @@ const express = require('express');
 
 const router = express.Router();
 
-const honorRecords = require('../db/snakehonorrecords');
+const honorRecords = require('../db/snakeHonorRecords');
 const logger = require('../logger').logger('userhonor', 'info');
 const utils = require('../util/comUtils');
 
