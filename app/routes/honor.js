@@ -55,10 +55,12 @@ function queryHonor(req, res, next) {
 
     rx.Observable.zip(userOb, historyOb).flatMap(it => {
         // user
-        let tUser = it[0][0];
+        let tUser = it[0];
         // last history
         let tHistory = it[1][0];
-
+        logger.info('queryHonor start :::: ');
+        logger.info(it);
+        logger.info('queryHonor end :::: ');
         if (tUser == undefined) {
             throw { error: `user[${openId}] not found ` };
         }

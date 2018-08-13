@@ -6,7 +6,7 @@
       "type": "Project",
       "description": "",
       "id": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123",
-      "lastModified": "2018-08-11T16:29:08.842+08:00",
+      "lastModified": "2018-08-13T13:52:36.265+08:00",
       "name": "snake_server"
     },
     {
@@ -411,6 +411,49 @@
     {
       "type": "Request",
       "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": [
+            {
+              "enabled": true,
+              "name": "openId",
+              "value": "${openId}"
+            }
+          ]
+        },
+        "scheme": {
+          "name": "http",
+          "version": "V11"
+        },
+        "host": "${host}:${port}",
+        "path": "/honor/queryHonor"
+      },
+      "id": "c497162a-88f9-431a-a006-1c97c1e0b300",
+      "lastModified": "2018-08-13T10:22:03.983+08:00",
+      "name": "queryHonor",
+      "headers": [],
+      "metaInfo": {
+        "ownerId": "github|11735631"
+      },
+      "parentId": "2687c405-c3fa-4947-8e30-ad0d65fcec44"
+    },
+    {
+      "type": "Request",
+      "method": {
         "requestBody": true,
         "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
         "name": "POST"
@@ -779,7 +822,7 @@
               "enabled": true,
               "type": "Text",
               "name": "openId",
-              "value": "${timestamp()}"
+              "value": "${openId}"
             },
             {
               "enabled": true,
@@ -810,12 +853,6 @@
               "type": "Text",
               "name": "language",
               "value": "zh"
-            },
-            {
-              "enabled": true,
-              "type": "Text",
-              "name": "score",
-              "value": "${random(99999)}"
             }
           ]
         },
@@ -836,7 +873,7 @@
         "path": "/user/add"
       },
       "id": "036c0c75-570b-4b30-8f12-126c4adc0fd2",
-      "lastModified": "2018-08-07T19:46:16.245+08:00",
+      "lastModified": "2018-08-13T13:52:36.265+08:00",
       "name": "add",
       "headers": [
         {
