@@ -98,10 +98,6 @@ function calculExp(roudRank, kill, linkKill, time, deadTimes) {
 
 initExpRoute();
 
-setTimeout(function() {
-    calculExp(10,0, 0 ,0, 1);
-}, 1000);
-
 module.exports = {
     calculExp,
     calculGrade,

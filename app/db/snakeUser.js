@@ -107,7 +107,7 @@ function insertUserInfo(user) {
 function queryUserInfo(openId) {
     let queryUser = `select * from snake.user where openId='${openId}';`;
     logger.info(`[exec sql] ${queryUser}`);
-    return db.rxQuery(queryUser);
+    return db.rxQuery(queryUser).map(it => it[0]);
 }
 
 /**
@@ -183,7 +183,7 @@ function updateHonors(openId, honors, honorNum) {
     lengthHonor = ${honors[3]},
     timeHonor = ${honors[4]},
     skinHonor = ${honors[5]}
-    where openId='${openId}} ';`;
+    where openId='${openId}';`;
     logger.info(`[exec sql] ${updateHonorSql}`);
     return db.rxQuery(updateHonorSql).map(it => it.changedRows > 0);
 }

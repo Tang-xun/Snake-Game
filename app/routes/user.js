@@ -3,7 +3,7 @@ const dao = require('../db/daoBean');
 const user = require('../db/snakeUser');
 const utils = require('../util/comUtils');
 const gradeManager = require('../manager/gradeManager');
-
+const rx = require('rx');
 const logger = require('../logger').logger('route', 'info');
 
 let router = express.Router();
@@ -16,7 +16,7 @@ user.createUserTable().subscribe(next => {
 
 function add(req, res, next) {
     let bean = new dao.User();
-    let curentGrade  = gradeManager.calculGrade(1);
+    let curentGrade = gradeManager.calculGrade(1);
 
     bean.openId = req.body.openId;
     bean.nickName = req.body.nickName;
@@ -30,12 +30,33 @@ function add(req, res, next) {
     bean.nextGradeExp = curentGrade.exps[1];
     bean.gradeName = curentGrade.name;
     bean.grade = curentGrade.grade;
-    user.insertUserInfo(bean).flatMap(it=>{
-        return user.queryUserInfoWithId(it);
+
+    user.insertUserInfo(bean).catch(error => {
+        logger.info(`catch ${error}`);
+        if (error.errno == 1062) {
+            logger.info(`do on Error user has bean added `);
+            return user.queryUserInfo(bean.openId);
+        }
+        throw error;
+    }).flatMap(it => {
+        logger.info('flatMap it ' + (it instanceof Object) + '\t' + JSON.stringify(it) + '\t');
+        if(it instanceof Object) {
+            return  rx.Observable.just(it);
+        } else {
+            return user.queryUserInfoWithId(it).map(its => {
+               its.create = true;
+               return its;
+           });
+        }
     }).subscribe(next => {
-        logger.info(`user add insertId : ${JSON.stringify(next)}`);
-        utils.writeHttpResponse(res, 200, 'add user ok', next);
+        logger.info(`user add : ${JSON.stringify(next)}`);
+        if (next.create) {
+            utils.writeHttpResponse(res, 200, 'user add ok', next);
+        } else {
+            utils.writeHttpResponse(res, 602, 'user has bean add', next);
+        }
     }, error => {
+        logger.info(`error ${error}`)
         if (error.errno == 1062) {
             utils.writeHttpResponse(res, 602, 'user has bean registered');
         } else {
