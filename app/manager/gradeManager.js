@@ -72,7 +72,7 @@ function calculExp(roudRank, kill, linkKill, time, deadTimes) {
     let totalExp = 0;
     // rank exp
     if (roudRank < 11) {
-        totalExp += expConfig.level_1[1][roudRank];
+        totalExp += expConfig.level_1[1][roudRank-1];
     } else if (roudRank < 21) {
         totalExp += -expConfig.level_2[1];
     } else if (roudRank < 31) {
@@ -82,6 +82,7 @@ function calculExp(roudRank, kill, linkKill, time, deadTimes) {
     } else {
         totalExp += expConfig.default;
     }
+
     // kill exp
     totalExp += kill * expConfig.kill[1];
     // linkKill exp
@@ -96,6 +97,10 @@ function calculExp(roudRank, kill, linkKill, time, deadTimes) {
 }
 
 initExpRoute();
+
+setTimeout(function() {
+    calculExp(10,0, 0 ,0, 1);
+}, 1000);
 
 module.exports = {
     calculExp,
