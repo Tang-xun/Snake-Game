@@ -16,8 +16,8 @@ honorRecords.createHonorRecordsTable().subscribe(
 );
 
 function query(req, res, next) {
-    let openid = req.body.openid;
-    honorRecords.queryUserHonor(openid).subscribe(
+    let openId = req.method == 'POST' ? req.body.openId : req.query.openId;
+    honorRecords.queryUserHonor(openId).subscribe(
         next => {
             logger.info(`query honorRecore ${JSON.stringify(next)}`);
             utils.writeHttpResponse(res, 200, 'success', next);

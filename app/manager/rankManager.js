@@ -78,7 +78,11 @@ function calUserRanks(curExp) {
         .map(it => Math.floor(it.ranks / (rankExp.length) * 100))
         .catch(error => {
             if (error.name = 'EmptyError') {
-                return rx.Observable.just(100);
+                if (global.userCount == 0) {
+                    return rx.Observable.just(100);
+                } else {
+                    return rx.Observable.just(Math.round(100 / global.userCount));
+                }
             }
         });
 }

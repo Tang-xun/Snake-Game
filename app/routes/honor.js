@@ -48,7 +48,7 @@ function add(req, res, next) {
 
 function queryHonor(req, res, next) {
 
-    let openId = req.query.openId;
+    let openId = req.method == 'POST' ? req.body.openId : req.query.openId;
 
     let userOb = user.queryUserInfo(openId)
     let historyOb = history.queryHistory(openId, 1);

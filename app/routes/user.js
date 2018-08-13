@@ -40,13 +40,13 @@ function add(req, res, next) {
         throw error;
     }).flatMap(it => {
         logger.info('flatMap it ' + (it instanceof Object) + '\t' + JSON.stringify(it) + '\t');
-        if(it instanceof Object) {
-            return  rx.Observable.just(it);
+        if (it instanceof Object) {
+            return rx.Observable.just(it);
         } else {
             return user.queryUserInfoWithId(it).map(its => {
-               its.create = true;
-               return its;
-           });
+                its.create = true;
+                return its;
+            });
         }
     }).subscribe(next => {
         logger.info(`user add : ${JSON.stringify(next)}`);
@@ -83,8 +83,16 @@ function update(req, res, next) {
     user.updateLoginTime(openId).subscribe(next => {
         utils.writeHttpResponse(res, 200, 'ok', next);
     }, error => {
-        utils.writeHttpResponse(res, 601, 'ok', error);
+        utils.writeHttpResponse(res, 601, 'error', error);
     });
+}
+
+function ranklist(req, res, next) {
+    user.queryRankList().subscribe(next => {
+        utils.writeHttpResponse(res, 200, 'ok', next);
+    }, error => {
+        utils.writeHttpResponse(res, 600, 'error', error);
+    })
 }
 
 /* GET home page. */
@@ -93,5 +101,7 @@ router.get('/add', add).post('/add', add);
 router.get('/query', query).post('/query', query);
 
 router.get('/update', update).post('update', update);
+
+router.get('/ranklist', ranklist).post('ranklist', ranklist);
 
 module.exports = router;

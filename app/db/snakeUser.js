@@ -192,6 +192,10 @@ function getUserCount() {
     return db.rxQuery('select count(openId) as count from user;').map(it => it[0].count);
 }
 
+function queryRankList() {
+    return db.rxQuery('select row_number() over (order by curExp desc) as ranks, openId, nickName, headUri, curExp from snake.user limit 0, 100;');
+}
+
 function sortUserExp() {
     let sortUserSql = `update user, (select row_number() over (order by curExp desc) as ranks, openId from user) as sorts set user.ranks=sorts.ranks where user.openId=sorts.openId;`;
     logger.info(`[exec sql] ${sortUserSql}`);
@@ -217,6 +221,7 @@ module.exports = {
     updateLoginTime,
     updateHistoryInfo,
     queryUpdateInfo,
+    queryRankList,
     getUserCount,
     sortUserExp,
     fetchRankExp,

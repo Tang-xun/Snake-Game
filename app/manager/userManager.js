@@ -1,2 +1,13 @@
+let logger = require('../logger').logger('user-manager','info');
 
-userPool = {};
+function updateUserHonor() {
+
+}
+
+function updateUserHistroy() {
+
+}
+
+function updateUserLoginTime() {
+
+}

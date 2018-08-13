@@ -1,6 +1,6 @@
 const rx = require('rx');
 const honor = require('../db/snakeHonor');
-const logger = require('../logger').logger('honors', 'info');
+const logger = require('../logger').logger('honors-manager', 'info');
 
 let honorRule = {};
 let honorGroup = {};
@@ -29,7 +29,31 @@ honor.listHonors().flatMap(it => {
 }, error => logger.info(error));
 
 
-function fetchHonorFromHistroy(winCount, length, kill, linkKill, time, skinNum) {
+function fetchHonorSync(winCount, length, kill, linkKill, time, skinNum) {
+    logger.info(`${winCount} \t ${length} \t ${kill} \t ${linkKill} \t ${time}`);
+    let res = [];
+
+
+    let a = honorScope[honorKeys.win].filter(it => it <= winCount).length - 1;
+    let b = honorScope[honorKeys.length].filter(it => it <= length).length - 1;
+    let c = honorScope[honorKeys.kill].filter(it => it <= kill).length - 1;
+    let d = honorScope[honorKeys.linkKill].filter(it => it <= linkKill).length - 1;
+    let e = honorScope[honorKeys.time].filter(it => it <= time).length - 1;
+    let f = honorScope[honorKeys.skinNum].filter(it => it <= skinNum).length - 1;
+
+    res.push(a > -1 ? honorKeys.win * 10 + a : honorKeys.win)
+    res.push(b > -1 ? honorKeys.length * 10 + b : honorKeys.length)
+    res.push(c > -1 ? honorKeys.kill * 10 + c : honorKeys.kill)
+    res.push(d > -1 ? honorKeys.linkKill * 10 + d : honorKeys.linkKill)
+    res.push(e > -1 ? honorKeys.time * 10 + e : honorKeys.time)
+    res.push(f > -1 ? honorKeys.skinNum * 10 + f : honorKeys.skinNum)
+
+    console.log(res);
+
+    return res;
+}
+
+function fetchHonorRx(winCount, length, kill, linkKill, time, skinNum) {
     logger.info(`${winCount} \t ${length} \t ${kill} \t ${linkKill} \t ${time}`);
 
     return rx.Observable.create(observer => {
@@ -63,6 +87,7 @@ function fetchHonorWithCode(code) {
 }
 
 module.exports = {
-    fetchHonorFromHistroy,
+    fetchHonorRx,
+    fetchHonorSync,
     fetchHonorWithCode,
 }

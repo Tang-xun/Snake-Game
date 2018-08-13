@@ -10,7 +10,9 @@ function writeHttpResponse(res, code, msg, data) {
         'msg': msg,
         'data': data
     };
-    logger.info(`resObj ${JSON.stringify(resObj)}`);
+    logger.info(`==================response==================`);
+    logger.info(resObj);
+    logger.info(`=====================end==================`);
     res.write(JSON.stringify(resObj));
     res.end();
 }
