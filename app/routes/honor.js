@@ -74,7 +74,7 @@ function queryHonor(req, res, next) {
         let winCount = tUser.winCount;
         let skinNum = tUser.skinNum;
         let liveTime = tHistory.liveTime;
-        let kill = tHistory.kill;
+        let kill = tHistory.bestKill;
         let length = tHistory.length;
         let linkKill = tHistory.linkKill;
 
