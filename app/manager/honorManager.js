@@ -34,12 +34,12 @@ function fetchHonorFromHistroy(winCount, length, kill, linkKill, time, skinNum) 
 
     return rx.Observable.create(observer => {
         observer.onNext([
-            honorScope[honorKeys.win].filter(it => it < winCount).length - 1,
-            honorScope[honorKeys.length].filter(it => it < length).length - 1,
-            honorScope[honorKeys.kill].filter(it => it < kill).length - 1,
-            honorScope[honorKeys.linkKill].filter(it => it < linkKill).length - 1,
-            honorScope[honorKeys.time].filter(it => it < time).length - 1,
-            honorScope[honorKeys.skinNum].filter(it => it < skinNum).length - 1
+            honorScope[honorKeys.win].filter(it => it <= winCount).length - 1,
+            honorScope[honorKeys.length].filter(it => it <= length).length - 1,
+            honorScope[honorKeys.kill].filter(it => it <= kill).length - 1,
+            honorScope[honorKeys.linkKill].filter(it => it <= linkKill).length - 1,
+            honorScope[honorKeys.time].filter(it => it <= time).length - 1,
+            honorScope[honorKeys.skinNum].filter(it => it <= skinNum).length - 1
         ]);
     }).map(it => {
         logger.info(it);

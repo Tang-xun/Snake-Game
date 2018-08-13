@@ -178,9 +178,9 @@ function updateHonors(openId, honors, honorNum) {
     let updateHonorSql = `update snake.user set
     honorNum = ${honorNum},
     winHonor = ${honors[0]},
-    killHonor = ${honors[1]},
-    linkKillHonor = ${honors[2]},
-    lengthHonor = ${honors[3]},
+    lengthHonor = ${honors[1]},
+    killHonor = ${honors[2]},
+    linkKillHonor = ${honors[3]},
     timeHonor = ${honors[4]},
     skinHonor = ${honors[5]}
     where openId='${openId}';`;

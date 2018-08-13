@@ -76,12 +76,11 @@ function calUserRanks(curExp) {
     return rx.Observable.from(rankExp)
         .first(it => it.curExp <= curExp)
         .map(it => Math.floor(it.ranks / (rankExp.length) * 100))
-        .doOnError(
-            error => {
-                logger.info(`calUserRanks ${error}`)
+        .catch(error => {
+            if (error.name = 'EmptyError') {
                 return rx.Observable.just(100);
             }
-        );
+        });
 }
 
 module.exports = {
