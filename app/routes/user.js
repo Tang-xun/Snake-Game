@@ -71,7 +71,7 @@ function query(req, res, next) {
         if (utils.isInvalid(next)) {
             utils.writeHttpResponse(res, 603, `not found user openId : ${openId}`);
         } else {
-            utils.writeHttpResponse(res, 200, 'ok', next[0]);
+            utils.writeHttpResponse(res, 200, 'ok', next);
         }
     }, error => {
         utils.writeHttpResponse(res, 601, 'error', error);
