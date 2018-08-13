@@ -34,11 +34,7 @@ function createHistory(req, bean) {
     bean.openId = req.body.openId;
     bean.gameType = parseInt(req.body.gameType);
     bean.roundRank = parseInt(req.body.roundRank);
-    if (bean.gameType) {
-        bean.liveTime = parseInt(req.body.liveTime);
-    } else {
-        bean.liveTime = 0;
-    }
+    bean.liveTime = parseInt(req.body.liveTime);
     bean.length = parseInt(req.body.length);
     bean.bestKill = parseInt(req.body.bestKill);
     bean.linkKill = parseInt(req.body.linkKill);
@@ -198,11 +194,32 @@ function checkParams(history) {
     return checked;
 }
 
+function addHistoryLogic(req, res, next) {
+
+    let history = new dao.History().init(req.body);
+    
+    logger.info('add history ' + history);
+
+    let userOb = user.queryUserInfo(history.openId);
+
+    /**
+     * 1 查询user info 
+     * 2 匹配user 最高纪录， 并更新userInfo
+     * 3 匹配Honor 判断勋章逻辑，并更新userInfo
+     * 4 计算curExp 判断等级逻辑和经验，皮肤奖励
+     * 5 计算honor 判断皮肤，奖金逻辑
+     * 6 同步(更新user, 添加history, 添加honor, 添加skin奖励)
+     * 7 返回最新用户信息，世界排名，honor信息，皮肤奖励和经验奖励
+     */
+    
+
+}
+
 function update(req, res, next) {
     logger.info(`history update`);
 }
 
-router.get('/add', addHistory).post('/add', addHistory);
+router.get('/add', addHistoryLogic).post('/add', addHistoryLogic);
 router.get('/query', query).post('/query', query);
 router.get('/update', update).post('/update', update);
 

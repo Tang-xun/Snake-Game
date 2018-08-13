@@ -6,7 +6,8 @@ function Grade() {
 }
 
 function History() {
-    this.openId;
+
+    this.openId = '';
     this.gameType = 0;
     this.roundRank = -1;
     this.liveTime = 0;
@@ -14,6 +15,18 @@ function History() {
     this.bestKill = 0;
     this.linkKill = 0;
     this.deadTimes = 0;
+}
+
+History.prototype = {
+    init(params) {
+        Object.keys(params)
+            .filter(key => params[key] != undefined)
+            .forEach(key => {
+                this[key] = (typeof (this[key]) == 'number') ? parseInt(params[key]) : params[key];
+            });
+        console.log(this);
+
+    }
 }
 
 function Honor() {
@@ -84,3 +97,15 @@ module.exports = {
     Order,
     Honor,
 }
+let bean = {
+    openId: '1533996972432',
+    gameType: '0',
+    length: '1000',
+    bestKill: '10',
+    linkKill: '6',
+    roundRank: '1',
+    deadTimes: '3',
+    liveTime: '300000'
+}
+
+new History().init(bean);

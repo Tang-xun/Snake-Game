@@ -1,8 +1,5 @@
 const db = require('./mysqlPool');
-const dao = require('./daoBean');
-const rx = require('rx');
 const logger = require('../logger').logger('user', 'info');
-
 
 /**
  * create user table , when app first start 
