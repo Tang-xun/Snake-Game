@@ -118,7 +118,7 @@ function queryUserInfo(openId) {
 function queryUserInfoWithId(id) {
     let queryUser = `select * from snake.user where id='${id}';`;
     logger.info(`[exec sql] ${queryUser}`);
-    return db.rxQuery(queryUser);
+    return db.rxQuery(queryUser).map(it => it[0]);
 }
 
 function queryUpdateInfo(openId) {
