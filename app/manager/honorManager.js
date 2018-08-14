@@ -11,7 +11,6 @@ let honorKeys = { win: 10, kill: 22, linkKill: 32, length: 41, time: 51, skinNum
 honor.listHonors().flatMap(it => {
     return rx.Observable.from(it);
 }).subscribe(it => {
-    logger.info(it);
     key = it.gainType * 10 + it.gameType;
     if (!honorRule[key]) {
         honorRule[key] = [];
@@ -37,10 +36,8 @@ function fetchHonorSync(bean) {
     let liveTime = bean.liveTime;
     let skinNum = bean.skinNum;
 
-    logger.info(`${winCount} \t ${length} \t ${bestKill} \t ${linkKill} \t ${liveTime}`);
+    logger.info(`${winCount} ${length} ${bestKill} ${linkKill} ${liveTime}`);
     let res = {};
-
-
     let a = honorScope[honorKeys.win].filter(it => it <= winCount).length - 1;
     let b = honorScope[honorKeys.length].filter(it => it <= length).length - 1;
     let c = honorScope[honorKeys.kill].filter(it => it <= bestKill).length - 1;
@@ -63,7 +60,7 @@ function fetchHonorSync(bean) {
 }
 
 function fetchHonorRx(winCount, length, kill, linkKill, time, skinNum) {
-    logger.info(`${winCount} \t ${length} \t ${kill} \t ${linkKill} \t ${time}`);
+    logger.info(`${winCount} ${length} ${kill} ${linkKill} ${time}`);
 
     return rx.Observable.create(observer => {
         observer.onNext([

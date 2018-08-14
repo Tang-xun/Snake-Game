@@ -6,7 +6,7 @@
       "type": "Project",
       "description": "",
       "id": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123",
-      "lastModified": "2018-08-13T19:56:49.179+08:00",
+      "lastModified": "2018-08-14T17:09:52.433+08:00",
       "name": "snake_server"
     },
     {
@@ -102,19 +102,19 @@
               "enabled": true,
               "type": "Text",
               "name": "length",
-              "value": "10001"
+              "value": "100001"
             },
             {
               "enabled": true,
               "type": "Text",
               "name": "bestKill",
-              "value": "102"
+              "value": "11"
             },
             {
               "enabled": true,
               "type": "Text",
               "name": "linkKill",
-              "value": "6"
+              "value": "20"
             },
             {
               "enabled": true,
@@ -132,7 +132,7 @@
               "enabled": true,
               "type": "Text",
               "name": "liveTime",
-              "value": "300000"
+              "value": "30000000"
             }
           ]
         },
@@ -154,7 +154,7 @@
         "path": "/history/add"
       },
       "id": "7a063c7d-a810-4eba-9060-b67e506ef8e6",
-      "lastModified": "2018-08-13T19:56:07.456+08:00",
+      "lastModified": "2018-08-14T14:56:04.183+08:00",
       "name": "add",
       "headers": [
         {
@@ -516,57 +516,6 @@
     },
     {
       "type": "Service",
-      "description": "勋章记录",
-      "id": "f03d5b7b-df65-4e4b-95f8-f3a52541c174",
-      "lastModified": "2018-08-13T15:44:00.917+08:00",
-      "name": "honorRecord",
-      "parentId": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123"
-    },
-    {
-      "type": "Request",
-      "method": {
-        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
-        "name": "GET"
-      },
-      "body": {
-        "formBody": {
-          "overrideContentType": true,
-          "encoding": "application/x-www-form-urlencoded",
-          "items": []
-        },
-        "bodyType": "Text",
-        "autoSetLength": true
-      },
-      "headersType": "Form",
-      "uri": {
-        "query": {
-          "delimiter": "&",
-          "items": [
-            {
-              "enabled": true,
-              "name": "openId",
-              "value": "${openId}"
-            }
-          ]
-        },
-        "scheme": {
-          "name": "http",
-          "version": "V11"
-        },
-        "host": "${host}:${port}",
-        "path": "/userHonor/query"
-      },
-      "id": "f380dc15-0a6a-4c0b-bbfa-ba16e416caca",
-      "lastModified": "2018-08-13T15:51:47.933+08:00",
-      "name": "queryUserHonor",
-      "headers": [],
-      "metaInfo": {
-        "ownerId": "github|11735631"
-      },
-      "parentId": "f03d5b7b-df65-4e4b-95f8-f3a52541c174"
-    },
-    {
-      "type": "Service",
       "description": "订单信息",
       "id": "bf431631-efea-4755-86be-ea10320b68b5",
       "lastModified": "2018-08-06T11:43:54.798+08:00",
@@ -839,6 +788,108 @@
     },
     {
       "type": "Service",
+      "description": "勋章记录",
+      "id": "f03d5b7b-df65-4e4b-95f8-f3a52541c174",
+      "lastModified": "2018-08-14T17:08:50.450+08:00",
+      "name": "records",
+      "parentId": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": [
+            {
+              "enabled": true,
+              "type": "Text",
+              "name": "openId",
+              "value": "${openId}"
+            }
+          ]
+        },
+        "bodyType": "Form",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "name": "http",
+          "version": "V11"
+        },
+        "host": "${host}:${port}",
+        "path": "/skin/query/"
+      },
+      "id": "16a02b68-a5e6-4aeb-b0ee-0c5d57a29005",
+      "lastModified": "2018-08-14T17:09:52.433+08:00",
+      "name": "querySkinRecords",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/x-www-form-urlencoded"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "github|11735631"
+      },
+      "parentId": "f03d5b7b-df65-4e4b-95f8-f3a52541c174"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.1",
+        "name": "GET"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": []
+        },
+        "bodyType": "Text",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": [
+            {
+              "enabled": true,
+              "name": "openId",
+              "value": "${openId}"
+            }
+          ]
+        },
+        "scheme": {
+          "name": "http",
+          "version": "V11"
+        },
+        "host": "${host}:${port}",
+        "path": "/userHonor/query"
+      },
+      "id": "f380dc15-0a6a-4c0b-bbfa-ba16e416caca",
+      "lastModified": "2018-08-13T15:51:47.933+08:00",
+      "name": "queryUserHonor",
+      "headers": [],
+      "metaInfo": {
+        "ownerId": "github|11735631"
+      },
+      "parentId": "f03d5b7b-df65-4e4b-95f8-f3a52541c174"
+    },
+    {
+      "type": "Service",
       "description": "用户信息",
       "id": "ecd86e98-5666-47f3-bad7-b6bdaaff453c",
       "lastModified": "2018-08-06T11:44:02.446+08:00",
@@ -924,7 +975,7 @@
         "path": "/user/add"
       },
       "id": "036c0c75-570b-4b30-8f12-126c4adc0fd2",
-      "lastModified": "2018-08-13T14:38:13.292+08:00",
+      "lastModified": "2018-08-14T12:52:26.117+08:00",
       "name": "add",
       "headers": [
         {
@@ -1089,7 +1140,7 @@
     {
       "type": "Context",
       "id": "32633d30-471b-4565-b374-c51506fea9e6",
-      "lastModified": "2018-08-13T19:05:14.023+08:00",
+      "lastModified": "2018-08-14T17:08:19.861+08:00",
       "name": "local",
       "variables": [
         {
@@ -1105,14 +1156,14 @@
         {
           "enabled": true,
           "name": "openId",
-          "value": "1534158308118"
+          "value": "1534237680044"
         }
       ]
     },
     {
       "type": "Context",
       "id": "bb35886f-7d33-4135-bbbe-e2acfdf8f382",
-      "lastModified": "2018-08-13T20:00:41.041+08:00",
+      "lastModified": "2018-08-14T14:59:10.704+08:00",
       "name": "server",
       "variables": [
         {
@@ -1128,7 +1179,7 @@
         {
           "enabled": true,
           "name": "openId",
-          "value": "1534161633523"
+          "value": "1534229945458"
         }
       ]
     }

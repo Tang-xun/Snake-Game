@@ -1,5 +1,8 @@
 let logger = require('../logger').logger('dao', 'info');
 
+let noExpiredTime = 60 * 1000 * 60 * 24 * 30 * 20;
+
+let experienceTime = 60 * 1000 * 60 * 24 * 5;
 
 function Grade() {
     this.grade;
@@ -31,7 +34,7 @@ History.prototype = {
         return this;
     },
 
-    
+
 }
 
 function Honor() {
@@ -112,6 +115,40 @@ User.prototype = {
     }
 }
 
+function SkinRecord() {
+    this.openId = '';
+    this.type = 0;
+    this.name = '';
+    this.uri = '';
+    this.createTime;
+    this.updateTime;
+    this.expiredTime = '';
+    this.expired = false;
+}
+
+SkinRecord.prototype = {
+    init(params) {
+        Object.keys(params)
+            .filter(key => params[key] != undefined)
+            .forEach(key => {
+                this[key] = (typeof (this[key]) == 'number') ? parseInt(params[key]) : params[key];
+            });
+        logger.info(this);
+        return this;
+    },
+
+    isExpired() {
+        return this.expired;
+    },
+
+    updateExpired() {
+        let now = new Date().getTime();
+        if (this.expiredTime < now) {
+            this.expired = true;
+        }
+    }
+}
+
 function Order() {
     this.orderId;
     this.productId;
@@ -129,6 +166,9 @@ module.exports = {
     Grade,
     User,
     History,
+    SkinRecord,
     Order,
     Honor,
+    noExpiredTime,
+    experienceTime,
 }

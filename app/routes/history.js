@@ -7,7 +7,7 @@ const rankManager = require('../manager/rankManager');
 const gradeManager = require('../manager/gradeManager');
 const honorManager = require('../manager/honorManager');
 const honorRecords = require('../db/snakeHonorRecords');
-const userManager = require('../manager/userManager');
+const skinManager = require('../manager/skinManager');
 
 const logger = require('../logger').logger('route', 'info');
 const rx = require('rx');
@@ -156,6 +156,10 @@ function addHistoryLogic(req, res, next) {
         it.honors.forEach(honorBean => {
             observables.push(honorRecords.addHonorRecords(honorBean));
         });
+        it.skins.forEach(skin => {
+            logger.info(`will add ${JSON.stringify(skin)}`);
+            observables.push(skinManager.addSkinRecord(historyBean.openId, skin));
+        })
         observables.push(rx.Observable.just(it));
         // add skin records
         logger.info('todo save skin records ');

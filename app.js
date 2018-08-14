@@ -18,6 +18,7 @@ const orderRoute = require('./app/routes/order');
 const honorRoute = require('./app/routes/honor');
 const historyRoute = require('./app/routes/history');
 const userHonor = require('./app/routes/userHonor');
+const skinRecord = require('./app/routes/skin');
 
 // log4js
 const log4js = require('./app/logger');
@@ -64,6 +65,7 @@ function setupRouter() {
     app.use('/honor', honorRoute);
     app.use('/history', historyRoute);
     app.use('/userHonor', userHonor);
+    app.use('/skin', skinRecord);
 }
 
 
