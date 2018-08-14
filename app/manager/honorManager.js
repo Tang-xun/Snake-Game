@@ -28,27 +28,36 @@ honor.listHonors().flatMap(it => {
     honorScope[key].push(it.v);
 }, error => logger.info(error));
 
+function fetchHonorSync(bean) {
 
-function fetchHonorSync(winCount, length, kill, linkKill, time, skinNum) {
-    logger.info(`${winCount} \t ${length} \t ${kill} \t ${linkKill} \t ${time}`);
-    let res = [];
+    let winCount = bean.winCount;
+    let length = bean.length;
+    let bestKill = bean.bestKill;
+    let linkKill = bean.linkKill;
+    let liveTime = bean.liveTime;
+    let skinNum = bean.skinNum;
+
+    logger.info(`${winCount} \t ${length} \t ${bestKill} \t ${linkKill} \t ${liveTime}`);
+    let res = {};
 
 
     let a = honorScope[honorKeys.win].filter(it => it <= winCount).length - 1;
     let b = honorScope[honorKeys.length].filter(it => it <= length).length - 1;
-    let c = honorScope[honorKeys.kill].filter(it => it <= kill).length - 1;
+    let c = honorScope[honorKeys.kill].filter(it => it <= bestKill).length - 1;
     let d = honorScope[honorKeys.linkKill].filter(it => it <= linkKill).length - 1;
-    let e = honorScope[honorKeys.time].filter(it => it <= time).length - 1;
+    let e = honorScope[honorKeys.time].filter(it => it <= liveTime).length - 1;
     let f = honorScope[honorKeys.skinNum].filter(it => it <= skinNum).length - 1;
 
-    res.push(a > -1 ? honorKeys.win * 10 + a : honorKeys.win)
-    res.push(b > -1 ? honorKeys.length * 10 + b : honorKeys.length)
-    res.push(c > -1 ? honorKeys.kill * 10 + c : honorKeys.kill)
-    res.push(d > -1 ? honorKeys.linkKill * 10 + d : honorKeys.linkKill)
-    res.push(e > -1 ? honorKeys.time * 10 + e : honorKeys.time)
-    res.push(f > -1 ? honorKeys.skinNum * 10 + f : honorKeys.skinNum)
-
-    console.log(res);
+    res = {
+        winHonor: (a > -1 ? honorKeys.win * 10 + a : honorKeys.win),
+        killHonor: (c > -1 ? honorKeys.kill * 10 + c : honorKeys.kill),
+        timeHonor: (e > -1 ? honorKeys.time * 10 + e : honorKeys.time),
+        skinHonor: (f > -1 ? honorKeys.skinNum * 10 + f : honorKeys.skinNum),
+        lengthHonor: (b > -1 ? honorKeys.length * 10 + b : honorKeys.length),
+        linkKillHonor: (d > -1 ? honorKeys.linkKill * 10 + d : honorKeys.linkKill),
+    }
+    
+    logger.info(res)
 
     return res;
 }

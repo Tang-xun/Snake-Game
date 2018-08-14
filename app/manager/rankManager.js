@@ -87,9 +87,21 @@ function calUserRanks(curExp) {
         });
 }
 
+function calUserRanksSync(curExp) {
+    logger.info('calUser Ranks start ' + curExp);
+
+    let rankBeans = rankExp.filter(it=> it.curExp >= curExp);
+
+    if (rankBeans.length == 0) return 5;
+    if (rankBeans.length == curExp.length) return 100;
+    
+    return Math.floor((rankBeans.length / global.userCount) * 100);
+}
+
 module.exports = {
     ServerConfig,
     calUserRanks,
+    calUserRanksSync,
     rxFetchUserCount,
     rxFetchRankScore,
     rxRanksTimeTask,

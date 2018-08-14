@@ -15,27 +15,18 @@ user.createUserTable().subscribe(next => {
 });
 
 function add(req, res, next) {
-    let bean = new dao.User();
+    let userBean = new dao.User().init(req.body);
     let curentGrade = gradeManager.calculGrade(1);
+    userBean.curExp = 1;
+    userBean.nextGradeExp = curentGrade.exps[1];
+    userBean.gradeName = curentGrade.name;
+    userBean.grade = curentGrade.grade;
 
-    bean.openId = req.body.openId;
-    bean.nickName = req.body.nickName;
-    bean.headUri = req.body.headUri;
-    bean.gender = req.body.gender;
-    bean.language = req.body.language;
-    bean.province = req.body.province;
-    bean.city = req.body.city;
-    bean.country = req.body.country;
-    bean.curExp = 1;
-    bean.nextGradeExp = curentGrade.exps[1];
-    bean.gradeName = curentGrade.name;
-    bean.grade = curentGrade.grade;
-
-    user.insertUserInfo(bean).catch(error => {
+    user.insertUserInfo(userBean).catch(error => {
         logger.info(`catch ${error}`);
         if (error.errno == 1062) {
             logger.info(`do on Error user has bean added `);
-            return user.queryUserInfo(bean.openId);
+            return user.queryUserInfo(userBean.openId);
         }
         throw error;
     }).flatMap(it => {
@@ -57,11 +48,7 @@ function add(req, res, next) {
         }
     }, error => {
         logger.info(`error ${error}`)
-        if (error.errno == 1062) {
-            utils.writeHttpResponse(res, 602, 'user has bean registered');
-        } else {
-            utils.writeHttpResponse(res, 601, 'error', error);
-        }
+        utils.writeHttpResponse(res, 601, 'error', error);
     });
 }
 

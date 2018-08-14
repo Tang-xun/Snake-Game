@@ -3,10 +3,11 @@ const dao = require('../db/daoBean');
 const user = require('../db/snakeUser');
 const utils = require('../util/comUtils');
 const history = require('../db/snakeHistory');
-const rankServer = require('../manager/rankManager');
+const rankManager = require('../manager/rankManager');
 const gradeManager = require('../manager/gradeManager');
 const honorManager = require('../manager/honorManager');
 const honorRecords = require('../db/snakeHonorRecords');
+const userManager = require('../manager/userManager');
 
 const logger = require('../logger').logger('route', 'info');
 const rx = require('rx');
@@ -30,157 +31,6 @@ function query(req, res, next) {
     });
 }
 
-function createHistory(req, bean) {
-    bean.openId = req.body.openId;
-    bean.gameType = parseInt(req.body.gameType);
-    bean.roundRank = parseInt(req.body.roundRank);
-    bean.liveTime = parseInt(req.body.liveTime);
-    bean.length = parseInt(req.body.length);
-    bean.bestKill = parseInt(req.body.bestKill);
-    bean.linkKill = parseInt(req.body.linkKill);
-    bean.deadTimes = parseInt(req.body.deadTimes);
-}
-
-function addHistory(req, res, next) {
-    let bean = new dao.History();
-    createHistory(req, bean);
-
-    logger.info(`add history ${JSON.stringify(bean)}`);
-
-    if (checkParams(bean)) {
-        logger.error(`params check error : ${JSON.stringify(bean)}`);
-        utils.writeHttpResponse(res, 600, `params check error`);
-        return;
-    }
-    user.queryUpdateInfo(bean.openId).flatMap(next => {
-        if (next == undefined) {
-            throw { error: 'user not exists' };
-        }
-        return rx.Observable.just(next);
-    }).flatMap(next => {
-        logger.info(`do action first ${JSON.stringify(next)}`);
-        let oUser = next;
-
-        // handle user game records logic
-        if (!bean.gameType) {
-            // time model
-            if (bean.length > oUser.t_length) oUser.t_length = bean.length;
-            if (bean.bestKill > oUser.t_bestKill) oUser.t_bestKill = bean.bestKill;
-            if (bean.linkKill > oUser.t_linkKill) oUser.t_linkKill = bean.linkKill;
-            if (bean.liveTime > oUser.liveTime) oUser.liveTime = bean.liveTime;
-        } else {
-            // endless model
-            if (bean.length > oUser.e_length) oUser.e_length = bean.length;
-            if (bean.bestKill > oUser.e_bestKill) oUser.e_bestKill = bean.bestKill;
-            if (bean.linkKill > oUser.e_linkKill) oUser.e_linkKill = bean.linkKill;
-            if (bean.liveTime > oUser.liveTime) oUser.liveTime = bean.liveTime;
-        }
-        // round rank first 
-        if (bean.roundRank == 1) oUser.winCount++;
-
-        // 判断升级逻辑
-        let historyExp = gradeManager.calculExp(bean.roundRank, bean.bestKill, bean.linkKill, bean.liveTime, bean.deadTimes);
-
-        let honorReward = honorManager.fetchHonorSync(oUser.winCount, bean.length, bean.bestKill, bean.linkKill, bean.liveTime, oUser.skinNum);
-
-        let userHonors = [oUser.winHonor, oUser.lengthHonor, oUser.killHonor, oUser.linkKillHonor, oUser.timeHonor, oUser.skinHonor];
-
-        logger.info(`honorReward ${honorReward}`);
-        logger.info(`userHonors ${userHonors}`);
-        let count = honorReward.length;
-
-        let honorCodes = [];
-        for (var i = 0; i < count; i++) {
-            if (userHonors[i] != honorReward[i]) {
-                logger.info(`gain new honor ${honorReward[i]}`);
-                honorCodes.push(honorReward[i]);
-            }
-        }
-
-        logger.info(`honors ${JSON.stringify(honorCodes)}`);
-
-        let honorExp = [];
-        let skinType = [];
-
-        let honors = [];
-
-        honorCodes.forEach(it => {
-            let h = honorManager.fetchHonorWithCode(it);
-            honors.push(h);
-            logger.info(`foreach honors ${h}`);
-            h.openId = oUser.openId;
-            honorRecords.addHonorRecords(h);
-            honorExp.push(h.rewardExp);
-            skinType.push(h.skinType);
-        });
-
-        if (honorCodes.length > 0) updateUserHonors(oUser, honorReward);
-
-        logger.info(`honorExp ${honorExp}`);
-
-        logger.info(`skinType ${skinType}`);
-
-        oUser.curExp += historyExp;
-
-        oUser.skinNum += skinType.length;
-
-        const reducer = (accumulator, currentValue) => accumulator + currentValue;
-        logger.info(`reward exp ${honorExp.length > 0 ? honorExp.reduce(reducer) : 0}`);
-
-        oUser.curExp += honorExp.length > 0 ? honorExp.reduce(reducer) : 0;
-
-        let gradeInfo = gradeManager.calculGrade(oUser.curExp);
-        logger.info(`cal grader ${JSON.stringify(gradeInfo)}`);
-
-        let rewrd = null;
-        if (oUser.curExp > oUser.nextGradeExp) {
-            oUser.grade = gradeInfo.grade;
-            oUser.nextGradeExp = gradeInfo.exps[1];
-            oUser.gradeName = gradeInfo.name;
-            // 处理升级奖励
-            rewrd = gradeInfo.rewrd;
-            if (rewrd) {
-                oUser.curExp += rewrd.rdExp ? rewrd.rdExp : 0;
-                oUser.skinNum += rewrd.rdSkin.length;
-            }
-        }
-
-        return rx.Observable.combineLatest(
-            history.addHistory(bean),
-            rankServer.calUserRanks(oUser.curExp),
-            user.updateHistoryInfo(oUser),
-            rx.Observable.just(oUser),
-            rx.Observable.just(honors),
-            rx.Observable.just(rewrd ? rewrd : 0)
-        );
-    }).subscribe(next => {
-        logger.info(`next ${JSON.stringify(next)}`);
-        let data = {
-            historyId: next[0],
-            ranks: next[1],
-            updateUser: next[2],
-            userInfo: next[3],
-            honors: next[4],
-            reward: next[5],
-        };
-        utils.writeHttpResponse(res, 200, 'add history ok ', data);
-    }, error => {
-        logger.info(error);
-        logger.error(`error  ${JSON.stringify(error)}`);
-        utils.writeHttpResponse(res, 600, `add history error `, error);
-    });
-}
-
-function updateUserHonors(user, honorReward) {
-    user.winHonor = honorReward[0];
-    user.lengthHonor = honorReward[1];
-    user.killHonor = honorReward[2];
-    user.linkKillHonor = honorReward[3];
-    user.timeHonor = honorReward[4];
-    user.skinHonor = honorReward[5];
-    user.honorNum += honorReward.length;
-}
-
 function checkParams(history) {
     let checked = (history == null ||
         history.openId.trim().length == 0 ||
@@ -194,25 +44,134 @@ function checkParams(history) {
     return checked;
 }
 
+/**
+ * @description
+ * 1 查询user info 
+ * 2 匹配user 最高纪录， 并更新userInfo
+ * 3 匹配Honor 判断勋章逻辑，并更新userInfo
+ * 4 计算curExp 判断等级逻辑和经验，皮肤奖励
+ * 5 计算honor 判断皮肤，奖金逻辑
+ * 6 同步(更新user, 添加history, 添加honor, 添加skin奖励)
+ * 7 返回最新用户信息，世界排名，honor信息，皮肤奖励和经验奖励
+ */
 function addHistoryLogic(req, res, next) {
 
-    let history = new dao.History().init(req.body);
-    
-    logger.info('add history ' + history);
+    let historyBean = new dao.History().init(req.body);
 
-    let userOb = user.queryUserInfo(history.openId);
+    if (checkParams(historyBean)) {
+        utils.writeHttpResponse(res, 601, 'params checked error', historyBean);
+        return;
+    }
 
-    /**
-     * 1 查询user info 
-     * 2 匹配user 最高纪录， 并更新userInfo
-     * 3 匹配Honor 判断勋章逻辑，并更新userInfo
-     * 4 计算curExp 判断等级逻辑和经验，皮肤奖励
-     * 5 计算honor 判断皮肤，奖金逻辑
-     * 6 同步(更新user, 添加history, 添加honor, 添加skin奖励)
-     * 7 返回最新用户信息，世界排名，honor信息，皮肤奖励和经验奖励
-     */
-    
+    logger.info('add history ' + historyBean);
 
+    user.queryUserInfo(historyBean.openId).flatMap(it => {
+        // 用户数据
+        let userBean = new dao.User().init(it);
+        logger.info('query user info ');
+        logger.info(userBean);
+        // 更新用户的个人记录
+        userBean.updateHistory(historyBean);
+        if (historyBean.roundRank == 1) userBean.winCount++;
+        historyBean.winCount = userBean.winCount;
+        historyBean.skinNum = userBean.skinNum;
+        let newHonor = honorManager.fetchHonorSync(historyBean);
+
+        // 用户勋章记录
+        let honorBean = {
+            winHonor: userBean.winHonor,
+            lengthHonor: userBean.lengthHonor,
+            killHonor: userBean.killHonor,
+            linkKillHonor: userBean.linkKillHonor,
+            timeHonor: userBean.timeHonor,
+            skinHonor: userBean.skinHonor,
+        }
+
+        let honors = [];
+        let newGainHonor = utils.findDiffProperty(newHonor, honorBean)
+
+        logger.info('update honor before ' + JSON.stringify(userBean));
+        userBean.updateHonor(newHonor);
+        logger.info('update honor after ' + JSON.stringify(userBean));
+        ;
+        logger.info('new gain honor: ' + JSON.stringify(newGainHonor));
+        Object.values(newGainHonor).forEach(v => honors.push(honorManager.fetchHonorWithCode(v)));
+        logger.info('honors: ' + JSON.stringify(honors));
+
+        // 计算经验所需的数据
+        let honorExp = 0;
+        let honorSkins = [];
+        honors.forEach(it => {
+            logger.info('forEach honor ' + JSON.stringify(it));
+            it.openId = userBean.openId;
+            if (it.rewardExp > 0) honorExp += it.rewardExp;
+            if (it.skinType > 0) honorSkins.push(gradeManager.skinType[it.skinType]);
+        });
+
+        let historyExp = gradeManager.calculExp(historyBean);
+        logger.info('historyExp: ' + historyExp);
+        userBean.curExp += historyExp;
+        userBean.curExp += honorExp;
+
+        let gradeInfo = gradeManager.calculGrade(userBean.curExp);
+        logger.info('gradeInfo' + JSON.stringify(gradeInfo));
+        userBean.curExp += gradeInfo.rewrd.rdExp ? gradeInfo.rewrd.rdExp : 0;
+        logger.info('gradeInfo.rewrd.rdSkin :::: ');
+        logger.info(honorSkins);
+        logger.info(gradeInfo.rewrd.rdSkin);
+
+        logger.info(gradeInfo.rewrd.rdSkin ? "true" : "false");
+
+        if (gradeInfo.rewrd.rdSkin) honorSkins = honorSkins.concat(gradeInfo.rewrd.rdSkin);
+        logger.info(honorSkins);
+
+        userBean.skinNum += honorSkins.length;
+        userBean.grade = gradeInfo.grade;
+        userBean.gradeName = gradeInfo.name;
+        userBean.nextGradeExp = gradeInfo.exps[1];
+        let userRankPercent = rankManager.calUserRanksSync(userBean.curExp);
+        logger.info('ranks is ' + userRankPercent);
+
+        let nextData = {
+            userInfo: userBean,
+            ranks: userRankPercent,
+            historyInfo: historyBean,
+            honors: honors,
+            skins: honorSkins,
+        }
+        return rx.Observable.just(nextData);
+    }).flatMap(it => {
+        logger.info('doAction start');
+        logger.info(it);
+        // update user info 
+        logger.info('will update user');
+        let observables = [];
+
+        observables.push(user.updateHistoryInfo(it.userInfo));
+        // add game history 
+        logger.info('will save history');
+        observables.push(history.addHistory(it.historyInfo));
+        // add honor records
+        logger.info('will save honors');
+        it.honors.forEach(honorBean => {
+            observables.push(honorRecords.addHonorRecords(honorBean));
+        });
+        observables.push(rx.Observable.just(it));
+        // add skin records
+        logger.info('todo save skin records ');
+        logger.info('doAction end');
+        logger.info(observables);
+        return rx.Observable.forkJoin(observables);
+    }).subscribe(next => {
+        logger.info(next);
+        if (next[0] && next[1]) {
+            utils.writeHttpResponse(res, 200, 'ok', next.pop());
+        } else {
+            utils.writeHttpResponse(res, 200, 'ok', next);
+        }
+    }, error => {
+        utils.writeHttpResponse(res, 601, 'error', error);
+    });
 }
 
 function update(req, res, next) {

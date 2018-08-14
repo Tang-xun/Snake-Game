@@ -48,7 +48,7 @@ function initExpRoute() {
                 grade: grade,
                 name: gradeName[grade],
                 exps: [it[0] + 1, it[1]],
-                rewrd: rewardExp[grade]
+                rewrd: rewardExp[grade]?rewardExp[grade]:0
             });
             grade++;
         }
@@ -65,30 +65,36 @@ function calculGrade(exp) {
     return expRoute.find(it => it.exps[0] <= expInt && it.exps[1] >= expInt);
 }
 
-function calculExp(roudRank, kill, linkKill, time, deadTimes) {
-
-    logger.info(`calculExp ${roudRank} ${kill} ${linkKill} ${time} ${deadTimes}`);
+function calculExp(expBean) {
+    
+    let roundRank = expBean.roundRank;
+    let bestKill = expBean.bestKill;
+    let linkKill = expBean.linkKill;
+    let liveTime = expBean.liveTime;
+    let deadTimes = expBean.deadTimes;
+    
+    logger.info(`calculExp ${roundRank} ${bestKill} ${linkKill} ${liveTime} ${deadTimes}`);
 
     let totalExp = 0;
     // rank exp
-    if (roudRank < 11) {
-        totalExp += expConfig.level_1[1][roudRank-1];
-    } else if (roudRank < 21) {
+    if (roundRank < 11) {
+        totalExp += expConfig.level_1[1][roundRank-1];
+    } else if (roundRank < 21) {
         totalExp += -expConfig.level_2[1];
-    } else if (roudRank < 31) {
+    } else if (roundRank < 31) {
         totalExp += -expConfig.level_3[1];
-    } else if (roudRank < 41) {
+    } else if (roundRank < 41) {
         totalExp += -expConfig.level_3[1];
     } else {
         totalExp += expConfig.default;
     }
 
     // kill exp
-    totalExp += kill * expConfig.kill[1];
+    totalExp += bestKill * expConfig.kill[1];
     // linkKill exp
     totalExp += linkKill * expConfig.linkKill[1];
     // time exp
-    totalExp += (time / expConfig.time[0]) * expConfig.time[1];
+    totalExp += (liveTime / expConfig.time[0]) * expConfig.time[1];
     // deadTimes exp
     totalExp += deadTimes / expConfig.deadTimes[0] * expConfig.deadTimes[1];
     logger.info(`calculExp total Exp is ${totalExp}`);

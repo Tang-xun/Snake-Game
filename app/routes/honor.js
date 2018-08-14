@@ -136,19 +136,17 @@ function updateHonorRecords(it, openId) {
 
 function query(req, res, next) {
     let name = req.body.name;
-    let observer = rx.Observer.create(
-        next => {
+
+    if (name) {
+        honor.queryHonorWithName(name).subscribe(next => {
             logger.info(`next ${JSON.stringify(next)}`);
             utils.writeHttpResponse(res, 200, 'ok', next);
         }, error => {
             logger.info(`error ${JSON.stringify(error)}`);
             utils.writeHttpResponse(res, 601, 'error', error);
-        }
-    );
-    if (name) {
-        honor.queryHonorWithName(name).subscribe(observer);
+        });
     } else {
-        utils.writeHttpResponse(601, 'params error need name');
+        utils.writeHttpResponse(res, 601, 'params error need name');
     }
 }
 

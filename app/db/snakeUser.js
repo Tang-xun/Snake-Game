@@ -185,6 +185,17 @@ function updateHonors(openId, honors, honorNum) {
     return db.rxQuery(updateHonorSql).map(it => it.changedRows > 0);
 }
 
+function autoUpdate(userBean) {
+    let updateSql = `update snake.user set `;
+    Object.keys(userBean)
+        .forEach(key => {
+            if (key != 'openId') typeof (userBean[key]) == 'string' ? updateSql += `${key}='${userBean[key]}',` : updateSql += `${key}=${userBean[key]},`;
+        });
+    logger.info('autoUpdate userBean ');
+    logger.info(updateSql);
+    updateSql += `where openId = ${userBean.openId}`;
+}
+
 function getUserCount() {
     return db.rxQuery('select count(openId) as count from user;').map(it => it[0].count);
 }

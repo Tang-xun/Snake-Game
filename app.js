@@ -41,7 +41,8 @@ function setupRouter() {
     logger.info(`init router`);
 
     app.use(function (req, res, next) {
-
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
         obj = req.method == 'POST' ? req.body : req.query;
         rx.Observable.zip(
             rx.Observable.from(Object.keys(obj)),

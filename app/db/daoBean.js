@@ -1,3 +1,6 @@
+let logger = require('../logger').logger('dao', 'info');
+
+
 function Grade() {
     this.grade;
     this.name;
@@ -24,9 +27,11 @@ History.prototype = {
             .forEach(key => {
                 this[key] = (typeof (this[key]) == 'number') ? parseInt(params[key]) : params[key];
             });
-        console.log(this);
+        logger.info(this);
+        return this;
+    },
 
-    }
+    
 }
 
 function Honor() {
@@ -44,13 +49,12 @@ function User() {
     this.nickName;
     this.headUri;
     this.grade = 0;
+    this.gradeName = '小青蛇';
     this.gender = 0;
     this.language = '';
     this.province = '';
     this.city = '';
     this.country = '';
-    this.honor = '小青蛇';
-    this.score = 0;
     this.honorNum = 0;
     this.skin = 1;
     this.skinNum = 1;
@@ -76,6 +80,38 @@ function User() {
     this.createTime;
 }
 
+User.prototype = {
+    init(params) {
+        Object.keys(params)
+            .filter(key => params[key] != undefined)
+            .forEach(key => {
+                this[key] = (typeof (this[key]) == 'number') ? parseInt(params[key]) : params[key];
+            });
+        logger.info(this);
+        return this;
+    },
+
+    updateHistory(history) {
+        if (!history.gameType) {
+            // time model
+            if (history.length > this.t_length) this.t_length = history.length;
+            if (history.bestKill > this.t_bestKill) this.t_bestKill = history.bestKill;
+            if (history.linkKill > this.t_linkKill) this.t_linkKill = history.linkKill;
+            if (history.liveTime > this.liveTime) this.liveTime = history.liveTime;
+        } else {
+            // endless model
+            if (history.length > this.e_length) this.e_length = history.length;
+            if (history.bestKill > this.e_bestKill) this.e_bestKill = history.bestKill;
+            if (history.linkKill > this.e_linkKill) this.e_linkKill = history.linkKill;
+            if (history.liveTime > this.liveTime) this.liveTime = history.liveTime;
+        }
+    },
+
+    updateHonor(newHonor) {
+        Object.keys(newHonor).forEach(key => newHonor[key] != this[key] ? this[key] = newHonor[key] : null);
+    }
+}
+
 function Order() {
     this.orderId;
     this.productId;
@@ -89,7 +125,6 @@ function Order() {
     this.paymentTime;
 }
 
-
 module.exports = {
     Grade,
     User,
@@ -97,15 +132,3 @@ module.exports = {
     Order,
     Honor,
 }
-let bean = {
-    openId: '1533996972432',
-    gameType: '0',
-    length: '1000',
-    bestKill: '10',
-    linkKill: '6',
-    roundRank: '1',
-    deadTimes: '3',
-    liveTime: '300000'
-}
-
-new History().init(bean);

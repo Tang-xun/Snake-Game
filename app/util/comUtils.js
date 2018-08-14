@@ -1,5 +1,4 @@
 
-const rankServer = require('../manager/rankManager');
 const logger = require('../logger').logger('utils', 'info');
 const rx = require('rx');
 
@@ -40,8 +39,20 @@ function checkParams(bean) {
         )
 }
 
+function findDiffProperty(newObj, oldObj) {
+    logger.info('findDiffProperty start ');
+    logger.info(newObj);
+    logger.info(oldObj);
+    let diffKeys = [];
+    let res = {};
+    diffKeys = Object.keys(newObj).filter(it => newObj[it] > oldObj[it]);
+    diffKeys.forEach(it => res[it] = newObj[it]);
+    return res;
+}
+
 module.exports = {
     isInvalid,
     checkParams,
+    findDiffProperty,
     writeHttpResponse,
 }
