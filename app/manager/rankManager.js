@@ -3,9 +3,10 @@ const rx = require('rx');
 const logger = require('../logger').logger('ranks', 'info');
 const user = require('../db/snakeUser');
 
+let minutesUint = 60000
 
-let shortDelay = 2 * 1000;
-let shortUpdateDuration = 5 * 60 * 1000;
+let shortDelay = 2000;
+let shortUpdateDuration = process.env == 'dev' ? minutesUint * 5 : minutesUint * 30;
 
 let longDelay = shortDelay * 2;
 let longUpdateDuration = shortUpdateDuration * 2;
@@ -65,7 +66,6 @@ function rxFetchRankScore() {
     }).subscribe(next => {
         logger.info(`rxFetchRankScore next ${JSON.stringify(next)}`);
         rankExp = next;
-        logger.info(`print ServerConfig ${JSON.stringify(ServerConfig)}`);
     }, error => {
         logger.info(`error fetch rank score ${error}`);
     })

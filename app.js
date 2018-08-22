@@ -132,11 +132,17 @@ function init() {
 
 function serverStart() {
     init();
-    let server = http.createServer(app).listen(process.env == 'dev' ? 8000 : 80, function () {
-        let host = server.address().address;
-        let port = server.address().port;
-        logger.info(`[Event|app start] ${app.locals.title} listened on ${host}:${port}`);
-    });
+    if (process.env == 'dev') {
+        http.createServer(app).listen(8000, httpServerCallbcak);
+    } else {
+        http.createServer(app).listen(80, '0.0.0.0', httpServerCallbcak);
+    }
+}
+
+function httpServerCallbcak() {
+    let host = this.address().address;
+    let port = this.address().port;
+    logger.info(`[Event|app start] ${app.locals.title} ${process.env} listened on ${host}:${port}`);
 }
 
 serverStart();

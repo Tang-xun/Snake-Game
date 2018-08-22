@@ -29,7 +29,7 @@ function createHistoryTable (callback) {
  * @param {*} history 
  * @param {*} callback 
  */
-function addHistory (history, callback) {
+function addHistory (history) {
     let addSql = `insert into snake.history (
                     openId, 
                     gameType,
@@ -58,13 +58,21 @@ function addHistory (history, callback) {
  * query user history
  * @param {*} openId 
  * @param {*} limit 
- * @param {*} callback 
  */
-function queryHistory (openId, limit, callback) {
+function queryHistory (openId, limit) {
     let querySql = `select * from snake.history where openId='${openId}' order by id desc limit 0,${limit > 0 ? limit : 500}`;
     logger.info(`query history ${querySql}`);
     return db.rxQuery(querySql, null);
 }
+
+
+/**
+ * query user a week best history
+ */
+function queryBestHistory(openId, startTime, endTime) {
+
+}
+
 module.exports = {
     createHistoryTable,
     addHistory,

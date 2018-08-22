@@ -79,8 +79,6 @@ function User() {
     this.e_linkKill = 0;
     this.liveTime = 0;
     this.latestLogin;
-    this.updateTime;
-    this.createTime;
 }
 
 User.prototype = {
