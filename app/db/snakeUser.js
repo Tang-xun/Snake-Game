@@ -37,6 +37,7 @@ function createUserTable(callback) {
         lengthHonor int NOT NULL default 41 COMMENT 'length honor level',
         timeHonor   int NOT NULL default 51 COMMENT 'live time honor level',
         skinHonor   int NOT NULL default 82 COMMENT 'skin num level',
+        appCount    int NOT NULL default 10 COMMENT 'user app Count',
         nextGradeExp  int NOT NULL COMMENT 'next grade exp',
         latestLogin TIMESTAMP COMMENT 'latest login time',
         createTime  TIMESTAMP NOT NULL default CURRENT_TIMESTAMP,
@@ -196,6 +197,23 @@ function autoUpdate(userBean) {
     updateSql += `where openId = ${userBean.openId}`;
 }
 
+function queryAppCount(openId) {
+    let querySql = `select appCount from user where openId = '${openId}'`;
+    logger.info(`[exec sql] ${querySql}`);
+    return db.rxQuery(querySql).map(it => it[0].appCount);
+}
+
+function updateAppCount(openId, count) {
+    let updateSql = `update user set appCount=${count} where openId='${openId}';`;
+    if (count>0) {
+        logger.info(`[exec sql] ${updateSql}`);
+        return db.rxQuery(updateSql).map(it => it.Chenged > 0);
+    } else {
+        logger.info(`[exec sql] select true;`);
+        return db.rxQuery('select true;').map(it => it > 0);
+    }
+}
+
 function getUserCount() {
     return db.rxQuery('select count(openId) as count from user;').map(it => it[0].count);
 }
@@ -230,6 +248,8 @@ module.exports = {
     updateHistoryInfo,
     queryUpdateInfo,
     queryRankList,
+    queryAppCount,
+    updateAppCount,
     getUserCount,
     sortUserExp,
     fetchRankExp,

@@ -1,6 +1,4 @@
 const db = require('./mysqlPool');
-const logger = require('../logger').logger('grade', 'info');
-const RX = require('rxjs');
 
 function createGradeTable (callback) {
     let createSql = `CREATE TABLE IF NOT EXISTS snake.grade  (
