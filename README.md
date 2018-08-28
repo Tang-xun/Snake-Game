@@ -68,24 +68,24 @@ mail: tangxun_123@163.com
 
 ### Task List
 
-- [ ] project frame setup 
-- [ ] db design:
+- [x] project frame setup 
+- [x] db design:
 	- [x] user
 	- [x] history 
 	- [x] person ranks
 	- [x] order
 	- [x] history
-	- [ ] grade
-	- [ ] group ranks
+	- [x] grade
+	- [x] group ranks
 	- [ ] payment server
-	- [ ] auth
-- [ ] dev:
+	- [x] auth
+- [x] dev:
 	- [x] user
 	- [x] history 
 	- [x] order
 	- [x] person ranks
-	- [ ] grade
-	- [ ] group ranks
+	- [x] grade
+	- [x] group ranks
 	- [ ] payment server
-	- [ ] auth
-- [ ] debug:
+	- [x] auth
+- [x] debug:

@@ -198,7 +198,7 @@ function autoUpdate(userBean) {
 }
 
 function queryLatestTime(openId) {
-    let querySql = `select latestLogin from user where openId = ${openId}`;
+    let querySql = `select latestLogin from user where openId = '${openId}'`;
     logger.info(`[exec sql] ${querySql}`);
     return db.rxQuery(querySql).map(it => it[0].latestLogin);
 }
