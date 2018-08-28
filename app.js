@@ -19,7 +19,6 @@ const honorRoute = require('./app/routes/honor');
 const historyRoute = require('./app/routes/history');
 const userHonor = require('./app/routes/userHonor');
 const skinRecord = require('./app/routes/skin');
-const fetchApp = require('./app/routes/fetchApp');
 
 // log4js
 const log4js = require('./app/logger');
@@ -65,12 +64,9 @@ function setupRouter() {
     app.use('/grade', gradeRoute);
     app.use('/order', orderRoute);
     app.use('/honor', honorRoute);
-    app.use('/fetchApp', fetchApp);
     app.use('/userHonor', userHonor);
     app.use('/history', historyRoute);
 }
-
-
 
 function setupServerError() {
     logger.info(`init server error handler`);

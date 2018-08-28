@@ -82,6 +82,56 @@ function ranklist(req, res, next) {
     })
 }
 
+function queryAppAward(req, res, next) {
+    let openId = req.method == 'POST' ? req.body.openId : req.query.openId;
+    user.queryLatestTime(openId).flatMap(it => {
+        logger.info('queryLatestTime ::: ');
+        logger.info(it);
+        
+        let now = new Date();
+        let lastest = new Date(it);
+        let diff = now - lastest;
+        
+        let addCount = Math.floor(diff / (1000 * 60 * 18));
+        addCount = addCount > 10 ? 10 : addCount;
+        addCount = addCount < 0 ? 0 : addCount;
+        
+        logger.info(`now : ${now} \t lastest : ${lastest} \t count : ${addCount}`);
+        return rx.Observable.just({
+            openId: openId,
+            count: addCount,
+            time: lastest.toLocaleString()
+        });
+    }).subscribe(next => {
+        utils.writeHttpResponse(res, 200, 'ok', next);
+    }, error => {
+        utils.writeHttpResponse(res, 600, 'error', error);
+    })
+}
+
+function fetchAppAward(req, res, next) {
+    let openId = req.method == 'POST' ? req.body.openId : req.query.openId;
+    user.queryLatestTime(openId).flatMap(it => {
+        logger.info('queryLatestTime ::: ');
+        logger.info(it);
+        
+        let now = new Date();
+        let lastest = new Date(it);
+        let diff = now - lastest;
+        
+        let addCount = Math.floor(diff / (1000 * 60 * 18));
+        addCount = addCount > 10 ? 10 : addCount;
+        addCount = addCount < 0 ? 0 : addCount;
+        return user.updateAppCount(openId, addCount);
+    }).flatMap(it => {
+        return user.queryUserInfo(openId);
+    }).subscribe(next => {
+        utils.writeHttpResponse(res, 200, 'ok', next);
+    }, error => {
+        utils.writeHttpResponse(res, 600, 'error', error);
+    })
+}
+
 /* GET home page. */
 router.get('/add', add).post('/add', add);
 
@@ -90,5 +140,10 @@ router.get('/query', query).post('/query', query);
 router.get('/update', update).post('update', update);
 
 router.get('/ranklist', ranklist).post('ranklist', ranklist);
+
+router.get('/fetchAppAward', fetchAppAward).post('/fetchAppAward', fetchAppAward);
+
+router.get('/queryAppAward', queryAppAward).post('/queryAppAward', queryAppAward);
+
 
 module.exports = router;

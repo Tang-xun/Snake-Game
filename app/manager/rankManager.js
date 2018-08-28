@@ -25,14 +25,14 @@ let ServerConfig = new sysConfig();
 function rxFetchUserCount() {
     logger.info(`shortDelay: ${shortDelay} shortUpdateDuration:${shortUpdateDuration}`);
     rx.Observable.timer(shortDelay, shortUpdateDuration).flatMap(() => {
-        logger.info(`rxFetchUserCount ${new Date()}`);
+        logger.info(`[time task] rxFetchUserCount :::`);
         return user.getUserCount();
     }).subscribe(data => {
-        logger.info(`fetch user count next ${JSON.stringify(data)}`);
+        logger.info(`[time task] fetch user count next ${JSON.stringify(data)}`);
         global.userCount = data;
         ServerConfig.userCount = data;
     }, error => {
-        logger.error(`fetch user count error ${error}`);
+        logger.error(`[time task] fetch user count error ${error}`);
     })
 }
 
@@ -41,33 +41,30 @@ function rxFetchUserCount() {
  */
 function rxRanksTimeTask() {
     rx.Observable.timer(longDelay, longUpdateDuration).flatMap(() => {
-        logger.info(`rxRanksTimeTask ${new Date()}`);
+        logger.info('[time task] rxRanksTimeTask ::: ');
         return user.sortUserExp();
-    }).subscribe(
-        next => {
-            logger.info(`next update userRanks message: ${next.message}`);
-        },
-        error => {
-            logger.info(`error sort user score ${error}`);
-        }
-    );
+    }).subscribe(next => {
+        logger.info(`[time task] next update userRanks message: ${next.message}`);
+    }, error => {
+        logger.info(`[time task] error sort user score ${error}`);
+    });
 }
 
 function rxFetchRankScore() {
     rx.Observable.timer(shortDelay + 1000, shortUpdateDuration).flatMap(() => {
-        logger.info(`rxFetchRankScore ${new Date()}`);
+        logger.info('[time task] rxFetchRankScore :::');
         if (isNaN(global.userCount)) {
             logger.info(`user count is NaN needn't fetch Rank ${ServerConfig.userCount} ${global.userCount}`);
             throw { error: 'user count is NaN' };
         }
         let groupCount = Math.round(global.userCount / 20);
-        logger.info(`current user score group count ${groupCount}`);
+        logger.info(`[time task] current user score group count ${groupCount}`);
         return user.fetchRankExp(groupCount > 0 ? groupCount : 1);
     }).subscribe(next => {
-        logger.info(`rxFetchRankScore next ${JSON.stringify(next)}`);
+        logger.info(`[time task] rxFetchRankScore next ${JSON.stringify(next)}`);
         rankExp = next;
     }, error => {
-        logger.info(`error fetch rank score ${error}`);
+        logger.info(`[time task] error fetch rank score ${error}`);
     })
 }
 
@@ -90,11 +87,11 @@ function calUserRanks(curExp) {
 function calUserRanksSync(curExp) {
     logger.info('calUser Ranks start ' + curExp);
 
-    let rankBeans = rankExp.filter(it=> it.curExp >= curExp);
+    let rankBeans = rankExp.filter(it => it.curExp >= curExp);
 
     if (rankBeans.length == 0) return 5;
     if (rankBeans.length == curExp.length) return 100;
-    
+
     return Math.floor((rankBeans.length / global.userCount) * 100);
 }
 

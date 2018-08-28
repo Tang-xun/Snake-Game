@@ -197,6 +197,12 @@ function autoUpdate(userBean) {
     updateSql += `where openId = ${userBean.openId}`;
 }
 
+function queryLatestTime(openId) {
+    let querySql = `select latestLogin from user where openId = ${openId}`;
+    logger.info(`[exec sql] ${querySql}`);
+    return db.rxQuery(querySql).map(it => it[0].latestLogin);
+}
+
 function queryAppCount(openId) {
     let querySql = `select appCount from user where openId = '${openId}'`;
     logger.info(`[exec sql] ${querySql}`);
@@ -204,8 +210,8 @@ function queryAppCount(openId) {
 }
 
 function updateAppCount(openId, count) {
-    let updateSql = `update user set appCount=${count} where openId='${openId}';`;
-    if (count>0) {
+    let updateSql = `update user set appCount=appCount+${count}, latestLogin=current_timestamp() where openId='${openId}';`;
+    if (count > 0) {
         logger.info(`[exec sql] ${updateSql}`);
         return db.rxQuery(updateSql).map(it => it.Chenged > 0);
     } else {
@@ -248,6 +254,7 @@ module.exports = {
     updateHistoryInfo,
     queryUpdateInfo,
     queryRankList,
+    queryLatestTime,
     queryAppCount,
     updateAppCount,
     getUserCount,
