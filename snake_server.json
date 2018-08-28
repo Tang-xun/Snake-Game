@@ -1,12 +1,12 @@
 {
-  "front-version": "2.18.0",
+  "front-version": "2.19.0",
   "version": 3,
   "nodes": [
     {
       "type": "Project",
       "description": "",
       "id": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123",
-      "lastModified": "2018-08-14T17:09:52.433+08:00",
+      "lastModified": "2018-08-28T12:00:53.321+08:00",
       "name": "snake_server"
     },
     {
@@ -1010,6 +1010,57 @@
           ]
         },
         "bodyType": "Form",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "name": "http",
+          "version": "V11"
+        },
+        "host": "${host}:${port}",
+        "path": "/user/fetchAppAward"
+      },
+      "id": "573c3a09-162e-4486-83cd-309a2b20b92c",
+      "lastModified": "2018-08-28T12:00:53.321+08:00",
+      "name": "fetchAppAward",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/x-www-form-urlencoded"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "github|11735631"
+      },
+      "parentId": "ecd86e98-5666-47f3-bad7-b6bdaaff453c"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": [
+            {
+              "enabled": true,
+              "type": "Text",
+              "name": "openId",
+              "value": "${openId}"
+            }
+          ]
+        },
+        "bodyType": "Form",
         "autoSetLength": true,
         "textBody": ""
       },
@@ -1029,6 +1080,57 @@
       "id": "df705be5-bc1b-457a-a140-75cf3d195fe5",
       "lastModified": "2018-08-07T20:57:36.996+08:00",
       "name": "query",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/x-www-form-urlencoded"
+        }
+      ],
+      "metaInfo": {
+        "ownerId": "github|11735631"
+      },
+      "parentId": "ecd86e98-5666-47f3-bad7-b6bdaaff453c"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": [
+            {
+              "enabled": true,
+              "type": "Text",
+              "name": "openId",
+              "value": "${openId}"
+            }
+          ]
+        },
+        "bodyType": "Form",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "name": "http",
+          "version": "V11"
+        },
+        "host": "${host}:${port}",
+        "path": "/user/queryAppAward"
+      },
+      "id": "3d11efc5-a9ba-4854-9ceb-365bba3bc7e8",
+      "lastModified": "2018-08-28T12:00:33.405+08:00",
+      "name": "queryAppAward",
       "headers": [
         {
           "enabled": true,
@@ -1163,7 +1265,7 @@
     {
       "type": "Context",
       "id": "bb35886f-7d33-4135-bbbe-e2acfdf8f382",
-      "lastModified": "2018-08-14T14:59:10.704+08:00",
+      "lastModified": "2018-08-14T17:17:41.828+08:00",
       "name": "server",
       "variables": [
         {
@@ -1179,7 +1281,7 @@
         {
           "enabled": true,
           "name": "openId",
-          "value": "1534229945458"
+          "value": "1534238254154"
         }
       ]
     }
