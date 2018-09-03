@@ -6,7 +6,7 @@
       "type": "Project",
       "description": "",
       "id": "2f4a6b1b-e8d6-4ec8-8ac5-dd5e6054f123",
-      "lastModified": "2018-08-28T12:00:53.321+08:00",
+      "lastModified": "2018-09-03T15:34:41.206+08:00",
       "name": "snake_server"
     },
     {
@@ -1139,6 +1139,58 @@
         }
       ],
       "metaInfo": {
+        "ownerId": "github|11735631"
+      },
+      "parentId": "ecd86e98-5666-47f3-bad7-b6bdaaff453c"
+    },
+    {
+      "type": "Request",
+      "method": {
+        "requestBody": true,
+        "link": "http://tools.ietf.org/html/rfc7231#section-4.3.3",
+        "name": "POST"
+      },
+      "body": {
+        "formBody": {
+          "overrideContentType": true,
+          "encoding": "application/x-www-form-urlencoded",
+          "items": [
+            {
+              "enabled": true,
+              "type": "Text",
+              "name": "openId",
+              "value": "1534238254154"
+            }
+          ]
+        },
+        "bodyType": "Form",
+        "autoSetLength": true
+      },
+      "headersType": "Form",
+      "uri": {
+        "query": {
+          "delimiter": "&",
+          "items": []
+        },
+        "scheme": {
+          "name": "http",
+          "version": "V11"
+        },
+        "host": "${host}:${port}",
+        "path": "/user/queryPlayerName"
+      },
+      "id": "7c3f087d-f074-4f13-baf7-f2d1d4638610",
+      "lastModified": "2018-09-03T15:34:41.206+08:00",
+      "name": "queryPlayerName",
+      "headers": [
+        {
+          "enabled": true,
+          "name": "Content-Type",
+          "value": "application/x-www-form-urlencoded"
+        }
+      ],
+      "metaInfo": {
+        "IS_FROM_HISTORY": null,
         "ownerId": "github|11735631"
       },
       "parentId": "ecd86e98-5666-47f3-bad7-b6bdaaff453c"
