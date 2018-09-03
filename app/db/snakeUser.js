@@ -244,6 +244,12 @@ function fetchRankExp(count) {
     return db.rxQuery(rankScoreSql);
 }
 
+function selectNickName(count) {
+    let selectNameSql = `select nickName from user where id%${count}=0;`;
+    logger.info(`[exec sql] ${selectNameSql}`);
+    return db.rxQuery(selectNameSql).map(it=>it.map(it=>it.nickName));
+}
+
 module.exports = {
     createUserTable,
     insertUserInfo,
@@ -261,4 +267,5 @@ module.exports = {
     sortUserExp,
     fetchRankExp,
     sortUserExpSingle,
+    selectNickName,
 }

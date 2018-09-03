@@ -3,6 +3,8 @@ const dao = require('../db/daoBean');
 const user = require('../db/snakeUser');
 const utils = require('../util/comUtils');
 const gradeManager = require('../manager/gradeManager');
+
+const coreServer = require('../manager/rankManager');
 const rx = require('rx');
 const logger = require('../logger').logger('route', 'info');
 
@@ -132,6 +134,16 @@ function fetchAppAward(req, res, next) {
     })
 }
 
+function queryName(req, res, next) {
+    let openId = req.method == 'POST' ? req.body.openId : req.query.openId;
+    let userNames = coreServer.getPlayNickName();
+    if (userNames != undefined && userNames.length == 50) {
+        utils.writeHttpResponse(res, 200, 'ok', userNames);
+    } else {
+        utils.writeHttpResponse(res, 600, 'error', userNames);
+    }
+}
+
 /* GET home page. */
 router.get('/add', add).post('/add', add);
 
@@ -144,6 +156,8 @@ router.get('/ranklist', ranklist).post('ranklist', ranklist);
 router.get('/fetchAppAward', fetchAppAward).post('/fetchAppAward', fetchAppAward);
 
 router.get('/queryAppAward', queryAppAward).post('/queryAppAward', queryAppAward);
+
+router.get('/queryPlayerName', queryName).post('/queryPlayerName', queryName);
 
 
 module.exports = router;

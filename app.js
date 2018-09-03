@@ -111,6 +111,7 @@ function startCoreServer() {
     coreServer.rxFetchUserCount();
     coreServer.rxFetchRankScore();
     coreServer.rxRanksTimeTask();
+    coreServer.rxFetchUserNickNames();
 }
 
 function init() {
