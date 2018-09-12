@@ -101,7 +101,6 @@ function onProcessExit() {
         logger.info(`[Event|app exit] exit code is ${code}`);
         logger.trace();
     });
-
 }
 
 /**
@@ -115,6 +114,8 @@ function startCoreServer() {
 }
 
 function init() {
+    // setup env ['dev', 'prd'];
+    process.env = 'dev';
     logger.info(`init start `);
     app.locals.title = 'Sanke_Server';
     app.locals.email = 'tangxun_123@163.com';
@@ -125,8 +126,6 @@ function init() {
     setupServerError();
     startCoreServer();
     onProcessExit();
-    // setup env ['dev', 'prd'];
-    process.env = 'dev';
 }
 
 function serverStart() {

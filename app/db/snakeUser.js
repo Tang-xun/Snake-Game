@@ -245,9 +245,9 @@ function fetchRankExp(count) {
 }
 
 function selectNickName(count) {
-    let selectNameSql = `select nickName from user where id%${count}=0;`;
+    let selectNameSql = `select nickName as name, headUri as url from user where id%${count}=0;`;
     logger.info(`[exec sql] ${selectNameSql}`);
-    return db.rxQuery(selectNameSql).map(it=>it.map(it=>it.nickName));
+    return db.rxQuery(selectNameSql);
 }
 
 module.exports = {
