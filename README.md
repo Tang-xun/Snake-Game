@@ -6,6 +6,8 @@ technique: game: cocos-creator / server: node.js
 date: 2018-7-19 20:00:00
 mail: tangxun_123@163.com
 ````
+
+### DB design pls read README_DB.md
 	
 ### project description
 

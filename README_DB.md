@@ -1,3 +1,5 @@
+### DB Design , Not full information , only refer..
+
 ### mysql opts
 
 ````shell
