@@ -1,66 +1,148 @@
+const cookieParser = require('cookie-parser');
+const createError = require('http-errors');
+const express = require('express');
+const http = require('http');
+const path = require('path');
+const coreServer = require('./app/manager/rankManager');
+
+const rx = require('rx');
+
+let app = new express();
+
+// router 
+const wxRoute = require('./app/routes/wx');
+const indexRoute = require('./app/routes/index');
+const userRoute = require('./app/routes/user');
+const gradeRoute = require('./app/routes/grade');
+const orderRoute = require('./app/routes/order');
+const honorRoute = require('./app/routes/honor');
+const historyRoute = require('./app/routes/history');
+const userHonor = require('./app/routes/userHonor');
+const skinRecord = require('./app/routes/skin');
+
+// log4js
+const log4js = require('./app/logger');
+let logger = log4js.logger('app', 'info');
+
+// 设置视图
+function setupView() {
+    logger.info(`init view`);
+
+    app.set('views', path.join(__dirname, 'views'));
+    app.set('view engine', 'jade');
+}
+
+// 设置日志
+function setupLog() {
+    log4js.use(app);
+}
+
+// 设置路由模块
+function setupRouter() {
+    logger.info(`init router`);
+
+    app.use(function (req, res, next) {
+        res.header("Access-Control-Allow-Origin", "*");
+        res.header("Access-Control-Allow-Headers", "X-Requested-With");
+        obj = req.method == 'POST' ? req.body : req.query;
+        rx.Observable.zip(
+            rx.Observable.from(Object.keys(obj)),
+            rx.Observable.from(Object.values(obj)),
+        ).subscribe(
+            next => {
+                logger.info(next);
+            }, error => {
+                logger.info(error);
+            }
+        )
+        next();
+    })
+    app.use('/', indexRoute);
+    app.use('/wx', wxRoute);
+    app.use('/user', userRoute);
+    app.use('/skin', skinRecord);
+    app.use('/grade', gradeRoute);
+    app.use('/order', orderRoute);
+    app.use('/honor', honorRoute);
+    app.use('/userHonor', userHonor);
+    app.use('/history', historyRoute);
+}
+
+function setupServerError() {
+    logger.info(`init server error handler`);
+    // catch 404 and forward to error handler
+    app.use(function (req, res, next) {
+        next(createError(404));
+    });
+
+    app.use(function (err, req, res, next) {
+        // set locals, only providing error in development
+        res.locals.message = err.message;
+        res.locals.error = req.app.get('env') === 'development' ? err : {};
+
+        // render the error page
+        res.status(err.status || 500);
+        res.render('error');
+    });
+}
+
+// 设置其他组件
+function setupBaseMidWare() {
+    logger.info(`init base midWare`);
+    app.use(express.json());
+    app.use(express.urlencoded({ extended: true }));
+    app.use(cookieParser());
+    app.use(express.static(path.join(__dirname, 'public')));
+}
+
+function onProcessExit() {
+    // setup process exit listener;
+    process.on('exit', function (code) {
+        logger.info(`[Event|app exit] exit code is ${code}`);
+        logger.trace();
+    });
+}
+
 /**
- * @description app global entrance 
- * @author tank
+ * start time task for user ranks
  */
-var FileStreamRotator = require('file-stream-rotator')
-var createError = require('http-errors');
-var express = require('express');
-var path = require('path');
-var cookieParser = require('cookie-parser');
-var morgan = require('morgan');
-var fs = require('fs');
-var path = require('path');
+function startCoreServer() {
+    coreServer.rxFetchUserCount();
+    coreServer.rxFetchRankScore();
+    coreServer.rxRanksTimeTask();
+    coreServer.rxFetchUserNickNames();
+}
 
+function init() {
+    // setup env ['dev', 'prd'];
+    process.env = 'dev';
+    logger.info(`init start `);
+    app.locals.title = 'Sanke_Server';
+    app.locals.email = 'tangxun_123@163.com';
+    setupView();
+    setupLog();
+    setupBaseMidWare();
+    setupRouter();
+    setupServerError();
+    startCoreServer();
+    onProcessExit();
+}
 
-var indexRouter = require('./routes/index');
-var usersRouter = require('./routes/users');
+function serverStart() {
+    init();
+    if (process.env == 'dev') {
+        http.createServer(app).listen(8000, httpServerCallbcak);
+    } else {
+        http.createServer(app).listen(80, '0.0.0.0', httpServerCallbcak);
+    }
+}
 
-var app = express();
+function httpServerCallbcak() {
+    let host = this.address().address;
+    let port = this.address().port;
+    logger.info(`[Event|app start] ${app.locals.title} ${process.env} listened on ${host}:${port}`);
+}
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'jade');
-
-// define logger midWare
-var logDirs = path.join(__dirname, 'logs');
-fs.existsSync(logDirs) || fs.mkdirSync(logDirs);
-var accLogStream = FileStreamRotator.getStream({
-    date_format : 'YYYY-MM-DD',
-    filename: path.join(logDirs, 'access-%DATE%.log'),
-    frequency:'daily',
-    verbose: false
-});
-morgan.format('snake','[snake server] :remote-addr - :remote-user [:date[clf]] :method :url HTTP/:http-version :status :res[content-length] :response-time ms');
-app.use(morgan('snake', {stream: accLogStream}));
-
-app.use(express.json());
-app.use(express.urlencoded({ extended: false }));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
-
-// define router 
-app.use('/', indexRouter);
-app.use('/users', usersRouter);
-
-// catch 404 and forward to error handler
-app.use(function(req, res, next) {
-  next(createError(404));
-});
-
-// error handler
-app.use(function(err, req, res, next) {
-  // set locals, only providing error in development
-  res.locals.message = err.message;
-  res.locals.error = req.app.get('env') === 'development' ? err : {};
-
-  // render the error page
-  res.status(err.status || 500);
-  res.render('error');
-});
-
-// set app listen on
-var listenPort = 8000;
-console.log(`${__filename} will running , listen on ${listenPort}`);
-app.listen(listenPort);
+serverStart();
 
 module.exports = app;
